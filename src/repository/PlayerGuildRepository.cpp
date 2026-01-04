@@ -2,14 +2,14 @@
 #include <cstdint>
 #include "PlayerGuildRepository.h"
 #include "PlayerbotAIConfig.h"
+#include "QueryResult.h"
 #include "UInt32VectorToString.h"
 #include "DatabaseEnv.h"
-#include "QueryResult.h"
 #include "Log.h"
 
 std::unordered_set<uint32_t> PlayerGuildRepository::GetPlayerGuildsIds()
 {
-	std::string randomBotsAccountsIdsString = UInt32VectorToString(sPlayerbotAIConfig->randomBotAccounts);
+	std::string randomBotsAccountsIdsString = UInt32VectorToString(PlayerbotAIConfig::instance().randomBotAccounts);
 
 	std::unordered_set<uint32_t> guildIds;
 
@@ -44,7 +44,7 @@ std::unordered_set<uint32_t> PlayerGuildRepository::GetPlayerGuildsIds()
 
 std::unordered_set<uint64_t> PlayerGuildRepository::GetGuildMembersIds(uint32_t guildId)
 {
-	std::string randomBotsAccountsIdsString = UInt32VectorToString(sPlayerbotAIConfig->randomBotAccounts);
+	std::string randomBotsAccountsIdsString = UInt32VectorToString(PlayerbotAIConfig::instance().randomBotAccounts);
 
 	std::unordered_set<uint64_t> membersIds;
 

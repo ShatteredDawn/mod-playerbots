@@ -23,6 +23,7 @@ void NonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
             }
         )
     );
+	// triggers.push_back(new TriggerNode("seldom", { NextAction("manage inventory", 1.0f) }));
     triggers.push_back(
         new TriggerNode(
             "timer",

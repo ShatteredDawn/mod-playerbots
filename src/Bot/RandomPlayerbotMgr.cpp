@@ -1489,7 +1489,7 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
 
 bool RandomPlayerbotMgr::ProcessBotRandomization(Player* bot)
 {
-	if (sPlayerbotAIConfig->disableRandomBotPeriodicRandomization)
+	if (PlayerbotAIConfig::instance().disableRandomBotPeriodicRandomization)
 		return false;
 
 	uint64_t botId = bot->GetGUID().GetRawValue();
@@ -1510,7 +1510,7 @@ bool RandomPlayerbotMgr::ProcessBotRandomization(Player* bot)
 
     Randomize(bot);
 
-    uint32 time = urand(sPlayerbotAIConfig->minRandomBotRandomizeTime, sPlayerbotAIConfig->maxRandomBotRandomizeTime);
+    uint32 time = urand(PlayerbotAIConfig::instance().minRandomBotRandomizeTime, PlayerbotAIConfig::instance().maxRandomBotRandomizeTime);
 
     ScheduleRandomize(botId, time);
 
@@ -1519,7 +1519,7 @@ bool RandomPlayerbotMgr::ProcessBotRandomization(Player* bot)
 
 bool RandomPlayerbotMgr::ProcessBotTeleportation(Player* bot)
 {
-	if (sPlayerbotAIConfig->disableRandomBotPeriodicTeleportation)
+	if (PlayerbotAIConfig::instance().disableRandomBotPeriodicTeleportation)
 		return false;
 
 	uint64_t botId = bot->GetGUID().GetRawValue();
@@ -1533,8 +1533,8 @@ bool RandomPlayerbotMgr::ProcessBotTeleportation(Player* bot)
 	Refresh(bot);
 	RandomTeleportForLevel(bot);
 
-	uint32_t time = urand(sPlayerbotAIConfig->minRandomBotTeleportInterval,
-						sPlayerbotAIConfig->maxRandomBotTeleportInterval);
+	uint32_t time = urand(PlayerbotAIConfig::instance().minRandomBotTeleportInterval,
+						PlayerbotAIConfig::instance().maxRandomBotTeleportInterval);
 
 	ScheduleTeleport(botId, time);
 
@@ -2317,6 +2317,8 @@ void RandomPlayerbotMgr::RandomTeleport(Player* bot)
 void RandomPlayerbotMgr::Randomize(Player* bot)
 {
     uint8 level = bot->GetLevel();
+
+	LOG_ERROR("playerbots", "randomizing bot {}", bot->GetName());
 
     if (bot->InBattleground())
         return;

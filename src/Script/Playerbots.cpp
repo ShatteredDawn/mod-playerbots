@@ -540,7 +540,7 @@ class PlayerbotsGuildScript : public GuildScript
 
 	void OnAddMember(Guild* guild, Player* player, [[maybe_unused]] uint8_t& plRank)
 	{
-		if (sRandomPlayerbotMgr->IsRandomBot(player))
+		if (RandomPlayerbotMgr::instance().IsRandomBot(player))
 			return;
 
 		uint32_t guildId = guild->GetId();
@@ -561,7 +561,7 @@ class PlayerbotsGuildScript : public GuildScript
 	 */
 	void OnGuildRemoveMember(Guild* guild, Player* player)
 	{
-		if (sRandomPlayerbotMgr->IsRandomBot(player))
+		if (RandomPlayerbotMgr::instance().IsRandomBot(player))
 			return;
 
 		uint32_t guildId = guild->GetId();
