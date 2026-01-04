@@ -138,7 +138,7 @@ public:
         creators["pet"] = &ChatTriggerContext::pet;
         creators["pet attack"] = &ChatTriggerContext::pet_attack;
         creators["roll"] = &ChatTriggerContext::roll_action;
-        creators["has hostile"] = &ChatTriggerContext::has_hostile;
+        creators["manage inventory"] = &ChatTriggerContext::manage_inventory;
     }
 
 private:
@@ -257,6 +257,7 @@ private:
     static Trigger* pet(PlayerbotAI* botAI) { return new ChatCommandTrigger(botAI, "pet"); }
     static Trigger* pet_attack(PlayerbotAI* botAI) { return new ChatCommandTrigger(botAI, "pet attack"); }
     static Trigger* roll_action(PlayerbotAI* botAI) { return new ChatCommandTrigger(botAI, "roll"); }
+    static Trigger* manage_inventory(PlayerbotAI* botAI) { return new ChatCommandTrigger(botAI, "manage inventory"); }
 };
 
 #endif
