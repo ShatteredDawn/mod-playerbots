@@ -30,7 +30,7 @@ public:
 	{
 		if (!this->isInspectable())
 		{
-			LOG_ERROR("playerbots", "Item is not inspectable");
+			LOG_DEBUG("playerbots.armor.inspector", "Item is not inspectable");
 
 			return this->getDefaultItemAction();
 		}
@@ -43,7 +43,7 @@ public:
 
 		if (player == nullptr)
 		{
-			LOG_ERROR("playerbots", "player nullptr");
+			LOG_DEBUG("playerbots.armor.inspector", "player nullptr");
 
 			return this->getDefaultItemAction();
 		}
@@ -52,7 +52,7 @@ public:
 
 		if (item == nullptr)
 		{
-			LOG_ERROR("playerbots", "item nullptr");
+			LOG_DEBUG("playerbots.armor.inspector", "item nullptr");
 
 			return this->getDefaultItemAction();
 		}
@@ -61,7 +61,7 @@ public:
 
 		if (!canUseItem)
 		{
-			LOG_ERROR("playerbots", "player can't use item");
+			LOG_DEBUG("playerbots.armor.inspector", "player can't use item");
 
 			return this->getDefaultItemAction();
 		}
@@ -71,7 +71,7 @@ public:
 
 		if (itemTemplate == nullptr)
 		{
-			LOG_ERROR("playerbots", "item template nullptr");
+			LOG_DEBUG("playerbots.armor.inspector", "item template nullptr");
 
 			return this->getDefaultItemAction();
 		}
@@ -103,7 +103,7 @@ public:
 
 			if (currentlyEquippedItemTemplate == nullptr)
 			{
-				LOG_ERROR("playerbots", "current item template nullptr");
+				LOG_DEBUG("playerbots.armor.inspector", "current item template nullptr");
 
 				return this->getDefaultItemAction();
 			}
