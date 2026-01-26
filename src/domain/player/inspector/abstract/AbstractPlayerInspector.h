@@ -4,7 +4,6 @@
 
 #include "ObjectGuid.h"
 #include "ObjectAccessor.h"
-#include "SharedDefines.h"
 #include "Player.h"
 
 #include "AbstractInspector.h"

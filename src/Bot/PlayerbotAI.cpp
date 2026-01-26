@@ -56,8 +56,7 @@
 #include "Unit.h"
 #include "UpdateTime.h"
 #include "Vehicle.h"
-#include "isEatingOrDrinking.h"
-#include "shouldKeepDrinking.h"
+#include "GlobalPlayerInspector.h"
 
 const int SPELL_TITAN_GRIP = 49152;
 
@@ -1453,13 +1452,13 @@ void PlayerbotAI::DoNextAction(bool min)
         }
     }
 
-    bool minimal = !AllowActivity();
+    bool minimal = !this->AllowActivity();
 
-	if (!minimal && isEatingOrDrinking(bot) && shouldKeepDrinking(this))
+    const GlobalPlayerInspector playerInspector(this->bot->GetGUID().GetRawValue());
+
+	if (!minimal && playerInspector.isDrinking() && playerInspector.shouldBeDrinking(95.0f))
 	{
-		std::string name = bot->GetName().c_str();
-
-		SetNextCheckDelay(1000);
+		this->SetNextCheckDelay(500);
 
 		return;
 	}
