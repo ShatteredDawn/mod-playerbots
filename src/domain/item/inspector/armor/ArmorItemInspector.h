@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "SharedDefines.h"
+#include "Item.h"
 #include "ItemTemplate.h"
 
 #include "StatsWeightCalculator.h"
@@ -20,7 +20,7 @@ public:
 	) : AbstractItemInspector(playerLowGUID, itemLowGUID)
 	{}
 
-	bool isInspectable() const
+	bool isInspectable() const override
 	{
 		const uint8_t itemClass = this->getCurrentItemClass();
 
@@ -58,13 +58,13 @@ public:
 			return this->getDefaultItemAction();
 		}
 
-		const bool canUseItem = player->CanUseItem(item);
+		const InventoryResult canUseItem = player->CanUseItem(item);
 
-		if (!canUseItem)
+		if (canUseItem != EQUIP_ERR_OK)
 		{
 			LOG_DEBUG("playerbots.armor.inspector", "player can't use item");
 
-			return this->getDefaultItemAction();
+			return this->getSellAction();
 		}
 
 		StatsWeightCalculator statisticsWeightCalculator(player);
@@ -85,20 +85,19 @@ public:
 		for (uint8_t i = 0; i < slots.size(); ++i)
 		{
 			const uint32_t equipmentSlot = slots[i];
-			player = ObjectAccessor::FindPlayer(playerGUID);
-
-			if (player == nullptr)
-				return this->getDefaultItemAction();
-
 			const Item* const currentlyEquippedItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, equipmentSlot);
 
 			if (currentlyEquippedItem == nullptr)
+			{
+				LOG_DEBUG("playerbots.armor.inspector", "current item is nullptr");
+
 				return {
 					.action = ItemActionEnum::EQUIP,
 					.bagSlot = this->getBagSlot(),
 					.containerSlot = this->getItemSlot(),
 					.equipmentSlot = equipmentSlot
 				};
+			}
 
 			const ItemTemplate* const currentlyEquippedItemTemplate = currentlyEquippedItem->GetTemplate();
 
@@ -113,6 +112,8 @@ public:
 
 			if (existingItemStatisticsWeight < newItemStatisticsWeight)
 			{
+				LOG_DEBUG("playerbots.armor.inspector", "Current item is worse than item");
+
 				return {
 					.action = ItemActionEnum::EQUIP,
 					.bagSlot = this->getBagSlot(),

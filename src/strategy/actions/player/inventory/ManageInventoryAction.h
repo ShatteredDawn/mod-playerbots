@@ -6,38 +6,12 @@
 #pragma once
 
 #include <string>
-#include <memory>
 #include <unordered_map>
-
-#include "Bag.h"
-#include "ItemTemplate.h"
 
 #include "Action.h"
 #include "Log.h"
 #include "PlayerbotAI.h"
 #include "ItemActionStruct.h"
-#include "AbstractItemInspector.h"
-#include "ArmorItemInspector.h"
-#include "ConsumableConsumableInspector.h"
-#include "ConsumableElixirInspector.h"
-#include "ConsumablePotionInspector.h"
-#include "ContainerInspector.h"
-#include "GemInspector.h"
-#include "GenericItemInspector.h"
-#include "GlyphInspector.h"
-#include "ItemTemplate.h"
-#include "KeyInspector.h"
-#include "MiscellaneousItemInspector.h"
-#include "MoneyInspector.h"
-#include "PermanentItemInspector.h"
-#include "ProjectItemInspector.h"
-#include "QuestItemInspector.h"
-#include "QuiverItemInspector.h"
-#include "ReagentItemInspector.h"
-#include "RecipeItemInspector.h"
-#include "TradeGoodItemInspector.h"
-#include "WeaponItemInspector.h"
-
 
 class ManageInventoryAction : public Action
 {
@@ -98,4 +72,5 @@ private:
 	void processItem(const uint64_t itemGUID);
 	template <typename InspectorT>
 	void determineItemAction(const uint32_t botLowGUID, const uint64_t itemLowGUID);
+	void refillConsumables();
 };

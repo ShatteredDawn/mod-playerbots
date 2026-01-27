@@ -21,7 +21,7 @@ public:
 	) : AbstractItemInspector(playerLowGUID, itemLowGUID)
 	{}
 
-	bool isInspectable() const
+	bool isInspectable() const override
 	{
 		const uint8_t itemClass = this->getCurrentItemClass();
 
@@ -31,32 +31,56 @@ public:
 	ItemActionStruct determineItemAction() const override
 	{
 		if (!this->isInspectable())
+		{
+			LOG_DEBUG("playerbots", "Item is not inspectable.");
+
 			return this->getDefaultItemAction();
+		}
 
 		if (this->isForbiddenItem())
+		{
+			LOG_DEBUG("playerbots", "Item is forbidden");
+
 			return this->getForbiddenItemAction();
+		}
 
 		const ObjectGuid playerGUID = ObjectGuid::Create<HighGuid::Player>(this->playerLowGUID);
 		Player* player = ObjectAccessor::FindPlayer(playerGUID);
 
 		if (player == nullptr)
+		{
+			LOG_DEBUG("playerbots", "Player is nullptr");
+
 			return this->getDefaultItemAction();
+		}
 
 		Item* currentItem = this->getMutableCurrentItem();
 
 		if (currentItem == nullptr)
-			return this->getDefaultItemAction();
+		{
+			LOG_DEBUG("playerbots", "new item had no template");
 
-		const bool canUseItem = player->CanUseItem(currentItem);
-
-		if (!canUseItem)
 			return this->getDefaultItemAction();
+		}
+
+		const InventoryResult canUseItem = player->CanUseItem(currentItem);
+
+		if (canUseItem != EQUIP_ERR_OK)
+		{
+			LOG_DEBUG("playerbots", "item could not be used, selling");
+
+			return this->getSellAction();
+		}
 
 		StatsWeightCalculator statisticsWeightCalculator(player);
 		const ItemTemplate* const itemTemplate = this->getCurrentItemTemplate();
 
 		if (itemTemplate == nullptr)
+		{
+			LOG_DEBUG("playerbots", "Item had no template");
+
 			return this->getDefaultItemAction();
+		}
 
 		std::vector<EquipmentSlots> slots = InventoryService::GetInstance().getItemEquipmentSlots(itemTemplate);
 
@@ -67,20 +91,20 @@ public:
 		for (uint8_t i = 0; i < slots.size(); ++i)
 		{
 			const uint32_t equipmentSlot = slots[i];
-			player = ObjectAccessor::FindPlayer(playerGUID);
 
-			if (player == nullptr)
-				return this->getDefaultItemAction();
-
-			const Item* const currentlyEquippedItem = player->GetItemByPos(this->getBagSlot(), equipmentSlot);
+			const Item* const currentlyEquippedItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, equipmentSlot);
 
 			if (currentlyEquippedItem == nullptr)
+			{
+				LOG_DEBUG("playerbots.inspector.weapon", "No current item, equipping new");
+
 				return {
 					.action = ItemActionEnum::EQUIP,
 					.bagSlot = this->getBagSlot(),
 					.containerSlot = this->getItemSlot(),
 					.equipmentSlot = equipmentSlot
 				};
+			}
 
 			const ItemTemplate* const currentlyEquippedItemTemplate = currentlyEquippedItem->GetTemplate();
 
@@ -91,6 +115,8 @@ public:
 
 			if (existingItemStatisticsWeight < newItemStatisticsWeight)
 			{
+				LOG_DEBUG("playerbots.inspector.weapon", "New item is better than old one.");
+
 				return {
 					.action = ItemActionEnum::EQUIP,
 					.bagSlot = this->getBagSlot(),

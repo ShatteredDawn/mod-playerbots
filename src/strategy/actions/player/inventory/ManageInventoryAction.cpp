@@ -15,6 +15,7 @@
 #include "ChatHelper.h"
 #include "ItemTemplate.h"
 
+#include "ItemActionEnum.h"
 #include "GlobalPlayerInspector.h"
 #include "GlobalItemInspector.h"
 #include "PlayerbotAI.h"
@@ -23,10 +24,51 @@
 #include "ItemActionStruct.h"
 #include "PlayerInventoryFacadeResultEnum.h"
 #include "PlayerInventoryFacade.h"
+#include "GlobalConsumableInspector.h"
+#include "ArmorItemInspector.h"
+#include "ConsumableConsumableInspector.h"
+#include "ConsumableElixirInspector.h"
+#include "ConsumablePotionInspector.h"
+#include "ContainerInspector.h"
+#include "GemInspector.h"
+#include "GenericItemInspector.h"
+#include "GlyphInspector.h"
+#include "ItemTemplate.h"
+#include "KeyInspector.h"
+#include "MiscellaneousItemInspector.h"
+#include "MoneyInspector.h"
+#include "PermanentItemInspector.h"
+#include "ProjectItemInspector.h"
+#include "QuestItemInspector.h"
+#include "QuiverItemInspector.h"
+#include "ReagentItemInspector.h"
+#include "RecipeItemInspector.h"
+#include "TradeGoodItemInspector.h"
+#include "WeaponItemInspector.h"
 
 using InspectorFactory = std::function<ItemActionStruct(const uint32_t botGUID, const uint64_t itemGUID)>;
 using SubclassMap = std::unordered_map<uint32_t, InspectorFactory>;
 using ClassMap = std::unordered_map<uint32_t, SubclassMap>;
+
+static const std::vector<std::pair<uint8_t, uint32_t>> arrowsIdsPerLevel = {
+	{ 75, 41586 }, // Terrorshaft Arrow
+	{ 65, 28056 }, // Blackflight Arrow
+	{ 61, 28053 }, // Wicked Arrow => Requires level 55 but is a TBC item so set to level 61
+	{ 40, 11285 }, // Jagged Arrow
+	{ 25, 3030 }, // Razor Arrow
+	{ 10, 2515 }, // Sharp Arrow
+	{ 0, 2512 } // Rough Arrow
+};
+
+static const std::vector<std::pair<uint8_t, uint32_t>> bulletsIdsPerLevel = {
+	{ 75, 41584 }, // Frostbite Bullets
+	{ 65, 28061 }, // Ironbite Shell
+	{ 61, 28060 }, // Impact Shot => Requires level 55 but is a TBC item so set to level 61
+	{ 40, 11284 }, // Accurate Slugs
+	{ 25, 3033 }, // Solid Shot
+	{ 10, 2519 }, // Heavy Shot
+	{ 0, 2516 } // Light Shot
+};
 
 static const ClassMap inspectorFactories = {
 	{
@@ -72,6 +114,15 @@ static const ClassMap inspectorFactories = {
 						LOG_DEBUG("playerbots.action.manage_inventory", "executing POTION inspector");
 
 						return ConsumablePotionInspector(botGUID, itemGUID).determineItemAction();
+					}
+				},
+				{
+					ManageInventoryAction::ANY_SUBCLASS,
+					[](const uint32_t botGUID, const uint64_t itemGUID)
+					{
+						LOG_DEBUG("playerbots.action.manage_inventory", "executing generic consumable inspector");
+
+						return GlobalConsumableInspector(botGUID, itemGUID).determineItemAction();
 					}
 				}
 			}
@@ -349,6 +400,15 @@ bool ManageInventoryAction::Execute(Event event)
 
 				// LOG_DEBUG("playerbots.action.manage_inventory", "Equipped item {}, result: {}", std::to_string(itemGUID), result);
 
+				Item* item = this->bot->GetItemByPos(action.bagSlot, action.containerSlot);
+
+				if (item == nullptr)
+					continue;
+
+				const ItemTemplate* proto = item->GetTemplate();
+
+				LOG_DEBUG("playerbots.action.manage_inventory", "Item {} was supposed to be equipped.", proto->ItemId);
+
 				shouldEquipUpgrade = true;
 
 				break;
@@ -371,6 +431,8 @@ bool ManageInventoryAction::Execute(Event event)
 
 				break;
 			}
+			case ItemActionEnum::NONE:
+				break;
 		}
 	}
 
@@ -382,6 +444,8 @@ bool ManageInventoryAction::Execute(Event event)
 
 		LOG_DEBUG("playerbots.action.manage_inventory", "Done equipping upgrades");
 	}
+
+	this->refillConsumables();
 
 	LOG_DEBUG("playerbots.action.manage_inventory", "Done processing inventory");
 
@@ -409,6 +473,7 @@ bool ManageInventoryAction::Execute(Event event)
 			LOG_DEBUG("playerbots.action.manage_inventory", "told master ({}) of bot {}", masterName, botName);
 		}
 	}
+
 
 	return true;
 	// if (this->bot != nullptr)
@@ -556,13 +621,6 @@ void ManageInventoryAction::processItem(const uint64_t itemGUID)
 		return;
 	}
 
-	if (itemState == ITEM_CHANGED)
-	{
-		LOG_DEBUG("playerbots.action.manage_inventory", "Item {} (template {}) was already modified.", itemGUID, itemTemplateLowGUID);
-
-		return;
-	}
-
 	if (!itemInspector.itemIsInWorld())
 	{
 		LOG_DEBUG("playerbots.action.manage_inventory", "Item {} (template {}) is not in world.", itemGUID, itemTemplateLowGUID);
@@ -622,6 +680,72 @@ void ManageInventoryAction::processItem(const uint64_t itemGUID)
 	this->itemActions.insert({itemGUID, action});
 
 	LOG_DEBUG("playerbots.action.manage_inventory", "Done visiting item {}", std::to_string(itemTemplateLowGUID));
+}
+
+void ManageInventoryAction::refillConsumables()
+{
+	if (this->bot->IsClass(CLASS_HUNTER))
+	{
+		Item* rangedWeapon = this->bot->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_RANGED);
+
+		if (rangedWeapon == nullptr)
+			return;
+
+		const ItemTemplate* weaponTemplate = rangedWeapon->GetTemplate();
+
+		if (weaponTemplate == nullptr)
+			return;
+
+		if (weaponTemplate->SubClass == ITEM_SUBCLASS_WEAPON_THROWN)
+			return;
+
+		const uint8_t playerLevel = this->bot->GetLevel();
+
+		if (weaponTemplate->SubClass == ITEM_SUBCLASS_WEAPON_GUN)
+		{
+			for (std::pair<uint8_t, uint32_t> bulletPair : bulletsIdsPerLevel)
+			{
+				if (playerLevel > bulletPair.first)
+				{
+					Item* item = Item::CreateItem(bulletPair.second, 1);
+
+					const ItemTemplate* itemTemplate = item->GetTemplate();
+
+					const bool hasEnoughAmmunition = this->bot->HasItemCount(bulletPair.second, itemTemplate->GetMaxStackSize());
+
+					if (!hasEnoughAmmunition)
+					{
+						this->bot->AddItem(bulletPair.second, itemTemplate->GetMaxStackSize());
+					}
+
+					delete item;
+
+					return;
+				}
+			}
+		}
+
+		for (std::pair<uint8_t, uint32_t> arrowPair : arrowsIdsPerLevel)
+		{
+			if (playerLevel > arrowPair.first)
+			{
+				Item* item = Item::CreateItem(arrowPair.second, 1);
+
+				const ItemTemplate* itemTemplate = item->GetTemplate();
+
+				const bool hasEnoughAmmunition = this->bot->HasItemCount(arrowPair.second, itemTemplate->GetMaxStackSize());
+
+				if (!hasEnoughAmmunition)
+				{
+					this->bot->AddItem(arrowPair.second, itemTemplate->GetMaxStackSize());
+				}
+
+				delete item;
+
+				return;
+			}
+		}
+	}
 }
 
 template <typename InspectorT>
