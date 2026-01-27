@@ -132,13 +132,6 @@ public:
     CastMirrorImageAction(PlayerbotAI* botAI) : CastBuffSpellAction(botAI, "mirror image") {}
 };
 
-class CastBlinkBackAction : public CastSpellAction
-{
-public:
-    CastBlinkBackAction(PlayerbotAI* botAI) : CastSpellAction(botAI, "blink") {}
-    bool Execute(Event event) override;
-};
-
 class CastManaShieldAction : public CastBuffSpellAction
 {
 public:
