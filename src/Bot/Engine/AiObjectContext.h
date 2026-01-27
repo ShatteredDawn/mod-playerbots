@@ -38,7 +38,7 @@ public:
     virtual Strategy* GetStrategy(std::string const name);
     virtual std::set<std::string> GetSiblingStrategy(std::string const name);
     virtual Trigger* GetTrigger(std::string const name);
-    virtual Action* GetAction(std::string const name);
+    // virtual Action* GetAction(std::string const name);
     virtual UntypedValue* GetUntypedValue(std::string const name);
 
     template <class T>
@@ -63,7 +63,7 @@ public:
 
     std::set<std::string> GetValues();
     std::set<std::string> GetSupportedStrategies();
-    std::set<std::string> GetSupportedActions();
+    // std::set<std::string> GetSupportedActions();
     std::string const FormatValues();
 
     std::vector<std::string> Save();
@@ -81,7 +81,7 @@ public:
 
 protected:
     NamedObjectContextList<Strategy> strategyContexts;
-    NamedObjectContextList<Action> actionContexts;
+    // NamedObjectContextList<Action> actionContexts;
     NamedObjectContextList<Trigger> triggerContexts;
     NamedObjectContextList<UntypedValue> valueContexts;
 
