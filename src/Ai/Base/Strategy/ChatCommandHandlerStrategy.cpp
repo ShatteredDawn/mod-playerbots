@@ -5,8 +5,6 @@
 
 #include "ChatCommandHandlerStrategy.h"
 
-#include "Playerbots.h"
-
 class ChatCommandActionNodeFactoryInternal : public NamedObjectFactory<ActionNode>
 {
 public:
@@ -106,14 +104,12 @@ void ChatCommandHandlerStrategy::InitTriggers(std::vector<TriggerNode*>& trigger
     triggers.push_back(new TriggerNode("pet", { NextAction("pet", relevance) }));
     triggers.push_back(new TriggerNode("pet attack", { NextAction("pet attack", relevance) }));
     triggers.push_back(new TriggerNode("roll", { NextAction("roll", relevance) }));
-    triggers.push_back(new TriggerNode("has hostile", { NextAction("has hostile", relevance) }));
 }
 
 ChatCommandHandlerStrategy::ChatCommandHandlerStrategy(PlayerbotAI* botAI) : PassTroughStrategy(botAI)
 {
     actionNodeFactories.Add(new ChatCommandActionNodeFactoryInternal());
 
-    supported.push_back("has hostile");
     supported.push_back("quests");
     supported.push_back("stats");
     supported.push_back("leave");
