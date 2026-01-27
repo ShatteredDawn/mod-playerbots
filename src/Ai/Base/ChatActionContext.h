@@ -84,8 +84,6 @@
 #include "EquipGlyphsAction.h"
 #include "PetsAction.h"
 
-#include "HasHostileAction.h"
-
 class ChatActionContext : public NamedObjectContext<Action>
 {
 public:
@@ -199,13 +197,9 @@ public:
         creators["pet"] = &ChatActionContext::pet;
         creators["pet attack"] = &ChatActionContext::pet_attack;
         creators["roll"] = &ChatActionContext::roll_action;
-
-        creators["has hostile"] = &ChatActionContext::has_hostile;
     }
 
 private:
-    static Action* has_hostile(PlayerbotAI* botAI)  { return new HasHostileAction(botAI); }
-
     static Action* open_items(PlayerbotAI* botAI) { return new OpenItemAction(botAI); }
     static Action* unlock_items(PlayerbotAI* botAI) { return new UnlockItemAction(botAI); }
     static Action* unlock_traded_item(PlayerbotAI* botAI) { return new UnlockTradedItemAction(botAI); }

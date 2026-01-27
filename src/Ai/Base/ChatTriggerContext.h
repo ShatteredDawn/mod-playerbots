@@ -138,11 +138,9 @@ public:
         creators["pet"] = &ChatTriggerContext::pet;
         creators["pet attack"] = &ChatTriggerContext::pet_attack;
         creators["roll"] = &ChatTriggerContext::roll_action;
-        creators["has hostile"] = &ChatTriggerContext::has_hostile;
     }
 
 private:
-    static Trigger* has_hostile(PlayerbotAI* botAI) { return new ChatCommandTrigger(botAI, "has hostile"); }
     static Trigger* open_items(PlayerbotAI* botAI) { return new ChatCommandTrigger(botAI, "open items"); }
     static Trigger* unlock_items(PlayerbotAI* botAI) { return new ChatCommandTrigger(botAI, "unlock items"); }
     static Trigger* unlock_traded_item(PlayerbotAI* botAI) { return new ChatCommandTrigger(botAI, "unlock traded item"); }
