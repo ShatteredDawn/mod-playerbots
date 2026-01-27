@@ -122,7 +122,7 @@ public:
         Player* player = handler->GetSession()->GetPlayer();
         std::string key = args;
 
-        PlayerbotMgr* mgr = sPlayerbotsMgr->GetPlayerbotMgr(player);
+        PlayerbotMgr* mgr = PlayerbotsMgr::instance().GetPlayerbotMgr(player);
         if (mgr)
         {
             mgr->HandleSetSecurityKeyCommand(player, key);
@@ -151,7 +151,7 @@ public:
 
         Player* player = handler->GetSession()->GetPlayer();
 
-        PlayerbotMgr* mgr = sPlayerbotsMgr->GetPlayerbotMgr(player);
+        PlayerbotMgr* mgr = PlayerbotsMgr::instance().GetPlayerbotMgr(player);
         if (mgr)
         {
             mgr->HandleLinkAccountCommand(player, accountName, key);
@@ -168,7 +168,7 @@ public:
     {
         Player* player = handler->GetSession()->GetPlayer();
 
-        PlayerbotMgr* mgr = sPlayerbotsMgr->GetPlayerbotMgr(player);
+        PlayerbotMgr* mgr = PlayerbotsMgr::instance().GetPlayerbotMgr(player);
         if (mgr)
         {
             mgr->HandleViewLinkedAccountsCommand(player);
@@ -195,7 +195,7 @@ public:
 
         Player* player = handler->GetSession()->GetPlayer();
 
-        PlayerbotMgr* mgr = sPlayerbotsMgr->GetPlayerbotMgr(player);
+        PlayerbotMgr* mgr = PlayerbotsMgr::instance().GetPlayerbotMgr(player);
         if (mgr)
         {
             mgr->HandleUnlinkAccountCommand(player, accountName);

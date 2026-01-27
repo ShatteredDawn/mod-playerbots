@@ -22,7 +22,6 @@
 #include "DatabaseEnv.h"
 #include "DatabaseLoader.h"
 #include "GuildTaskMgr.h"
-#include "Metric.h"
 #include "PlayerScript.h"
 #include "PlayerbotAIConfig.h"
 #include "PlayerbotGuildMgr.h"
@@ -98,7 +97,7 @@ public:
     {
         if (!player->GetSession()->IsBot())
         {
-            sPlayerbotsMgr->AddPlayerbotData(player, false);
+            PlayerbotsMgr::instance().AddPlayerbotData(player, false);
             sRandomPlayerbotMgr->OnPlayerLogin(player);
 
             // Before modifying the following messages, please make sure it does not violate the AGPLv3.0 license
@@ -125,54 +124,11 @@ public:
         }
     }
 
-    bool OnPlayerBeforeTeleport(Player* /*player*/, uint32 /*mapid*/, float /*x*/, float /*y*/, float /*z*/, float /*orientation*/, uint32 /*options*/, Unit* /*target*/) override
-    {
-        /* for now commmented out until proven its actually required
-        * havent seen any proof CleanVisibilityReferences() is needed
-
-        // If the player is not safe to touch, do nothing
-        if (!player)
-            return true;
-
-        // If same map or not in world do nothing
-        if (!player->IsInWorld() || player->GetMapId() == mapid)
-            return true;
-
-        // If real player do nothing
-        PlayerbotAI* ai = GET_PLAYERBOT_AI(player);
-        if (!ai || ai->IsRealPlayer())
-            return true;
-
-        // Cross-map bot teleport: defer visibility reference cleanup.
-        // CleanVisibilityReferences() erases this bot's GUID from other objects' visibility containers.
-        // This is intentionally done via the event queue (instead of directly here) because erasing
-        // from other players' visibility maps inside the teleport call stack can hit unsafe re-entrancy
-        // or iterator invalidation while visibility updates are in progress
-        ObjectGuid guid = player->GetGUID();
-        player->m_Events.AddEventAtOffset(
-            [guid, mapid]()
-            {
-                // do nothing, if the player is not safe to touch
-                Player* p = ObjectAccessor::FindPlayer(guid);
-                if (!p || !p->IsInWorld() || p->IsDuringRemoveFromWorld())
-                    return;
-
-                // do nothing if we are already on the target map
-                if (p->GetMapId() == mapid)
-                    return;
-
-                p->GetObjectVisibilityContainer().CleanVisibilityReferences();
-            },
-            Milliseconds(0));
-
-        */
-
-        return true;
-    }
-
     void OnPlayerAfterUpdate(Player* player, uint32 diff) override
     {
-        if (PlayerbotAI* botAI = GET_PLAYERBOT_AI(player))
+        PlayerbotAI* const botAI = PlayerbotsMgr::instance().GetPlayerbotAI(player);
+
+        if (botAI != nullptr)
         {
             botAI->UpdateAI(diff);
         }
@@ -185,19 +141,26 @@ public:
 
     bool OnPlayerCanUseChat(Player* player, uint32 type, uint32 /*lang*/, std::string& msg, Player* receiver) override
     {
-        if (type == CHAT_MSG_WHISPER)
+        if (type != CHAT_MSG_WHISPER)
         {
-            if (PlayerbotAI* botAI = GET_PLAYERBOT_AI(receiver))
-            {
-                botAI->HandleCommand(type, msg, player);
-
-                // hotfix; otherwise the server will crash when whispering logout
-                // https://github.com/mod-playerbots/mod-playerbots/pull/1838
-                // TODO: find the root cause and solve it. (does not happen in party chat)
-                if (msg == "logout")
-                    return false;
-            }
+            return true;
         }
+
+        PlayerbotAI* const botAI = PlayerbotsMgr::instance().GetPlayerbotAI(receiver);
+
+        if (botAI == nullptr)
+        {
+            return true;
+        }
+
+        botAI->HandleCommand(type, msg, player);
+
+        // hotfix; otherwise the server will crash when whispering logout
+        // https://github.com/mod-playerbots/mod-playerbots/pull/1838
+        // TODO: find the root cause and solve it. (does not happen in party chat)
+        if (msg == "logout")
+            return false;
+
         return true;
     }
 
@@ -205,50 +168,71 @@ public:
     {
         for (GroupReference* itr = group->GetFirstMember(); itr != nullptr; itr = itr->next())
         {
-            if (Player* member = itr->GetSource())
+            Player* const member = itr->GetSource();
+
+            if (member == nullptr)
             {
-                if (PlayerbotAI* botAI = GET_PLAYERBOT_AI(member))
-                {
-                    botAI->HandleCommand(type, msg, player);
-                }
+                continue;
             }
+
+            PlayerbotAI* const botAI = PlayerbotsMgr::instance().GetPlayerbotAI(member);
+
+            if (botAI == nullptr)
+            {
+                continue;
+            }
+
+            botAI->HandleCommand(type, msg, player);
         }
+
         return true;
     }
 
     bool OnPlayerCanUseChat(Player* player, uint32 type, uint32 /*lang*/, std::string& msg, Guild* guild) override
     {
-        if (type == CHAT_MSG_GUILD)
+        if (type != CHAT_MSG_GUILD)
         {
-            if (PlayerbotMgr* playerbotMgr = GET_PLAYERBOT_MGR(player))
-            {
-                for (PlayerBotMap::const_iterator it = playerbotMgr->GetPlayerBotsBegin();
-                     it != playerbotMgr->GetPlayerBotsEnd(); ++it)
-                {
-                    if (Player* const bot = it->second)
-                    {
-                        if (bot->GetGuildId() == player->GetGuildId())
-                        {
-                            GET_PLAYERBOT_AI(bot)->HandleCommand(type, msg, player);
-                        }
-                    }
-                }
-            }
+            return true;
         }
+
+        PlayerbotMgr* playerbotMgr = PlayerbotsMgr::instance().GetPlayerbotMgr(player);
+
+        if (playerbotMgr == nullptr)
+        {
+            return true;
+        }
+
+        for (PlayerBotMap::const_iterator it = playerbotMgr->GetPlayerBotsBegin(); it != playerbotMgr->GetPlayerBotsEnd(); ++it)
+        {
+            Player* const bot = it->second;
+
+            if (bot == nullptr)
+            {
+                continue;
+            }
+
+            if (bot->GetGuildId() != player->GetGuildId())
+            {
+                continue;
+            }
+
+            PlayerbotsMgr::instance().GetPlayerbotAI(bot)->HandleCommand(type, msg, player);
+        }
+
         return true;
     }
 
     bool OnPlayerCanUseChat(Player* player, uint32 type, uint32 /*lang*/, std::string& msg, Channel* channel) override
     {
-        if (PlayerbotMgr* playerbotMgr = GET_PLAYERBOT_MGR(player))
+        PlayerbotMgr* const playerbotMgr = PlayerbotsMgr::instance().GetPlayerbotMgr(player);
+
+        if (playerbotMgr != nullptr && channel->GetFlags() & 0x18)
         {
-            if (channel->GetFlags() & 0x18)
-            {
-                playerbotMgr->HandleCommand(type, msg);
-            }
+            playerbotMgr->HandleCommand(type, msg);
         }
 
         sRandomPlayerbotMgr->HandleCommand(type, msg, player);
+
         return true;
     }
 
@@ -303,7 +287,9 @@ public:
 
     void OnDestructPlayer(Player* player) override
     {
-        if (PlayerbotAI* botAI = GET_PLAYERBOT_AI(player))
+        PlayerbotAI* botAI = PlayerbotsMgr::instance().GetPlayerbotAI(player);
+
+        if (botAI != nullptr)
         {
             delete botAI;
         }
@@ -385,10 +371,12 @@ public:
     bool OnPlayerbotCheckLFGQueue(lfg::Lfg5Guids const& guidsList) override
     {
         bool nonBotFound = false;
+
         for (ObjectGuid const& guid : guidsList.guids)
         {
             Player* player = ObjectAccessor::FindPlayer(guid);
-            if (guid.IsGroup() || (player && !GET_PLAYERBOT_AI(player)))
+
+            if (guid.IsGroup() || (player && !PlayerbotsMgr::instance().GetPlayerbotAI(player)))
             {
                 nonBotFound = true;
                 break;
@@ -406,27 +394,43 @@ public:
 
     void OnPlayerbotCheckPetitionAccount(Player* player, bool& found) override
     {
-        if (found && GET_PLAYERBOT_AI(player))
+        if (!found)
+        {
+            return;
+        }
+
+        if (PlayerbotsMgr::instance().GetPlayerbotAI(player) != nullptr)
+        {
             found = false;
+        }
     }
 
     bool OnPlayerbotCheckUpdatesToSend(Player* player) override
     {
-        if (PlayerbotAI* botAI = GET_PLAYERBOT_AI(player))
-            return botAI->IsRealPlayer();
+        PlayerbotAI* botAI = PlayerbotsMgr::instance().GetPlayerbotAI(player);
 
-        return true;
+        if (botAI == nullptr)
+        {
+            return true;
+        }
+
+        return botAI->IsRealPlayer();
     }
 
     void OnPlayerbotPacketSent(Player* player, WorldPacket const* packet) override
     {
-        if (!player)
+        if (player == nullptr)
+        {
             return;
+        }
 
-        if (PlayerbotAI* botAI = GET_PLAYERBOT_AI(player))
+        PlayerbotAI* botAI = PlayerbotsMgr::instance().GetPlayerbotAI(player);
+
+        if (botAI != nullptr)
         {
             botAI->HandleBotOutgoingPacket(*packet);
         }
+
         if (PlayerbotMgr* playerbotMgr = GET_PLAYERBOT_MGR(player))
         {
             playerbotMgr->HandleMasterOutgoingPacket(*packet);
@@ -449,8 +453,9 @@ public:
     {
         if (PlayerbotMgr* playerbotMgr = GET_PLAYERBOT_MGR(player))
         {
-            PlayerbotAI* botAI = GET_PLAYERBOT_AI(player);
-            if (!botAI || botAI->IsRealPlayer())
+            PlayerbotAI* botAI = PlayerbotsMgr::instance().GetPlayerbotAI(player);
+
+            if (botAI == nullptr || botAI->IsRealPlayer())
             {
                 playerbotMgr->LogoutAllBots();
             }

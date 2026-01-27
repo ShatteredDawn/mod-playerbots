@@ -71,7 +71,7 @@ public:
 		if (this->hasHostileUnitsInRange(15.0f))
 			return false;
 
-		PlayerbotAI* botAI = PlayerbotsMgr::instance()->GetPlayerbotAI(player);
+		PlayerbotAI* botAI = PlayerbotsMgr::instance().GetPlayerbotAI(player);
 
 		if (botAI == nullptr)
 			return false;

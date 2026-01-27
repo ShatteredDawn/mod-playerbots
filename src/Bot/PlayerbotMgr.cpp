@@ -488,7 +488,7 @@ void PlayerbotHolder::OnBotLogin(Player* const bot)
         return;
     }
 
-    sPlayerbotsMgr->AddPlayerbotData(bot, true);
+    PlayerbotsMgr::instance().AddPlayerbotData(bot, true);
     playerBots[bot->GetGUID()] = bot;
 
     OnBotLoginInternal(bot);
@@ -1087,7 +1087,7 @@ std::vector<std::string> PlayerbotHolder::HandlePlayerbotCommand(char const* arg
         else
         {
             messages.push_back("Enable player botAI");
-            sPlayerbotsMgr->AddPlayerbotData(master, true);
+            PlayerbotsMgr::instance().AddPlayerbotData(master, true);
             GET_PLAYERBOT_AI(master)->SetMaster(master);
         }
 
@@ -1494,7 +1494,7 @@ PlayerbotMgr::PlayerbotMgr(Player* const master) : PlayerbotHolder(), master(mas
 PlayerbotMgr::~PlayerbotMgr()
 {
     if (master)
-        sPlayerbotsMgr->RemovePlayerBotData(master->GetGUID(), false);
+        PlayerbotsMgr::instance().RemovePlayerBotData(master->GetGUID(), false);
 }
 
 void PlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool /*minimal*/)

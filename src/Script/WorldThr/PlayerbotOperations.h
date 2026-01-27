@@ -355,7 +355,7 @@ public:
             if (!member || !newGroup->IsMember(memberGuid))
                 continue;
 
-            PlayerbotAI* memberBotAI = sPlayerbotsMgr->GetPlayerbotAI(member);
+            PlayerbotAI* memberBotAI = PlayerbotsMgr::instance().GetPlayerbotAI(member);
             if (memberBotAI)
                 memberBotAI->Reset();
 
@@ -412,7 +412,7 @@ public:
         if (!bot)
             return false;
 
-        PlayerbotAI* botAI = sPlayerbotsMgr->GetPlayerbotAI(bot);
+        PlayerbotAI* botAI = PlayerbotsMgr::instance().GetPlayerbotAI(bot);
         if (!botAI)
             return false;
 
