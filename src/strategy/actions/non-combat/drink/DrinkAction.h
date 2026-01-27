@@ -23,13 +23,27 @@ public:
 
     bool isPossible() override
     {
-        bool possible = !this->bot->IsInCombat() &&
-            !this->bot->IsMounted() &&
-            !this->botAI->HasAnyAuraOf(GetTarget(), "dire bear form", "bear form", "cat form", "travel form",
-                "aquatic form","flight form", "swift flight form", nullptr) &&
-            (this->botAI->HasCheat(BotCheatMask::food) || UseItemAction::isPossible());
+        if (this->bot->IsInCombat())
+        {
+            return false;
+        }
 
-        return possible;
+        if (this->bot->IsMounted())
+        {
+            return false;
+        }
+
+        if (this->botAI->HasAnyAuraOf(GetTarget(), "dire bear form", "bear form", "cat form", "travel form", "aquatic form","flight form", "swift flight form", nullptr))
+        {
+            return false;
+        }
+
+        if (this->bot->IsCrowdControlled())
+        {
+            return false;
+        }
+
+        return this->botAI->HasCheat(BotCheatMask::food) || UseItemAction::isPossible();
     }
 
     bool isUseful() override
