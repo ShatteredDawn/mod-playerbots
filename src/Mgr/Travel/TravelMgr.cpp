@@ -429,7 +429,7 @@ void WorldPosition::printWKT(std::vector<WorldPosition> points, std::ostringstre
 
 WorldPosition WorldPosition::getDisplayLocation()
 {
-    WorldPosition pos = sTravelNodeMap->getMapOffset(getMapId());
+    WorldPosition pos = TravelNodeMap::instance().getMapOffset(getMapId());
     return offset(const_cast<WorldPosition*>(&pos));
 }
 
@@ -2330,9 +2330,9 @@ void TravelMgr::LoadQuestTravelTable()
     sPlayerbotAIConfig.openLog("unload_grid.csv", "w");
     sPlayerbotAIConfig.openLog("unload_obj.csv", "w");
 
-    sTravelNodeMap->loadNodeStore();
+    TravelNodeMap::instance().loadNodeStore();
 
-    sTravelNodeMap->generateAll();
+    TravelNodeMap::instance().generateAll();
 
     /*
     bool fullNavPointReload = false;
@@ -2341,9 +2341,9 @@ void TravelMgr::LoadQuestTravelTable()
    if (!fullNavPointReload && true)
         TravelNodeStore::loadNodes();
 
-    //sTravelNodeMap->loadNodeStore();
+    //TravelNodeMap::instance().loadNodeStore();
 
-    for (auto node : sTravelNodeMap->getNodes())
+    for (auto node : TravelNodeMap::instance().getNodes())
     {
         node->setLinked(true);
     }
@@ -2385,7 +2385,7 @@ void TravelMgr::LoadQuestTravelTable()
                     else
                         nodeName += " flightMaster";
 
-                    sTravelNodeMap->addNode(&pos, nodeName, true, true);
+                    TravelNodeMap::instance().addNode(&pos, nodeName, true, true);
 
                     break;
                 }
@@ -2415,8 +2415,8 @@ void TravelMgr::LoadQuestTravelTable()
             WorldPosition startPos(startTaxiNode->map_id, startTaxiNode->x, startTaxiNode->y, startTaxiNode->z);
             WorldPosition endPos(endTaxiNode->map_id, endTaxiNode->x, endTaxiNode->y, endTaxiNode->z);
 
-            TravelNode* startNode = sTravelNodeMap->getNode(&startPos, nullptr, 15.0f);
-            TravelNode* endNode = sTravelNodeMap->getNode(&endPos, nullptr, 15.0f);
+            TravelNode* startNode = TravelNodeMap::instance().getNode(&startPos, nullptr, 15.0f);
+            TravelNode* endNode = TravelNodeMap::instance().getNode(&endPos, nullptr, 15.0f);
 
             if (!startNode || !endNode)
                 continue;
@@ -2449,7 +2449,7 @@ void TravelMgr::LoadQuestTravelTable()
             if (cInfo->rank == 3 || (cInfo->rank == 1 && !pos.isOverworld() && u.c == 1))
             {
                 std::string const nodeName = cInfo->Name;
-                sTravelNodeMap->addNode(&pos, nodeName, true, true);
+                TravelNodeMap::instance().addNode(&pos, nodeName, true, true);
             }
         }
 
@@ -2476,7 +2476,7 @@ void TravelMgr::LoadQuestTravelTable()
                 pos = WorldPosition(info->mapId, info->positionX, info->positionY, info->positionZ, info->orientation);
 
                 std::string const nodeName = startNames[i] + " start";
-                sTravelNodeMap->addNode(&pos, nodeName, true, true);
+                TravelNodeMap::instance().addNode(&pos, nodeName, true, true);
             }
         }
 
@@ -2531,7 +2531,7 @@ void TravelMgr::LoadQuestTravelTable()
 
                                 if (pos.distance(&lPos) == 0)
                                 {
-                                    TravelNode* node = sTravelNodeMap->addNode(&pos, data->name, true, true, true,
+                                    TravelNode* node = TravelNodeMap::instance().addNode(&pos, data->name, true, true, true,
    iter.first);
 
                                     if (!prevNode)
@@ -2567,7 +2567,7 @@ void TravelMgr::LoadQuestTravelTable()
 
                                     if (pos.distance(&lPos) == 0)
                                     {
-                                        TravelNode* node = sTravelNodeMap->addNode(&pos, data->name, true, true, true,
+                                        TravelNode* node = TravelNodeMap::instance().addNode(&pos, data->name, true, true, true,
    iter.first); if (node != prevNode)
                                         {
                                             float totalTime = (p.second->TimeSeg - timeStart) / 1000.0f;
@@ -2606,7 +2606,7 @@ void TravelMgr::LoadQuestTravelTable()
 
                         if (p->delay > 0)
                         {
-                            TravelNode* node = sTravelNodeMap->addNode(&pos, data->name, true, true, true, iter.first);
+                            TravelNode* node = TravelNodeMap::instance().addNode(&pos, data->name, true, true, true, iter.first);
 
                             if (!prevNode)
                             {
@@ -2639,7 +2639,7 @@ void TravelMgr::LoadQuestTravelTable()
 
                             if (p->delay > 0)
                             {
-                                TravelNode* node = sTravelNodeMap->getNode(&pos, nullptr, 5.0f);
+                                TravelNode* node = TravelNodeMap::instance().getNode(&pos, nullptr, 5.0f);
                                 if (node != prevNode)
                                 {
                                     TravelNodePath travelPath(0.1f, 0.0, (uint8) TravelNodePathType::transport, entry,
@@ -2668,13 +2668,13 @@ void TravelMgr::LoadQuestTravelTable()
 
             WorldPosition  pos = WorldPosition(points, WP_MEAN_CENTROID);
 
-            TravelNode* node = sTravelNodeMap->addNode(&pos, pos.getAreaName(), true, true, false);
+            TravelNode* node = TravelNodeMap::instance().addNode(&pos, pos.getAreaName(), true, true, false);
         }
 
-        LOG_INFO("playerbots", ">> Loaded {} navigation points.", sTravelNodeMap->getNodes().size());
+        LOG_INFO("playerbots", ">> Loaded {} navigation points.", TravelNodeMap::instance().getNodes().size());
     }
 
-    sTravelNodeMap->calcMapOffset();
+    TravelNodeMap::instance().calcMapOffset();
     loadMapTransfers();
     */
 
@@ -2693,14 +2693,14 @@ void TravelMgr::LoadQuestTravelTable()
         //PathGenerator
         std::vector<WorldPosition> ppath;
 
-        uint32 cur = 0, max = sTravelNodeMap->getNodes().size();
+        uint32 cur = 0, max = TravelNodeMap::instance().getNodes().size();
 
-        for (auto& startNode : sTravelNodeMap->getNodes())
+        for (auto& startNode : TravelNodeMap::instance().getNodes())
         {
             if (!preloadReLinkFullyLinked && startNode->isLinked())
                 continue;
 
-            for (auto& endNode : sTravelNodeMap->getNodes())
+            for (auto& endNode : TravelNodeMap::instance().getNodes())
             {
                 if (startNode == endNode)
                     continue;
@@ -2735,18 +2735,18 @@ void TravelMgr::LoadQuestTravelTable()
 
             if (preloadSubPrint && (cur * 50) / max > ((cur - 1) * 50) / max)
             {
-                sTravelNodeMap->printMap();
-                sTravelNodeMap->printNodeStore();
+                TravelNodeMap::instance().printMap();
+                TravelNodeMap::instance().printNodeStore();
             }
         }
 
         if (!preloadSubPrint)
         {
-            sTravelNodeMap->printNodeStore();
-            sTravelNodeMap->printMap();
+            TravelNodeMap::instance().printNodeStore();
+            TravelNodeMap::instance().printMap();
         }
 
-        LOG_INFO("playerbots", ">> Loaded paths for {} nodes.", sTravelNodeMap->getNodes().size());
+        LOG_INFO("playerbots", ">> Loaded paths for {} nodes.", TravelNodeMap::instance().getNodes().size());
     }
 
     bool removeLowLinkNodes = false || fullNavPointReload || storeNavPointReload;
@@ -2755,7 +2755,7 @@ void TravelMgr::LoadQuestTravelTable()
     {
         std::vector<TravelNode*> goodNodes;
         std::vector<TravelNode*> remNodes;
-        for (auto& node : sTravelNodeMap->getNodes())
+        for (auto& node : TravelNodeMap::instance().getNodes())
         {
             if (!node->getPosition()->isOverworld())
                 continue;
@@ -2775,9 +2775,9 @@ void TravelMgr::LoadQuestTravelTable()
         }
 
         for (auto& node : remNodes)
-            sTravelNodeMap->removeNode(node);
+            TravelNodeMap::instance().removeNode(node);
 
-        LOG_INFO("playerbots", ">> Checked {} nodes.", sTravelNodeMap->getNodes().size());
+        LOG_INFO("playerbots", ">> Checked {} nodes.", TravelNodeMap::instance().getNodes().size());
     }
 
     bool cleanUpNodeLinks = false || fullNavPointReload || storeNavPointReload;
@@ -2787,22 +2787,22 @@ void TravelMgr::LoadQuestTravelTable()
     {
         //Routes
         uint32 cur = 0;
-        uint32 max = sTravelNodeMap->getNodes().size();
+        uint32 max = TravelNodeMap::instance().getNodes().size();
 
         //Clean up node links
-        for (auto& startNode : sTravelNodeMap->getNodes())
+        for (auto& startNode : TravelNodeMap::instance().getNodes())
         {
              startNode->cropUselessLinks();
 
              cur++;
              if (cleanUpSubPrint && (cur * 10) / max > ((cur - 1) * 10) / max)
              {
-                 sTravelNodeMap->printMap();
-                 sTravelNodeMap->printNodeStore();
+                 TravelNodeMap::instance().printMap();
+                 TravelNodeMap::instance().printNodeStore();
              }
         }
 
-        LOG_INFO("playerbots", ">> Cleaned paths for {} nodes.", sTravelNodeMap->getNodes().size());
+        LOG_INFO("playerbots", ">> Cleaned paths for {} nodes.", TravelNodeMap::instance().getNodes().size());
     }
 
     bool reCalculateCost = false || fullNavPointReload || storeNavPointReload;
@@ -2810,7 +2810,7 @@ void TravelMgr::LoadQuestTravelTable()
 
     if (reCalculateCost)
     {
-        for (auto& startNode : sTravelNodeMap->getNodes())
+        for (auto& startNode : TravelNodeMap::instance().getNodes())
         {
             for (auto& path : *startNode->getLinks())
             {
@@ -2826,14 +2826,14 @@ void TravelMgr::LoadQuestTravelTable()
             }
         }
 
-        LOG_INFO("playerbots", ">> Calculated pathcost for {} nodes.", sTravelNodeMap->getNodes().size());
+        LOG_INFO("playerbots", ">> Calculated pathcost for {} nodes.", TravelNodeMap::instance().getNodes().size());
     }
 
     bool mirrorMissingPaths = true || fullNavPointReload || storeNavPointReload;
 
     if (mirrorMissingPaths)
     {
-        for (auto& startNode : sTravelNodeMap->getNodes())
+        for (auto& startNode : TravelNodeMap::instance().getNodes())
         {
             for (auto& path : *startNode->getLinks())
             {
@@ -2856,13 +2856,13 @@ void TravelMgr::LoadQuestTravelTable()
             }
         }
 
-        LOG_INFO("playerbots", ">> Reversed missing paths for {} nodes.", sTravelNodeMap->getNodes().size());
+        LOG_INFO("playerbots", ">> Reversed missing paths for {} nodes.", TravelNodeMap::instance().getNodes().size());
     }
     */
 
-    sTravelNodeMap->printMap();
-    sTravelNodeMap->printNodeStore();
-    sTravelNodeMap->saveNodeStore();
+    TravelNodeMap::instance().printMap();
+    TravelNodeMap::instance().printNodeStore();
+    TravelNodeMap::instance().saveNodeStore();
 
     // Creature/gos/zone export.
     if (sPlayerbotAIConfig.hasLog("creatures.csv"))
@@ -3239,7 +3239,7 @@ void TravelMgr::LoadQuestTravelTable()
             if (loc.second.empty())
                 continue;
 
-            if (!sTravelNodeMap->getMapOffset(loc.second.front().getMapId()) && loc.second.front().getMapId() != 0)
+            if (!TravelNodeMap::instance().getMapOffset(loc.second.front().getMapId()) && loc.second.front().getMapId() != 0)
                 continue;
 
             std::vector<WorldPosition> points = loc.second;
@@ -3618,7 +3618,7 @@ void TravelMgr::LoadQuestTravelTable()
 
     //Zone area map REMOVE!
     uint32 k = 0;
-    for (auto& node : sTravelNodeMap->getNodes())
+    for (auto& node : TravelNodeMap::instance().getNodes())
     {
         WorldPosition* pos = node->getPosition();
         //map area
@@ -4147,7 +4147,7 @@ void TravelMgr::addMapTransfer(WorldPosition start, WorldPosition end, float por
 
 void TravelMgr::loadMapTransfers()
 {
-    for (auto& node : sTravelNodeMap->getNodes())
+    for (auto& node : TravelNodeMap::instance().getNodes())
     {
         for (auto& link : *node->getLinks())
         {

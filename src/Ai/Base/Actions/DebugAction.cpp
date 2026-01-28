@@ -53,8 +53,8 @@ bool DebugAction::Execute(Event event)
     }
     else if (text.find("printmap") != std::string::npos)
     {
-        sTravelNodeMap->printMap();
-        sTravelNodeMap->printNodeStore();
+        TravelNodeMap::instance().printMap();
+        TravelNodeMap::instance().printNodeStore();
         return true;
     }
     else if (text.find("travel ") != std::string::npos)
@@ -72,7 +72,7 @@ bool DebugAction::Execute(Event event)
                 return false;
 
             std::vector<WorldPosition> beginPath, endPath;
-            TravelNodeRoute route = sTravelNodeMap->getRoute(botPos, *points.front(), beginPath, bot);
+            TravelNodeRoute route = TravelNodeMap::instance().getRoute(botPos, *points.front(), beginPath, bot);
 
             std::ostringstream out;
             out << "Traveling to " << dest->getTitle() << ": ";
@@ -194,16 +194,16 @@ bool DebugAction::Execute(Event event)
 
         std::string const name = "USER:" + text.substr(9);
 
-        /* TravelNode* startNode  = */ sTravelNodeMap->addNode(pos, name, false, false); // startNode not used, but addNode as side effect, fragment marked for removal.
+        /* TravelNode* startNode  = */ TravelNodeMap::instance().addNode(pos, name, false, false); // startNode not used, but addNode as side effect, fragment marked for removal.
 
-        for (auto& endNode : sTravelNodeMap->getNodes(pos, 2000))
+        for (auto& endNode : TravelNodeMap::instance().getNodes(pos, 2000))
         {
             endNode->setLinked(false);
         }
 
         botAI->TellMasterNoFacing("Node " + name + " created.");
 
-        sTravelNodeMap->setHasToGen();
+        TravelNodeMap::instance().setHasToGen();
 
         return true;
     }
@@ -211,7 +211,7 @@ bool DebugAction::Execute(Event event)
     {
         WorldPosition pos(bot);
 
-        TravelNode* startNode = sTravelNodeMap->getNode(pos, nullptr, 50);
+        TravelNode* startNode = TravelNodeMap::instance().getNode(pos, nullptr, 50);
 
         if (!startNode)
             return false;
@@ -221,24 +221,24 @@ bool DebugAction::Execute(Event event)
             botAI->TellMasterNoFacing("Node can not be removed.");
         }
 
-        sTravelNodeMap->m_nMapMtx.lock();
-        sTravelNodeMap->removeNode(startNode);
+        TravelNodeMap::instance().m_nMapMtx.lock();
+        TravelNodeMap::instance().removeNode(startNode);
         botAI->TellMasterNoFacing("Node removed.");
-        sTravelNodeMap->m_nMapMtx.unlock();
+        TravelNodeMap::instance().m_nMapMtx.unlock();
 
-        sTravelNodeMap->setHasToGen();
+        TravelNodeMap::instance().setHasToGen();
 
         return true;
     }
     else if (text.find("reset node") != std::string::npos)
     {
-        for (auto& node : sTravelNodeMap->getNodes())
+        for (auto& node : TravelNodeMap::instance().getNodes())
             node->setLinked(false);
         return true;
     }
     else if (text.find("reset path") != std::string::npos)
     {
-        for (auto& node : sTravelNodeMap->getNodes())
+        for (auto& node : TravelNodeMap::instance().getNodes())
             for (auto& path : *node->getLinks())
                 node->removeLinkTo(path.first, true);
         return true;
@@ -246,23 +246,23 @@ bool DebugAction::Execute(Event event)
     else if (text.find("gen node") != std::string::npos)
     {
         // Pathfinder
-        sTravelNodeMap->generateNodes();
+        TravelNodeMap::instance().generateNodes();
         return true;
     }
     else if (text.find("gen path") != std::string::npos)
     {
-        sTravelNodeMap->generatePaths();
+        TravelNodeMap::instance().generatePaths();
         return true;
     }
     else if (text.find("crop path") != std::string::npos)
     {
-        sTravelNodeMap->removeUselessPaths();
+        TravelNodeMap::instance().removeUselessPaths();
         return true;
     }
     else if (text.find("save node") != std::string::npos)
     {
-        sTravelNodeMap->printNodeStore();
-        sTravelNodeMap->saveNodeStore();
+        TravelNodeMap::instance().printNodeStore();
+        TravelNodeMap::instance().saveNodeStore();
         return true;
     }
     else if (text.find("load node") != std::string::npos)
@@ -270,8 +270,8 @@ bool DebugAction::Execute(Event event)
         std::thread t(
             []
             {
-                sTravelNodeMap->removeNodes();
-                sTravelNodeMap->loadNodeStore();
+                TravelNodeMap::instance().removeNodes();
+                TravelNodeMap::instance().loadNodeStore();
             });
 
         t.detach();
@@ -282,7 +282,7 @@ bool DebugAction::Execute(Event event)
     {
         WorldPosition pos(bot);
 
-        std::vector<TravelNode*> nodes = sTravelNodeMap->getNodes(pos, 500);
+        std::vector<TravelNode*> nodes = TravelNodeMap::instance().getNodes(pos, 500);
 
         for (auto& node : nodes)
         {
