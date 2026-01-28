@@ -76,19 +76,19 @@ public:
     {
         if (!strcmp(args, "reset"))
         {
-            sPerfMonitor->Reset();
+            sPerfMonitor.Reset();
             return true;
         }
 
         if (!strcmp(args, "tick"))
         {
-            sPerfMonitor->PrintStats(true, false);
+            sPerfMonitor.PrintStats(true, false);
             return true;
         }
 
         if (!strcmp(args, "stack"))
         {
-            sPerfMonitor->PrintStats(false, true);
+            sPerfMonitor.PrintStats(false, true);
             return true;
         }
 
@@ -102,7 +102,7 @@ public:
             return true;
         }
 
-        sPerfMonitor->PrintStats();
+        sPerfMonitor.PrintStats();
         return true;
     }
 
