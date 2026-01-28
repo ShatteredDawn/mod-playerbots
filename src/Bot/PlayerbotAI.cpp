@@ -1748,7 +1748,7 @@ void PlayerbotAI::ResetStrategies(bool load)
         engines[i]->Init();
 
     // if (load)
-    //     sPlayerbotRepository->Load(this);
+    //     PlayerbotRepository::instance().Load(this);
 }
 
 bool PlayerbotAI::IsRanged(Player* player, bool bySpec)

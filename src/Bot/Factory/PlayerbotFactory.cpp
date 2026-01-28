@@ -312,7 +312,7 @@ void PlayerbotFactory::Randomize(bool incremental)
     sRandomPlayerbotMgr.SetValue(bot->GetGUID().GetCounter(), "specNo", 0);
     if (botAI)
     {
-        sPlayerbotRepository->Reset(botAI);
+        PlayerbotRepository::instance().Reset(botAI);
         // botAI->DoSpecificAction("auto talents");
         botAI->ResetStrategies(false);  // fix wrong stored strategy
     }

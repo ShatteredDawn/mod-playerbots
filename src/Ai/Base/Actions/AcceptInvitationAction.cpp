@@ -49,7 +49,7 @@ bool AcceptInvitationAction::Execute(Event event)
     if (sRandomPlayerbotMgr.IsRandomBot(bot))
         botAI->SetMaster(inviter);
     // else
-    // sPlayerbotRepository->Save(botAI);
+    // PlayerbotRepository::instance().Save(botAI);
 
     botAI->ResetStrategies();
     botAI->ChangeStrategy("+follow,-lfg,-bg", BOT_STATE_NON_COMBAT);

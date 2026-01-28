@@ -418,7 +418,7 @@ public:
 
         Group* group = bot->GetGroup();
         if (group && !bot->InBattleground() && !bot->InBattlegroundQueue() && botAI->HasActivePlayerMaster())
-            sPlayerbotRepository->Save(botAI);
+            PlayerbotRepository::instance().Save(botAI);
 
         return true;
     }

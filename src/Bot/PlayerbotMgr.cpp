@@ -452,7 +452,7 @@ void PlayerbotHolder::DisablePlayerBot(ObjectGuid guid)
         Group* group = bot->GetGroup();
         if (group && !bot->InBattleground() && !bot->InBattlegroundQueue() && botAI->HasActivePlayerMaster())
         {
-            sPlayerbotRepository->Save(botAI);
+            PlayerbotRepository::instance().Save(botAI);
         }
 
         LOG_DEBUG("playerbots", "Bot {} logged out", bot->GetName().c_str());
@@ -564,7 +564,7 @@ void PlayerbotHolder::OnBotLogin(Player* const bot)
     {
         botAI->ResetStrategies(!sRandomPlayerbotMgr.IsRandomBot(bot));
     }
-    sPlayerbotRepository->Load(botAI);
+    PlayerbotRepository::instance().Load(botAI);
 
     if (master && !master->HasUnitState(UNIT_STATE_IN_FLIGHT))
     {
