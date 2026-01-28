@@ -45,8 +45,8 @@ public:
         if (*botAI->GetAiObjectContext()->GetValue<uint8>("aoe count") > 2)
         {
             WorldLocation aoe = *botAI->GetAiObjectContext()->GetValue<WorldLocation>("aoe position");
-            if (sServerFacade->IsDistanceLessOrEqualThan(
-                    sServerFacade->GetDistance2d(creature, aoe.GetPositionX(), aoe.GetPositionY()),
+            if (ServerFacade::instance().IsDistanceLessOrEqualThan(
+                    ServerFacade::instance().GetDistance2d(creature, aoe.GetPositionX(), aoe.GetPositionY()),
                     sPlayerbotAIConfig.aoeRadius))
                 return;
         }
@@ -70,7 +70,7 @@ public:
             if (!botAI->IsTank(member))
                 continue;
 
-            float distance = sServerFacade->GetDistance2d(member, creature);
+            float distance = ServerFacade::instance().GetDistance2d(member, creature);
             if (distance < minDistance)
                 minDistance = distance;
         }

@@ -133,7 +133,7 @@ Unit* EmoteActionBase::GetTarget()
     for (GuidVector::iterator i = nfp.begin(); i != nfp.end(); ++i)
     {
         Unit* unit = botAI->GetUnit(*i);
-        if (unit && sServerFacade->GetDistance2d(bot, unit) < sPlayerbotAIConfig.tooCloseDistance)
+        if (unit && ServerFacade::instance().GetDistance2d(bot, unit) < sPlayerbotAIConfig.tooCloseDistance)
             targets.push_back(unit);
     }
 
@@ -619,7 +619,7 @@ bool EmoteActionBase::ReceiveEmote(Player* source, uint32 emote, bool verbal)
     }
 
     if (source && !bot->isMoving() && !bot->HasInArc(static_cast<float>(M_PI), source, sPlayerbotAIConfig.farDistance))
-        sServerFacade->SetFacingTo(bot, source);
+        ServerFacade::instance().SetFacingTo(bot, source);
 
     if (verbal)
     {
@@ -689,7 +689,7 @@ bool EmoteAction::Execute(Event event)
         p >> emoteId >> source;
 
         pSource = ObjectAccessor::FindPlayer(source);
-        if (pSource && pSource != bot && sServerFacade->GetDistance2d(bot, pSource) < sPlayerbotAIConfig.farDistance &&
+        if (pSource && pSource != bot && ServerFacade::instance().GetDistance2d(bot, pSource) < sPlayerbotAIConfig.farDistance &&
             emoteId != EMOTE_ONESHOT_NONE)
         {
             if ((pSource->GetGUID() != bot->GetGUID()) &&

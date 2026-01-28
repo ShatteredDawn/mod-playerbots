@@ -28,7 +28,7 @@ bool ReachTargetAction::isUseful()
     Unit* target = GetTarget();
     // float dis = distance + CONTACT_DISTANCE;
     return target &&
-           !bot->IsWithinCombatRange(target, distance);  // sServerFacade->IsDistanceGreaterThan(AI_VALUE2(float,
+           !bot->IsWithinCombatRange(target, distance);  // ServerFacade::instance().IsDistanceGreaterThan(AI_VALUE2(float,
                                                          // "distance", GetTargetName()), distance);
 }
 
@@ -42,7 +42,7 @@ bool CastReachTargetSpellAction::isUseful()
         return false;
     }
 
-    return sServerFacade->IsDistanceGreaterThan(AI_VALUE2(float, "distance", "current target"),
+    return ServerFacade::instance().IsDistanceGreaterThan(AI_VALUE2(float, "distance", "current target"),
                                                 (distance + sPlayerbotAIConfig.contactDistance));
 }
 

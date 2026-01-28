@@ -132,7 +132,7 @@ bool CastCustomSpellAction::Execute(Event event)
 
     if (target != bot && !bot->HasInArc(CAST_ANGLE_IN_FRONT, target, sPlayerbotAIConfig.sightDistance))
     {
-        sServerFacade->SetFacingTo(bot, target);
+        ServerFacade::instance().SetFacingTo(bot, target);
         botAI->SetNextCheckDelay(sPlayerbotAIConfig.reactDelay);
 
         msg << "cast " << text;

@@ -28,8 +28,8 @@ bool CollisionValue::Calculate()
         if (bot == target)
             continue;
 
-        float dist = sServerFacade->GetDistance2d(bot, target->GetPositionX(), target->GetPositionY());
-        if (sServerFacade->IsDistanceLessThan(dist, target->GetCombatReach()))
+        float dist = ServerFacade::instance().GetDistance2d(bot, target->GetPositionX(), target->GetPositionY());
+        if (ServerFacade::instance().IsDistanceLessThan(dist, target->GetCombatReach()))
             return true;
     }
 

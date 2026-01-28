@@ -28,7 +28,7 @@ bool RevealGatheringItemAction::Execute(Event event)
     for (GameObject* go : targets)
     {
         if (!go || !go->isSpawned() ||
-            sServerFacade->IsDistanceLessOrEqualThan(sServerFacade->GetDistance2d(bot, go),
+            ServerFacade::instance().IsDistanceLessOrEqualThan(ServerFacade::instance().GetDistance2d(bot, go),
                                                      sPlayerbotAIConfig.lootDistance))
             continue;
 

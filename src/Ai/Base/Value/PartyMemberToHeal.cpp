@@ -99,7 +99,7 @@ Unit* PartyMemberToHeal::Calculate()
 bool PartyMemberToHeal::Check(Unit* player)
 {
     // return player && player != bot && player->GetMapId() == bot->GetMapId() && player->IsInWorld() &&
-    //     sServerFacade->GetDistance2d(bot, player) < (player->IsPlayer() && botAI->IsTank((Player*)player) ? 50.0f
+    //     ServerFacade::instance().GetDistance2d(bot, player) < (player->IsPlayer() && botAI->IsTank((Player*)player) ? 50.0f
     //     : 40.0f);
     return player->GetMapId() == bot->GetMapId() && !player->IsCharmed() &&
            bot->GetDistance2d(player) < sPlayerbotAIConfig.healDistance * 2 && bot->IsWithinLOSInMap(player);
@@ -129,7 +129,7 @@ Unit* PartyMemberToProtect::Calculate()
             continue;
 
         float attackDistance = 30.0f;
-        if (sServerFacade->GetDistance2d(pVictim, unit) > attackDistance)
+        if (ServerFacade::instance().GetDistance2d(pVictim, unit) > attackDistance)
             continue;
 
         if (botAI->IsTank((Player*)pVictim) && pVictim->GetHealthPct() > 10)

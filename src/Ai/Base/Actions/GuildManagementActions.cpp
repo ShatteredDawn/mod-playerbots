@@ -199,7 +199,7 @@ bool GuildManageNearbyAction::Execute(Event event)
 
         bool sameGroup = bot->GetGroup() && bot->GetGroup()->IsMember(player->GetGUID());
 
-        if (!sameGroup && sServerFacade->GetDistance2d(bot, player) > sPlayerbotAIConfig.spellDistance)
+        if (!sameGroup && ServerFacade::instance().GetDistance2d(bot, player) > sPlayerbotAIConfig.spellDistance)
             continue;
 
         if (sPlayerbotAIConfig.inviteChat && (sRandomPlayerbotMgr.IsRandomBot(bot) || !botAI->HasActivePlayerMaster()))

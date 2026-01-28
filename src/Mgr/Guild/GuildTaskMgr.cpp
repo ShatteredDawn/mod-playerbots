@@ -239,7 +239,7 @@ bool GuildTaskMgr::CreateKillTask(Player* player, uint32 guildId)
             if (strstr(name.c_str(), "UNUSED"))
                 continue;
 
-            float dist = sServerFacade->GetDistance2d(player, x, y);
+            float dist = ServerFacade::instance().GetDistance2d(player, x, y);
             if (dist > sPlayerbotAIConfig.guildTaskKillTaskDistance || player->GetMapId() != map)
                 continue;
 

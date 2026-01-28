@@ -71,7 +71,7 @@ void AttackersValue::AddAttackersOf(Group* group, std::unordered_set<Unit*>& tar
     {
         Player* member = ObjectAccessor::FindPlayer(itr->guid);
         if (!member || !member->IsAlive() || member == bot || member->GetMapId() != bot->GetMapId() ||
-            sServerFacade->GetDistance2d(bot, member) > sPlayerbotAIConfig.sightDistance)
+            ServerFacade::instance().GetDistance2d(bot, member) > sPlayerbotAIConfig.sightDistance)
             continue;
 
         AddAttackersOf(member, targets);
@@ -269,11 +269,11 @@ bool PossibleAddsValue::Calculate()
                     if (!attacker)
                         continue;
 
-                    float dist = sServerFacade->GetDistance2d(attacker, add);
-                    if (sServerFacade->IsDistanceLessOrEqualThan(dist, sPlayerbotAIConfig.aoeRadius * 1.5f))
+                    float dist = ServerFacade::instance().GetDistance2d(attacker, add);
+                    if (ServerFacade::instance().IsDistanceLessOrEqualThan(dist, sPlayerbotAIConfig.aoeRadius * 1.5f))
                         continue;
 
-                    if (sServerFacade->IsDistanceLessOrEqualThan(dist, sPlayerbotAIConfig.aggroDistance))
+                    if (ServerFacade::instance().IsDistanceLessOrEqualThan(dist, sPlayerbotAIConfig.aggroDistance))
                         return true;
                 }
             }

@@ -75,7 +75,7 @@ bool GoAction::Execute(Event event)
             if (GameObject* go = botAI->GetGameObject(guid))
                 if (go->isSpawned())
                 {
-                    if (sServerFacade->IsDistanceGreaterThan(sServerFacade->GetDistance2d(bot, go),
+                    if (ServerFacade::instance().IsDistanceGreaterThan(ServerFacade::instance().GetDistance2d(bot, go),
                                                              sPlayerbotAIConfig.reactDistance))
                     {
                         botAI->TellError("It is too far away");
@@ -176,7 +176,7 @@ bool GoAction::Execute(Event event)
         float z = bot->GetPositionZ();
         bot->UpdateAllowedPositionZ(x, y, z);
 
-        if (sServerFacade->IsDistanceGreaterThan(sServerFacade->GetDistance2d(bot, x, y),
+        if (ServerFacade::instance().IsDistanceGreaterThan(ServerFacade::instance().GetDistance2d(bot, x, y),
                                                  sPlayerbotAIConfig.reactDistance))
         {
             botAI->TellMaster("It is too far away");
@@ -209,7 +209,7 @@ bool GoAction::Execute(Event event)
     PositionInfo pos = context->GetValue<PositionMap&>("position")->Get()[param];
     if (pos.isSet())
     {
-        if (sServerFacade->IsDistanceGreaterThan(sServerFacade->GetDistance2d(bot, pos.x, pos.y),
+        if (ServerFacade::instance().IsDistanceGreaterThan(ServerFacade::instance().GetDistance2d(bot, pos.x, pos.y),
                                                  sPlayerbotAIConfig.reactDistance))
         {
             botAI->TellError("It is too far away");

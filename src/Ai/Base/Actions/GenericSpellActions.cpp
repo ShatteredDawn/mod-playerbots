@@ -133,7 +133,7 @@ bool CastSpellAction::isUseful()
 
     return spellTarget &&
            AI_VALUE2(bool, "spell cast useful",
-                     spell);  // && sServerFacade->GetDistance2d(bot, spellTarget) <= (range + combatReach);
+                     spell);  // && ServerFacade::instance().GetDistance2d(bot, spellTarget) <= (range + combatReach);
 }
 
 CastMeleeSpellAction::CastMeleeSpellAction(PlayerbotAI* botAI, std::string const spell) : CastSpellAction(botAI, spell)

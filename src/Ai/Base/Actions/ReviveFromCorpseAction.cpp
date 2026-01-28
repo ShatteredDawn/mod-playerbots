@@ -24,7 +24,7 @@ bool ReviveFromCorpseAction::Execute(Event event)
     WorldPacket& p = event.getPacket();
     if (!p.empty() && p.GetOpcode() == CMSG_RECLAIM_CORPSE && groupLeader && !corpse && bot->IsAlive())
     {
-        if (sServerFacade->IsDistanceLessThan(AI_VALUE2(float, "distance", "group leader"),
+        if (ServerFacade::instance().IsDistanceLessThan(AI_VALUE2(float, "distance", "group leader"),
                                               sPlayerbotAIConfig.farDistance))
         {
             if (!botAI->HasStrategy("follow", BOT_STATE_NON_COMBAT))
@@ -46,7 +46,7 @@ bool ReviveFromCorpseAction::Execute(Event event)
     if (groupLeader)
     {
         if (!GET_PLAYERBOT_AI(groupLeader) && groupLeader->isDead() && groupLeader->GetCorpse() &&
-            sServerFacade->IsDistanceLessThan(AI_VALUE2(float, "distance", "group leader"),
+            ServerFacade::instance().IsDistanceLessThan(AI_VALUE2(float, "distance", "group leader"),
                                               sPlayerbotAIConfig.farDistance))
             return false;
     }
@@ -87,7 +87,7 @@ bool FindCorpseAction::Execute(Event event)
     // if (groupLeader)
     // {
     //     if (!GET_PLAYERBOT_AI(groupLeader) &&
-    //         sServerFacade->IsDistanceLessThan(AI_VALUE2(float, "distance", "group leader"),
+    //         ServerFacade::instance().IsDistanceLessThan(AI_VALUE2(float, "distance", "group leader"),
     //         sPlayerbotAIConfig.farDistance)) return false;
     // }
 
@@ -162,7 +162,7 @@ bool FindCorpseAction::Execute(Event event)
 
     if (!botAI->AllowActivity(ALL_ACTIVITY))
     {
-        uint32 delay = sServerFacade->GetDistance2d(bot, corpse) /
+        uint32 delay = ServerFacade::instance().GetDistance2d(bot, corpse) /
                        bot->GetSpeed(MOVE_RUN);        // Time a bot would take to travel to it's corpse.
         delay = std::min(delay, uint32(10 * MINUTE));  // Cap time to get to corpse at 10 minutes.
 

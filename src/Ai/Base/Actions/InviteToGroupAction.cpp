@@ -88,7 +88,7 @@ bool InviteNearbyToGroupAction::Execute(Event event)
         if (abs(int32(player->GetLevel() - bot->GetLevel())) > 2)
             continue;
 
-        if (sServerFacade->GetDistance2d(bot, player) > sPlayerbotAIConfig.sightDistance)
+        if (ServerFacade::instance().GetDistance2d(bot, player) > sPlayerbotAIConfig.sightDistance)
             continue;
 
         // When inviting the 5th member of the group convert to raid for future invites.
@@ -221,7 +221,7 @@ bool InviteGuildToGroupAction::Execute(Event event)
             player->GetLevel() + 5)  // Do not invite members that too low level or risk dragging them to deadly places.
             continue;
 
-        if (!playerAi && sServerFacade->GetDistance2d(bot, player) > sPlayerbotAIConfig.sightDistance)
+        if (!playerAi && ServerFacade::instance().GetDistance2d(bot, player) > sPlayerbotAIConfig.sightDistance)
             continue;
 
         Group* group = bot->GetGroup();

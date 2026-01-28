@@ -47,7 +47,7 @@ bool IsNearLeaderValue::Calculate()
     if (groupLeader == bot)
         return true;
 
-    return sServerFacade->GetDistance2d(bot, botAI->GetGroupLeader()) < sPlayerbotAIConfig.sightDistance;
+    return ServerFacade::instance().GetDistance2d(bot, botAI->GetGroupLeader()) < sPlayerbotAIConfig.sightDistance;
 }
 
 bool BoolANDValue::Calculate()
@@ -155,7 +155,7 @@ bool GroupReadyValue::Calculate()
         // We only wait for members that are in range otherwise we might be waiting for bots stuck in dead loops
         // forever.
         if (botAI->GetGroupLeader() &&
-            sServerFacade->GetDistance2d(member, botAI->GetGroupLeader()) > sPlayerbotAIConfig.sightDistance)
+            ServerFacade::instance().GetDistance2d(member, botAI->GetGroupLeader()) > sPlayerbotAIConfig.sightDistance)
             continue;
 
         if (member->GetHealthPct() < sPlayerbotAIConfig.almostFullHealth)

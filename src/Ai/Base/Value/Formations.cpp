@@ -357,7 +357,7 @@ public:
         float range = sPlayerbotAIConfig.farDistance;
         float followRange = sPlayerbotAIConfig.followDistance;
 
-        if (sServerFacade->GetDistance2d(bot, master) <= range)
+        if (ServerFacade::instance().GetDistance2d(bot, master) <= range)
             return Formation::NullLocation;
 
         float angleToBot = master->GetAngle(bot);
@@ -378,7 +378,7 @@ public:
                 float tx = master->GetPositionX() + cos(a) * range + cos(followAngle) * followRange;
                 float ty = master->GetPositionY() + sin(a) * range + sin(followAngle) * followRange;
 
-                float dist = sServerFacade->GetDistance2d(bot, tx, ty);
+                float dist = ServerFacade::instance().GetDistance2d(bot, tx, ty);
                 float tg = master->GetMapHeight(tx, ty, z + 30.0f);
 
                 if (tg > INVALID_HEIGHT && (!minDist || dist < minDist))

@@ -61,13 +61,13 @@ bool CastFrostNovaAction::isUseful()
     if (target->isFrozen())
         return false;
 
-    return sServerFacade->IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", GetTargetName()), 10.f);
+    return ServerFacade::instance().IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", GetTargetName()), 10.f);
 }
 
 bool CastConeOfColdAction::isUseful()
 {
     bool facingTarget = AI_VALUE2(bool, "facing", "current target");
-    bool targetClose = sServerFacade->IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", GetTargetName()), 10.f);
+    bool targetClose = ServerFacade::instance().IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", GetTargetName()), 10.f);
     return facingTarget && targetClose;
 }
 

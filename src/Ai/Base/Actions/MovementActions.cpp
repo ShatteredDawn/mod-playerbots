@@ -393,7 +393,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     //             if (movePath.empty())
     //             {
     //                 //We have no path. Beyond 450yd the standard PathGenerator will probably move the wrong way.
-    //                 if (sServerFacade->IsDistanceGreaterThan(totalDistance, maxDist * 3))
+    //                 if (ServerFacade::instance().IsDistanceGreaterThan(totalDistance, maxDist * 3))
     //                 {
     //                     movePath.clear();
     //                     movePath.addPoint(endPosition);
@@ -402,7 +402,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     //                     bot->StopMoving();
     //                     if (botAI->HasStrategy("debug move", BOT_STATE_NON_COMBAT))
     //                         botAI->TellMasterNoFacing("I have no path");
-    //                     LOG_DEBUG("playerbots", "sServerFacade->IsDistanceGreaterThan(totalDistance, maxDist * 3)");
+    //                     LOG_DEBUG("playerbots", "ServerFacade::instance().IsDistanceGreaterThan(totalDistance, maxDist * 3)");
     //                     return false;
     //                 }
 
@@ -694,7 +694,7 @@ bool MovementAction::MoveTo(uint32 mapId, float x, float y, float z, bool idle, 
     // if (botAI->GetMaster())
     // {
     //     if (botAI->GetMaster()->m_movementInfo.HasMovementFlag(MOVEMENTFLAG_WALKING) &&
-    //     sServerFacade->GetDistance2d(bot, botAI->GetMaster()) < 20.0f)
+    //     ServerFacade::instance().GetDistance2d(bot, botAI->GetMaster()) < 20.0f)
     //         masterWalking = true;
     // }
 
@@ -898,7 +898,7 @@ bool MovementAction::IsMovingAllowed(WorldObject* target)
     if (bot->GetMapId() != target->GetMapId())
         return false;
 
-    // float distance = sServerFacade->GetDistance2d(bot, target);
+    // float distance = ServerFacade::instance().GetDistance2d(bot, target);
     // if (!bot->InBattleground() && distance > sPlayerbotAIConfig.reactDistance)
     //     return false;
 
@@ -1046,7 +1046,7 @@ void MovementAction::UpdateMovementState()
     // if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == CHASE_MOTION_TYPE && bot->CanNotReachTarget() &&
     // !bot->InBattleground())
     // {
-    //     if (Unit* pTarget = sServerFacade->GetChaseTarget(bot))
+    //     if (Unit* pTarget = ServerFacade::instance().GetChaseTarget(bot))
     //     {
     //         if (!bot->IsWithinMeleeRange(pTarget) && pTarget->IsCreature())
     //         {
@@ -1080,7 +1080,7 @@ void MovementAction::UpdateMovementState()
     //     bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == POINT_MOTION_TYPE) && bot->CanNotReachTarget()
     //     && !bot->InBattleground())
     // {
-    //     if (Unit* pTarget = sServerFacade->GetChaseTarget(bot))
+    //     if (Unit* pTarget = ServerFacade::instance().GetChaseTarget(bot))
     //     {
     //         if (pTarget != botAI->GetGroupLeader())
     //             return;
@@ -1117,7 +1117,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
     if (!target)
         return false;
 
-    if (!bot->InBattleground() && sServerFacade->IsDistanceLessOrEqualThan(sServerFacade->GetDistance2d(bot, target),
+    if (!bot->InBattleground() && ServerFacade::instance().IsDistanceLessOrEqualThan(ServerFacade::instance().GetDistance2d(bot, target),
                                                                            sPlayerbotAIConfig.followDistance))
     {
         // botAI->TellError("No need to follow");
@@ -1126,7 +1126,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
 
     /*
     if (!bot->InBattleground()
-        && sServerFacade->IsDistanceLessOrEqualThan(sServerFacade->GetDistance2d(bot, target->GetPositionX(),
+        && ServerFacade::instance().IsDistanceLessOrEqualThan(ServerFacade::instance().GetDistance2d(bot, target->GetPositionX(),
     target->GetPositionY()), sPlayerbotAIConfig.sightDistance)
         && abs(bot->GetPositionZ() - target->GetPositionZ()) >= sPlayerbotAIConfig.spellDistance &&
     botAI->HasRealPlayerMaster()
@@ -1194,7 +1194,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
         }
     }
 
-    if (sServerFacade->IsDistanceGreaterOrEqualThan(sServerFacade->GetDistance2d(bot, target),
+    if (ServerFacade::instance().IsDistanceGreaterOrEqualThan(ServerFacade::instance().GetDistance2d(bot, target),
                                                     sPlayerbotAIConfig.sightDistance))
     {
         if (target->GetGUID().IsPlayer())
@@ -1241,7 +1241,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
             return MoveTo(target, sPlayerbotAIConfig.followDistance);
     }
 
-    if (sServerFacade->IsDistanceLessOrEqualThan(sServerFacade->GetDistance2d(bot, target),
+    if (ServerFacade::instance().IsDistanceLessOrEqualThan(ServerFacade::instance().GetDistance2d(bot, target),
                                                  sPlayerbotAIConfig.followDistance))
     {
         // botAI->TellError("No need to follow");
@@ -1251,7 +1251,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
     if (target->IsFriendlyTo(bot) && bot->IsMounted() && AI_VALUE(GuidVector, "all targets").empty())
         distance += angle;
 
-    if (!bot->InBattleground() && sServerFacade->IsDistanceLessOrEqualThan(sServerFacade->GetDistance2d(bot, target),
+    if (!bot->InBattleground() && ServerFacade::instance().IsDistanceLessOrEqualThan(ServerFacade::instance().GetDistance2d(bot, target),
                                                                            sPlayerbotAIConfig.followDistance))
     {
         // botAI->TellError("No need to follow");
@@ -1274,7 +1274,7 @@ bool MovementAction::Follow(Unit* target, float distance, float angle)
 
     if (bot->GetMotionMaster()->GetCurrentMovementGeneratorType() == FOLLOW_MOTION_TYPE)
     {
-        Unit* currentTarget = sServerFacade->GetChaseTarget(bot);
+        Unit* currentTarget = ServerFacade::instance().GetChaseTarget(bot);
         if (currentTarget && currentTarget->GetGUID() == target->GetGUID())
             return false;
     }
@@ -1416,8 +1416,8 @@ bool MovementAction::Flee(Unit* target)
 
                 if (botAI->IsTank(player))
                 {
-                    float distanceToTank = sServerFacade->GetDistance2d(bot, player);
-                    float distanceToTarget = sServerFacade->GetDistance2d(bot, target);
+                    float distanceToTank = ServerFacade::instance().GetDistance2d(bot, player);
+                    float distanceToTarget = ServerFacade::instance().GetDistance2d(bot, target);
                     if (distanceToTank < fleeDistance)
                     {
                         fleeTarget = player;
@@ -1460,8 +1460,8 @@ bool MovementAction::Flee(Unit* target)
 
                 if ((isHealer && botAI->IsHeal(player)) || needHealer)
                 {
-                    float distanceToHealer = sServerFacade->GetDistance2d(bot, player);
-                    float distanceToTarget = sServerFacade->GetDistance2d(player, target);
+                    float distanceToHealer = ServerFacade::instance().GetDistance2d(bot, player);
+                    float distanceToTarget = ServerFacade::instance().GetDistance2d(player, target);
                     if (distanceToHealer < fleeDistance &&
                         distanceToTarget > (botAI->GetRange("shoot") / 2 + sPlayerbotAIConfig.followDistance) &&
                         (needHealer || player->IsWithinLOSInMap(target)))
@@ -1473,8 +1473,8 @@ bool MovementAction::Flee(Unit* target)
                 }
                 else if (isRanged && botAI->IsRanged(player))
                 {
-                    float distanceToRanged = sServerFacade->GetDistance2d(bot, player);
-                    float distanceToTarget = sServerFacade->GetDistance2d(player, target);
+                    float distanceToRanged = ServerFacade::instance().GetDistance2d(bot, player);
+                    float distanceToTarget = ServerFacade::instance().GetDistance2d(player, target);
                     if (distanceToRanged < fleeDistance &&
                         distanceToTarget > (botAI->GetRange("shoot") / 2 + sPlayerbotAIConfig.followDistance) &&
                         player->IsWithinLOSInMap(target))
@@ -1485,8 +1485,8 @@ bool MovementAction::Flee(Unit* target)
                     }
                 }
                 // remember any group member in case no one else found
-                float distanceToFlee = sServerFacade->GetDistance2d(bot, player);
-                float distanceToTarget = sServerFacade->GetDistance2d(player, target);
+                float distanceToFlee = ServerFacade::instance().GetDistance2d(bot, player);
+                float distanceToTarget = ServerFacade::instance().GetDistance2d(player, target);
                 if (distanceToFlee < spareDistance &&
                     distanceToTarget > (botAI->GetRange("shoot") / 2 + sPlayerbotAIConfig.followDistance) &&
                     player->IsWithinLOSInMap(target))
@@ -1508,7 +1508,7 @@ bool MovementAction::Flee(Unit* target)
 
             if ((!fleeTarget || !foundFlee) && master && master->IsAlive() && master->IsWithinLOSInMap(target))
             {
-                float distanceToTarget = sServerFacade->GetDistance2d(master, target);
+                float distanceToTarget = ServerFacade::instance().GetDistance2d(master, target);
                 if (distanceToTarget > (botAI->GetRange("shoot") / 2 + sPlayerbotAIConfig.followDistance))
                     foundFlee = MoveNear(master);
             }
@@ -2357,7 +2357,7 @@ Position CombatFormationMoveAction::AverageGroupPos(float dis, bool ranged, bool
             continue;
 
         if (!member->IsAlive() || member->GetMapId() != bot->GetMapId() || member->IsCharmed() ||
-            sServerFacade->GetDistance2d(bot, member) > dis)
+            ServerFacade::instance().GetDistance2d(bot, member) > dis)
             continue;
 
         averageX += member->GetPositionX();
@@ -2395,7 +2395,7 @@ float CombatFormationMoveAction::AverageGroupAngle(Unit* from, bool ranged, bool
             continue;
 
         if (!member->IsAlive() || member->GetMapId() != bot->GetMapId() || member->IsCharmed() ||
-            sServerFacade->GetDistance2d(bot, member) > sPlayerbotAIConfig.sightDistance)
+            ServerFacade::instance().GetDistance2d(bot, member) > sPlayerbotAIConfig.sightDistance)
             continue;
 
         cnt++;
@@ -2437,7 +2437,7 @@ Player* CombatFormationMoveAction::NearestGroupMember(float dis)
     {
         Player* member = ObjectAccessor::FindPlayer(itr->guid);
         if (!member || !member->IsAlive() || member == bot || member->GetMapId() != bot->GetMapId() ||
-            member->IsCharmed() || sServerFacade->GetDistance2d(bot, member) > dis)
+            member->IsCharmed() || ServerFacade::instance().GetDistance2d(bot, member) > dis)
             continue;
         if (nearestDis > bot->GetExactDist(member))
         {
@@ -2674,7 +2674,7 @@ bool SetFacingTargetAction::Execute(Event event)
     if (bot->HasUnitState(UNIT_STATE_IN_FLIGHT))
         return true;
 
-    sServerFacade->SetFacingTo(bot, target);
+    ServerFacade::instance().SetFacingTo(bot, target);
     botAI->SetNextCheckDelay(sPlayerbotAIConfig.reactDelay);
     return true;
 }

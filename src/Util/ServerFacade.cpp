@@ -4,8 +4,8 @@
  */
 
 #include "ServerFacade.h"
+#include "Player.h"
 
-#include "Playerbots.h"
 #include "TargetedMovementGenerator.h"
 
 float ServerFacade::GetDistance2d(Unit* unit, WorldObject* wo)

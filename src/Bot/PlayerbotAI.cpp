@@ -330,7 +330,7 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
             if (spellTarget && !bot->HasInArc(CAST_ANGLE_IN_FRONT, spellTarget) &&
                 (spellInfo->FacingCasterFlags & SPELL_FACING_FLAG_INFRONT))
             {
-                sServerFacade->SetFacingTo(bot, spellTarget);
+                ServerFacade::instance().SetFacingTo(bot, spellTarget);
             }
 
             // Wait for spell cast
@@ -629,7 +629,7 @@ void PlayerbotAI::HandleCommand(uint32 type, const std::string& text, Player& fr
         WorldPacket data;
         ChatHandler::BuildChatPacket(data, CHAT_MSG_ADDON, response.c_str(), LANG_ADDON, CHAT_TAG_NONE, bot->GetGUID(),
                                      bot->GetName());
-        sServerFacade->SendPacket(&fromPlayer, &data);
+        ServerFacade::instance().SendPacket(&fromPlayer, &data);
         return;
     }
 
@@ -1283,7 +1283,7 @@ void PlayerbotAI::HandleBotOutgoingPacket(WorldPacket const& packet)
             // bot->GetMotionMaster()->MoveKnockbackFrom(fx, fy, horizontalSpeed, verticalSpeed);
 
             // // set delay based on actual distance
-            // float newdis = sqrt(sServerFacade->GetDistance2d(bot, fx, fy));
+            // float newdis = sqrt(ServerFacade::instance().GetDistance2d(bot, fx, fy));
             // SetNextCheckDelay((uint32)((newdis / dis) * moveTimeHalf * 4 * IN_MILLISECONDS));
 
             // // add moveflags
@@ -1478,7 +1478,7 @@ void PlayerbotAI::DoNextAction(bool min)
 
     if (master && master->IsInWorld())
     {
-        float distance = sServerFacade->GetDistance2d(bot, master);
+        float distance = ServerFacade::instance().GetDistance2d(bot, master);
 
         if (master->m_movementInfo.HasMovementFlag(MOVEMENTFLAG_WALKING) && distance < 20.0f)
             bot->m_movementInfo.AddMovementFlag(MOVEMENTFLAG_WALKING);
@@ -1712,7 +1712,7 @@ bool PlayerbotAI::PlayEmote(uint32 emote)
     WorldPacket data(SMSG_TEXT_EMOTE);
     data << (TextEmotes)emote;
     data << EmoteAction::GetNumberOfEmoteVariants((TextEmotes)emote, bot->getRace(), bot->getGender());
-    data << ((master && (sServerFacade->GetDistance2d(bot, master) < 30.0f) && urand(0, 1)) ? master->GetGUID()
+    data << ((master && (ServerFacade::instance().GetDistance2d(bot, master) < 30.0f) && urand(0, 1)) ? master->GetGUID()
              : (bot->GetTarget() && urand(0, 1))                                            ? bot->GetTarget()
                                                                                             : ObjectGuid::Empty);
     bot->GetSession()->HandleTextEmoteOpcode(data);
@@ -2726,7 +2726,7 @@ bool PlayerbotAI::SayToParty(const std::string& msg)
 
     for (auto reciever : GetPlayersInGroup())
     {
-        sServerFacade->SendPacket(reciever, &data);
+        ServerFacade::instance().SendPacket(reciever, &data);
     }
 
     return true;
@@ -2743,7 +2743,7 @@ bool PlayerbotAI::SayToRaid(const std::string& msg)
 
     for (auto reciever : GetPlayersInGroup())
     {
-        sServerFacade->SendPacket(reciever, &data);
+        ServerFacade::instance().SendPacket(reciever, &data);
     }
 
     return true;
@@ -2862,7 +2862,7 @@ bool PlayerbotAI::IsTellAllowed(PlayerbotSecurityLevel securityLevel)
     if (sPlayerbotAIConfig.whisperDistance && !bot->GetGroup() && sRandomPlayerbotMgr.IsRandomBot(bot) &&
         master->GetSession()->GetSecurity() < SEC_GAMEMASTER &&
         (bot->GetMapId() != master->GetMapId() ||
-         sServerFacade->GetDistance2d(bot, master) > sPlayerbotAIConfig.whisperDistance))
+         ServerFacade::instance().GetDistance2d(bot, master) > sPlayerbotAIConfig.whisperDistance))
         return false;
 
     return true;
@@ -3214,7 +3214,7 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, bool checkHasSpell,
             // Otherwise, allow Deep Freeze even if immune
         }
 
-        if (bot != target && sServerFacade->GetDistance2d(bot, target) > sPlayerbotAIConfig.sightDistance)
+        if (bot != target && ServerFacade::instance().GetDistance2d(bot, target) > sPlayerbotAIConfig.sightDistance)
         {
             if (!sPlayerbotAIConfig.logInGroupOnly || (bot->GetGroup() && HasRealPlayerMaster()))
             {
@@ -3302,7 +3302,7 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, GameObject* goTarget, bool checkH
     if (CastingTime > 0 && bot->isMoving())
         return false;
 
-    if (sServerFacade->GetDistance2d(bot, goTarget) > sPlayerbotAIConfig.sightDistance)
+    if (ServerFacade::instance().GetDistance2d(bot, goTarget) > sPlayerbotAIConfig.sightDistance)
         return false;
 
     // ObjectGuid oldSel = bot->GetTarget();
@@ -3480,7 +3480,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
     WorldObject* faceTo = target;
     if (!bot->HasInArc(CAST_ANGLE_IN_FRONT, faceTo) && (spellInfo->FacingCasterFlags & SPELL_FACING_FLAG_INFRONT))
     {
-        sServerFacade->SetFacingTo(bot, faceTo);
+        ServerFacade::instance().SetFacingTo(bot, faceTo);
         // failWithDelay = true;
     }
 
@@ -3854,12 +3854,12 @@ bool PlayerbotAI::CanCastVehicleSpell(uint32 spellId, Unit* target)
     if (CastingTime && vehicleBase->isMoving())
         return false;
 
-    if (vehicleBase != spellTarget && sServerFacade->GetDistance2d(vehicleBase, spellTarget) > 120.0f)
+    if (vehicleBase != spellTarget && ServerFacade::instance().GetDistance2d(vehicleBase, spellTarget) > 120.0f)
         return false;
 
     if (!target && siegePos.isSet())
     {
-        if (sServerFacade->GetDistance2d(vehicleBase, siegePos.x, siegePos.y) > 120.0f)
+        if (ServerFacade::instance().GetDistance2d(vehicleBase, siegePos.x, siegePos.y) > 120.0f)
             return false;
     }
 
@@ -3929,7 +3929,7 @@ bool PlayerbotAI::CastVehicleSpell(uint32 spellId, Unit* target)
     PositionInfo siegePos = GetAiObjectContext()->GetValue<PositionMap&>("position")->Get()["bg siege"];
     if (!target && siegePos.isSet())
     {
-        if (sServerFacade->GetDistance2d(vehicleBase, siegePos.x, siegePos.y) > 120.0f)
+        if (ServerFacade::instance().GetDistance2d(vehicleBase, siegePos.x, siegePos.y) > 120.0f)
             return false;
     }
 
@@ -4423,7 +4423,7 @@ bool PlayerbotAI::HasManyPlayersNearby(uint32 trigerrValue, float range)
 
     for (auto& player : sRandomPlayerbotMgr.GetPlayers())
     {
-        if ((!player->IsGameMaster() || player->isGMVisible()) && sServerFacade->GetDistance2d(player, bot) < sqRange)
+        if ((!player->IsGameMaster() || player->isGMVisible()) && ServerFacade::instance().GetDistance2d(player, bot) < sqRange)
         {
             found++;
 

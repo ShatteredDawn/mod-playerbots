@@ -34,7 +34,7 @@ void FleeManager::calculateDistanceToCreatures(FleePoint* point)
         if (!unit)
             continue;
 
-        float d = sServerFacade->GetDistance2d(unit, point->x, point->y);
+        float d = ServerFacade::instance().GetDistance2d(unit, point->x, point->y);
         point->sumDistance += d;
         if (point->minDistance < 0 || point->minDistance > d)
             point->minDistance = d;
@@ -97,7 +97,7 @@ void FleeManager::calculatePossibleDestinations(std::vector<FleePoint*>& points)
                 float x = botPosX + cos(angle) * maxAllowedDistance, y = botPosY + sin(angle) * maxAllowedDistance,
                       z = botPosZ + CONTACT_DISTANCE;
                 if (forceMaxDistance &&
-                    sServerFacade->IsDistanceLessThan(sServerFacade->GetDistance2d(bot, x, y),
+                    ServerFacade::instance().IsDistanceLessThan(ServerFacade::instance().GetDistance2d(bot, x, y),
                                                       maxAllowedDistance - sPlayerbotAIConfig.tooCloseDistance))
                     continue;
 
@@ -113,7 +113,7 @@ void FleeManager::calculatePossibleDestinations(std::vector<FleePoint*>& points)
                 FleePoint* point = new FleePoint(botAI, x, y, z);
                 calculateDistanceToCreatures(point);
 
-                if (sServerFacade->IsDistanceGreaterOrEqualThan(point->minDistance - start.minDistance,
+                if (ServerFacade::instance().IsDistanceGreaterOrEqualThan(point->minDistance - start.minDistance,
                                                                 sPlayerbotAIConfig.followDistance))
                     points.push_back(point);
                 else
@@ -189,8 +189,8 @@ bool FleeManager::isUseful()
             creature->GetAttackDistance(bot) * creature->GetAttackDistance(bot))
             return true;
 
-        // float d = sServerFacade->GetDistance2d(unit, bot);
-        // if (sServerFacade->IsDistanceLessThan(d, sPlayerbotAIConfig.aggroDistance)) return true;
+        // float d = ServerFacade::instance().GetDistance2d(unit, bot);
+        // if (ServerFacade::instance().IsDistanceLessThan(d, sPlayerbotAIConfig.aggroDistance)) return true;
     }
 
     return false;

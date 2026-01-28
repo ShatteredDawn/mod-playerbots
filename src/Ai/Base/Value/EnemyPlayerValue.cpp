@@ -131,7 +131,7 @@ Unit* EnemyPlayerValue::Calculate()
                 if (pMember == bot)
                     continue;
 
-                if (sServerFacade->GetDistance2d(bot, pMember) > 30.0f)
+                if (ServerFacade::instance().GetDistance2d(bot, pMember) > 30.0f)
                     continue;
 
                 if (Unit* pAttacker = pMember->getAttackerForHelper())

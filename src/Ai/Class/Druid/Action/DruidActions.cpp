@@ -43,8 +43,8 @@ bool CastStarfallAction::isUseful()
     Unit* ccTarget = context->GetValue<Unit*>("current cc target")->Get();
     if (ccTarget && ccTarget->IsAlive())
     {
-        float dist2d = sServerFacade->GetDistance2d(ccTarget, aoePos.GetPositionX(), aoePos.GetPositionY());
-        if (sServerFacade->IsDistanceLessOrEqualThan(dist2d, sPlayerbotAIConfig.aoeRadius))
+        float dist2d = ServerFacade::instance().GetDistance2d(ccTarget, aoePos.GetPositionX(), aoePos.GetPositionY());
+        if (ServerFacade::instance().IsDistanceLessOrEqualThan(dist2d, sPlayerbotAIConfig.aoeRadius))
             return false;
     }
 

@@ -160,7 +160,7 @@ bool AttackAction::Attack(Unit* target, bool /*with_pet*/ /*true*/)
     }
 
     if (botAI->CanMove() && !bot->HasInArc(CAST_ANGLE_IN_FRONT, target))
-        sServerFacade->SetFacingTo(bot, target);
+        ServerFacade::instance().SetFacingTo(bot, target);
 
     botAI->ChangeEngine(BOT_STATE_COMBAT);
 
