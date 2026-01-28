@@ -100,7 +100,7 @@ public:
 
 		Acore::AnyUnfriendlyAttackableVisibleUnitInObjectRangeCheck u_check(player, 15.0f);
 		Acore::UnitListSearcher<Acore::AnyUnfriendlyAttackableVisibleUnitInObjectRangeCheck> searcher(player, targets, u_check);
-		Cell::VisitObjects(player, searcher, PlayerbotAIConfig::instance()->sightDistance);
+		Cell::VisitObjects(player, searcher, PlayerbotAIConfig::instance().sightDistance);
 
 		return !targets.empty();
 	}

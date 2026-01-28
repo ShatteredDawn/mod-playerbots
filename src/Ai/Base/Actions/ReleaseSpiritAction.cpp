@@ -185,7 +185,7 @@ bool AutoReleaseSpiritAction::ShouldAutoRelease() const
 
     return sServerFacade->IsDistanceGreaterThan(
         AI_VALUE2(float, "distance", "group leader"),
-        sPlayerbotAIConfig->sightDistance);
+        sPlayerbotAIConfig.sightDistance);
 }
 
 bool AutoReleaseSpiritAction::ShouldDelayBattlegroundRelease() const

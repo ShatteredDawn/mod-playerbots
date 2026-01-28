@@ -660,11 +660,11 @@ bool PlayerbotAIConfig::Initialize()
     }
 
     // Assign account types after accounts are created
-    sRandomPlayerbotMgr->AssignAccountTypes();
+    sRandomPlayerbotMgr.AssignAccountTypes();
 
-    if (sPlayerbotAIConfig->enabled)
+    if (sPlayerbotAIConfig.enabled)
     {
-        sRandomPlayerbotMgr->Init();
+        sRandomPlayerbotMgr.Init();
     }
 
     sPlayerbotGuildMgr->Init();
@@ -676,7 +676,7 @@ bool PlayerbotAIConfig::Initialize()
 
     AiObjectContext::BuildAllSharedContexts();
 
-    if (sPlayerbotAIConfig->randomBotSuggestDungeons)
+    if (sPlayerbotAIConfig.randomBotSuggestDungeons)
     {
         sPlayerbotDungeonRepository->LoadDungeonSuggestions();
     }

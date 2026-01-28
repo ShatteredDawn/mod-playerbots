@@ -152,7 +152,7 @@ bool PetsAction::Execute(Event event)
             botAI->TellError(text);
             return false;
         }
-        if (sPlayerbotAIConfig->IsPvpProhibited(bot->GetZoneId(), bot->GetAreaId()) &&
+        if (sPlayerbotAIConfig.IsPvpProhibited(bot->GetZoneId(), bot->GetAreaId()) &&
             (targetUnit->IsPlayer() || targetUnit->IsPet()) &&
             (!bot->duel || bot->duel->Opponent != targetUnit))
         {
@@ -208,7 +208,7 @@ bool PetsAction::Execute(Event event)
             }
         }
         // Inform the master if the command succeeded or failed.
-        if (didAttack && sPlayerbotAIConfig->petChatCommandDebug == 1)
+        if (didAttack && sPlayerbotAIConfig.petChatCommandDebug == 1)
         {
             std::string text = sPlayerbotTextMgr->GetBotTextOrDefault(
                 "pet_attack_success", "Pet commanded to attack your target.", {});
@@ -226,7 +226,7 @@ bool PetsAction::Execute(Event event)
     else if (param == "follow")
     {
         botAI->PetFollow();
-        if (sPlayerbotAIConfig->petChatCommandDebug == 1)
+        if (sPlayerbotAIConfig.petChatCommandDebug == 1)
         {
             std::string text = sPlayerbotTextMgr->GetBotTextOrDefault(
                 "pet_follow_success", "Pet commanded to follow.", {});
@@ -267,7 +267,7 @@ bool PetsAction::Execute(Event event)
                 charmInfo->SetForcedTargetGUID();
             }
         }
-        if (sPlayerbotAIConfig->petChatCommandDebug == 1)
+        if (sPlayerbotAIConfig.petChatCommandDebug == 1)
         {
             std::string text = sPlayerbotTextMgr->GetBotTextOrDefault(
                 "pet_stay_success", "Pet commanded to stay.", {});
@@ -295,7 +295,7 @@ bool PetsAction::Execute(Event event)
     }
 
     // Inform the master of the new stance if debug is enabled.
-    if (sPlayerbotAIConfig->petChatCommandDebug == 1)
+    if (sPlayerbotAIConfig.petChatCommandDebug == 1)
     {
         std::string text = sPlayerbotTextMgr->GetBotTextOrDefault(
             "pet_stance_set_success", "Pet stance set to %stance.",

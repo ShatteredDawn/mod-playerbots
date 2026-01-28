@@ -48,10 +48,10 @@ bool EnemyTooCloseForSpellTrigger::IsActive()
     //         isRaid = true;
 
     // //    if (isBoss || isRaid)
-    // //        return sServerFacade->IsDistanceLessThan(targetDistance, (sPlayerbotAIConfig->tooCloseDistance +
+    // //        return sServerFacade->IsDistanceLessThan(targetDistance, (sPlayerbotAIConfig.tooCloseDistance +
     // combatReach) / 2);
 
-    //     return sServerFacade->IsDistanceLessOrEqualThan(targetDistance, (sPlayerbotAIConfig->tooCloseDistance +
+    //     return sServerFacade->IsDistanceLessOrEqualThan(targetDistance, (sPlayerbotAIConfig.tooCloseDistance +
     //     combatReach / 2));
 }
 
@@ -148,7 +148,7 @@ bool EnemyIsCloseTrigger::IsActive()
 {
     Unit* target = AI_VALUE(Unit*, "current target");
     return target && sServerFacade->IsDistanceLessOrEqualThan(AI_VALUE2(float, "distance", "current target"),
-                                                              sPlayerbotAIConfig->tooCloseDistance);
+                                                              sPlayerbotAIConfig.tooCloseDistance);
 }
 
 bool EnemyWithinMeleeTrigger::IsActive()
@@ -181,7 +181,7 @@ EnemyOutOfSpellRangeTrigger::EnemyOutOfSpellRangeTrigger(PlayerbotAI* botAI)
 
 //     float combatReach = bot->GetCombatReach() + target->GetCombatReach();
 //     return target && (sServerFacade->GetDistance2d(bot, target) > (distance + combatReach +
-//     sPlayerbotAIConfig->contactDistance) || !bot->IsWithinLOSInMap(target));
+//     sPlayerbotAIConfig.contactDistance) || !bot->IsWithinLOSInMap(target));
 // }
 
 // bool EnemyOutOfMeleeTrigger::IsActive()
@@ -202,7 +202,7 @@ bool PartyMemberToHealOutOfSpellRangeTrigger::IsActive()
         return false;
 
     float combatReach = bot->GetCombatReach() + target->GetCombatReach();
-    return target && (sServerFacade->GetDistance2d(bot, target) > (distance + sPlayerbotAIConfig->contactDistance) ||
+    return target && (sServerFacade->GetDistance2d(bot, target) > (distance + sPlayerbotAIConfig.contactDistance) ||
                       !bot->IsWithinLOSInMap(target));
 }
 

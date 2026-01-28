@@ -5,8 +5,8 @@
 
 #include "PlayerbotWorldThreadProcessor.h"
 
+#include "Timer.h"
 #include "Log.h"
-#include "PlayerbotAIConfig.h"
 
 #include <algorithm>
 
