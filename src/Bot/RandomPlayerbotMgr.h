@@ -198,7 +198,7 @@ private:
 
         if (sPlayerbotAIConfig.enabled || sPlayerbotAIConfig.randomBotAutologin)
         {
-            PlayerbotCommandServer::instance()->Start();
+            PlayerbotCommandServer::instance().Start();
         }
 
         BattlegroundData.clear();  // Clear here and here only.
