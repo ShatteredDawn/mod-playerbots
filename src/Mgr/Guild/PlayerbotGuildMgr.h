@@ -34,8 +34,8 @@ private:
     PlayerbotGuildMgr(const PlayerbotGuildMgr&) = delete;
     PlayerbotGuildMgr& operator=(const PlayerbotGuildMgr&) = delete;
 
-    PlayerbotGuildMgr(const PlayerbotGuildMgr&&) = delete;
-    PlayerbotGuildMgr& operator=(const PlayerbotGuildMgr&&) = delete;
+    PlayerbotGuildMgr(PlayerbotGuildMgr&&) = delete;
+    PlayerbotGuildMgr& operator=(PlayerbotGuildMgr&&) = delete;
 
     std::unordered_map<std::string, bool> _guildNames;
 

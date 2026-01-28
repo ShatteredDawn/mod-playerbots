@@ -944,8 +944,8 @@ private:
     TravelMgr(const TravelMgr&) = delete;
     TravelMgr& operator=(const TravelMgr&) = delete;
 
-    TravelMgr(const TravelMgr&&) = delete;
-    TravelMgr& operator=(const TravelMgr&&) = delete;
+    TravelMgr(TravelMgr&&) = delete;
+    TravelMgr& operator=(TravelMgr&&) = delete;
 };
 
 #endif

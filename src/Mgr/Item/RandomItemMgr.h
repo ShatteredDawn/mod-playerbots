@@ -197,8 +197,8 @@ private:
     RandomItemMgr(const RandomItemMgr&) = delete;
     RandomItemMgr& operator=(const RandomItemMgr&) = delete;
 
-    RandomItemMgr(const RandomItemMgr&&) = delete;
-    RandomItemMgr& operator=(const RandomItemMgr&&) = delete;
+    RandomItemMgr(RandomItemMgr&&) = delete;
+    RandomItemMgr& operator=(RandomItemMgr&&) = delete;
 
     std::map<uint32, RandomItemCache> randomItemCache;
     std::map<RandomItemType, RandomItemPredicate*> predicates;

@@ -25,8 +25,8 @@ private:
     PlayerbotCommandServer(const PlayerbotCommandServer&) = delete;
     PlayerbotCommandServer& operator=(const PlayerbotCommandServer&) = delete;
 
-    PlayerbotCommandServer(const PlayerbotCommandServer&&) = delete;
-    PlayerbotCommandServer& operator=(const PlayerbotCommandServer&&) = delete;
+    PlayerbotCommandServer(PlayerbotCommandServer&&) = delete;
+    PlayerbotCommandServer& operator=(PlayerbotCommandServer&&) = delete;
 };
 
 #endif

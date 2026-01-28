@@ -590,8 +590,8 @@ private:
     TravelNodeMap(const TravelNodeMap&) = delete;
     TravelNodeMap& operator=(const TravelNodeMap&) = delete;
 
-    TravelNodeMap(const TravelNodeMap&&) = delete;
-    TravelNodeMap& operator=(const TravelNodeMap&&) = delete;
+    TravelNodeMap(TravelNodeMap&&) = delete;
+    TravelNodeMap& operator=(TravelNodeMap&&) = delete;
 
     std::vector<TravelNode*> m_nodes;
 

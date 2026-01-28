@@ -68,8 +68,8 @@ private:
     PerfMonitor(const PerfMonitor&) = delete;
     PerfMonitor& operator=(const PerfMonitor&) = delete;
 
-    PerfMonitor(const PerfMonitor&&) = delete;
-    PerfMonitor& operator=(const PerfMonitor&&) = delete;
+    PerfMonitor(PerfMonitor&&) = delete;
+    PerfMonitor& operator=(PerfMonitor&&) = delete;
 
     std::map<PerformanceMetric, std::map<std::string, PerformanceData*> > data;
     std::mutex lock;

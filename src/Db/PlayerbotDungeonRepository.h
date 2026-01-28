@@ -42,8 +42,8 @@ private:
     PlayerbotDungeonRepository(const PlayerbotDungeonRepository&) = delete;
     PlayerbotDungeonRepository& operator=(const PlayerbotDungeonRepository&) = delete;
 
-    PlayerbotDungeonRepository(const PlayerbotDungeonRepository&&) = delete;
-    PlayerbotDungeonRepository& operator=(const PlayerbotDungeonRepository&&) = delete;
+    PlayerbotDungeonRepository(PlayerbotDungeonRepository&&) = delete;
+    PlayerbotDungeonRepository& operator=(PlayerbotDungeonRepository&&) = delete;
 
     std::vector<DungeonSuggestion> m_dungeonSuggestions;
 };

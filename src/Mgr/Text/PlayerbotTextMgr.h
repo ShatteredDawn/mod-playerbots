@@ -97,8 +97,8 @@ private:
     PlayerbotTextMgr(const PlayerbotTextMgr&) = delete;
     PlayerbotTextMgr& operator=(const PlayerbotTextMgr&) = delete;
 
-    PlayerbotTextMgr(const PlayerbotTextMgr&&) = delete;
-    PlayerbotTextMgr& operator=(const PlayerbotTextMgr&&) = delete;
+    PlayerbotTextMgr(PlayerbotTextMgr&&) = delete;
+    PlayerbotTextMgr& operator=(PlayerbotTextMgr&&) = delete;
 
 
     std::map<std::string, std::vector<BotTextEntry>> botTexts;

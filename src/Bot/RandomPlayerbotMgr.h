@@ -226,8 +226,8 @@ private:
     RandomPlayerbotMgr(const RandomPlayerbotMgr&) = delete;
     RandomPlayerbotMgr& operator=(const RandomPlayerbotMgr&) = delete;
 
-    RandomPlayerbotMgr(const RandomPlayerbotMgr&&) = delete;
-    RandomPlayerbotMgr& operator=(const RandomPlayerbotMgr&&) = delete;
+    RandomPlayerbotMgr(RandomPlayerbotMgr&&) = delete;
+    RandomPlayerbotMgr& operator=(RandomPlayerbotMgr&&) = delete;
 
     // pid values are set in constructor
     botPID pid = botPID(1, 50, -50, 0, 0, 0);

@@ -32,8 +32,8 @@ private:
     PlayerbotSpellRepository(const PlayerbotSpellRepository&) = delete;
     PlayerbotSpellRepository& operator=(const PlayerbotSpellRepository&) = delete;
 
-    PlayerbotSpellRepository(const PlayerbotSpellRepository&&) = delete;
-    PlayerbotSpellRepository& operator=(const PlayerbotSpellRepository&&) = delete;
+    PlayerbotSpellRepository(PlayerbotSpellRepository&&) = delete;
+    PlayerbotSpellRepository& operator=(PlayerbotSpellRepository&&) = delete;
 
     std::map<uint32_t, SkillLineAbilityEntry const*> skillSpells;
     std::set<uint32_t> vendorItems;

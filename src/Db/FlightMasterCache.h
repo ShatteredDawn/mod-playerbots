@@ -26,8 +26,8 @@ private:
     FlightMasterCache(const FlightMasterCache&) = delete;
     FlightMasterCache& operator=(const FlightMasterCache&) = delete;
 
-    FlightMasterCache(const FlightMasterCache&&) = delete;
-    FlightMasterCache& operator=(const FlightMasterCache&&) = delete;
+    FlightMasterCache(FlightMasterCache&&) = delete;
+    FlightMasterCache& operator=(FlightMasterCache&&) = delete;
 
     std::map<uint32, WorldPosition> allianceFlightMasterCache;
     std::map<uint32, WorldPosition> hordeFlightMasterCache;
