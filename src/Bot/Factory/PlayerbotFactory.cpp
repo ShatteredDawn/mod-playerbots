@@ -190,7 +190,7 @@ void PlayerbotFactory::Init()
             continue;
         }
 
-        if (sRandomItemMgr->IsTestItem(gemId))
+        if (sRandomItemMgr.IsTestItem(gemId))
         {
            continue;
         }
@@ -1627,7 +1627,7 @@ void Shuffle(std::vector<uint32>& items)
 //         {
 //             if (isUpgrade)
 //             {
-//                 std::vector<uint32> ids = sRandomItemMgr->GetUpgradeList(bot, specName, slot, 0, itemInSlot);
+//                 std::vector<uint32> ids = sRandomItemMgr.GetUpgradeList(bot, specName, slot, 0, itemInSlot);
 //                 if (!ids.empty())
 //                     Shuffle(ids);
 
@@ -1667,7 +1667,7 @@ void Shuffle(std::vector<uint32>& items)
 //             }
 //             else
 //             {
-//                 std::vector<uint32> ids = sRandomItemMgr->GetUpgradeList(bot, specName, slot, quality, itemInSlot);
+//                 std::vector<uint32> ids = sRandomItemMgr.GetUpgradeList(bot, specName, slot, quality, itemInSlot);
 //                 if (!ids.empty())
 //                     Shuffle(ids);
 
@@ -1797,7 +1797,7 @@ void PlayerbotFactory::InitEquipment(bool incremental, bool second_chance)
             {
                 for (InventoryType inventoryType : GetPossibleInventoryTypeListBySlot((EquipmentSlots)slot))
                 {
-                    for (uint32 itemId : sRandomItemMgr->GetCachedEquipments(requiredLevel, inventoryType))
+                    for (uint32 itemId : sRandomItemMgr.GetCachedEquipments(requiredLevel, inventoryType))
                     {
                         if (itemId == 46978)  // shaman earth ring totem
                         {
@@ -2009,7 +2009,7 @@ bool PlayerbotFactory::IsDesiredReplacement(Item* item)
     }
     // if (!requiredLevel)
     // {
-    //     requiredLevel = sRandomItemMgr->GetMinLevelFromCache(proto->ItemId);
+    //     requiredLevel = sRandomItemMgr.GetMinLevelFromCache(proto->ItemId);
     // }
 
     uint32 delta = 1 + (80 - bot->GetLevel()) / 10;
@@ -2061,9 +2061,9 @@ inline Item* StoreNewItemInInventorySlot(Player* player, uint32 newItemId, uint3
 //                 //if (!CanEquipWeapon(proto))
 //                 //    continue;
 
-//                 if (sRandomItemMgr->HasStatWeight(proto->ItemId))
+//                 if (sRandomItemMgr.HasStatWeight(proto->ItemId))
 //                 {
-//                     if (!sRandomItemMgr->GetLiveStatWeight(bot, proto->ItemId))
+//                     if (!sRandomItemMgr.GetLiveStatWeight(bot, proto->ItemId))
 //                         continue;
 //                 }
 
@@ -2096,9 +2096,9 @@ inline Item* StoreNewItemInInventorySlot(Player* player, uint32 newItemId, uint3
 //                 //if (!CanEquipArmor(proto))
 //                 //    continue;
 
-//                 if (sRandomItemMgr->HasStatWeight(proto->ItemId))
+//                 if (sRandomItemMgr.HasStatWeight(proto->ItemId))
 //                 {
-//                     if (!sRandomItemMgr->GetLiveStatWeight(bot, proto->ItemId))
+//                     if (!sRandomItemMgr.GetLiveStatWeight(bot, proto->ItemId))
 //                         continue;
 //                 }
 
@@ -2981,7 +2981,7 @@ void PlayerbotFactory::InitAmmo()
     if (!subClass)
         return;
 
-    std::vector<uint32> ammoEntryList = sRandomItemMgr->GetAmmo(level, subClass);
+    std::vector<uint32> ammoEntryList = sRandomItemMgr.GetAmmo(level, subClass);
     uint32 entry = 0;
     for (uint32 tEntry : ammoEntryList)
     {
@@ -3165,7 +3165,7 @@ void PlayerbotFactory::InitPotions()
         if (!visitor.GetResult().empty())
             continue;
 
-        uint32 itemId = sRandomItemMgr->GetRandomPotion(level, effect);
+        uint32 itemId = sRandomItemMgr.GetRandomPotion(level, effect);
         if (!itemId)
         {
             // LOG_INFO("playerbots", "No potions (type {}) available for bot {} ({} level)", effect,
@@ -3859,7 +3859,7 @@ Item* PlayerbotFactory::StoreItem(uint32 itemId, uint32 count)
 
 void PlayerbotFactory::InitInventoryTrade()
 {
-    uint32 itemId = sRandomItemMgr->GetRandomTrade(level);
+    uint32 itemId = sRandomItemMgr.GetRandomTrade(level);
     if (!itemId)
     {
         LOG_ERROR("playerbots", "No trade items available for bot {} ({} level)", bot->GetName().c_str(),

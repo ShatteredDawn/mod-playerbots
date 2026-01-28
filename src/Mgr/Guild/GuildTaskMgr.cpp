@@ -190,7 +190,7 @@ bool GuildTaskMgr::CreateItemTask(Player* player, uint32 guildId)
         return false;
 
     RandomItemBySkillGuildTaskPredicate predicate(player);
-    uint32 itemId = sRandomItemMgr->GetRandomItem(player->GetLevel() - 5, RANDOM_ITEM_GUILD_TASK, &predicate);
+    uint32 itemId = sRandomItemMgr.GetRandomItem(player->GetLevel() - 5, RANDOM_ITEM_GUILD_TASK, &predicate);
     if (!itemId)
     {
         LOG_ERROR("playerbots", "{} / {}: no items avaible for item task",
@@ -961,7 +961,7 @@ bool GuildTaskMgr::Reward(CharacterDatabaseTransaction& trans, uint32 owner, uin
         body << leader->GetName() << "\n";
         rewardType = proto->Quality > ITEM_QUALITY_NORMAL ? RANDOM_ITEM_GUILD_TASK_REWARD_EQUIP_BLUE
                                                           : RANDOM_ITEM_GUILD_TASK_REWARD_EQUIP_GREEN;
-        itemId = sRandomItemMgr->GetRandomItem(player->GetLevel() - 5, rewardType);
+        itemId = sRandomItemMgr.GetRandomItem(player->GetLevel() - 5, rewardType);
     }
     else if (killTask)
     {
@@ -977,7 +977,7 @@ bool GuildTaskMgr::Reward(CharacterDatabaseTransaction& trans, uint32 owner, uin
         body << leader->GetName() << "\n";
         rewardType = proto->rank == CREATURE_ELITE_RARE ? RANDOM_ITEM_GUILD_TASK_REWARD_TRADE
                                                         : RANDOM_ITEM_GUILD_TASK_REWARD_TRADE_RARE;
-        itemId = sRandomItemMgr->GetRandomItem(player->GetLevel(), rewardType);
+        itemId = sRandomItemMgr.GetRandomItem(player->GetLevel(), rewardType);
         if (itemId)
         {
             ItemTemplate const* itemProto = sObjectMgr->GetItemTemplate(itemId);
