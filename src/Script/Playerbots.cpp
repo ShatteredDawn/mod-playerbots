@@ -351,7 +351,7 @@ public:
         LOG_INFO("server.loading", ">> Loaded playerbots config in {} ms", GetMSTimeDiffToNow(oldMSTime));
         LOG_INFO("server.loading", " ");
 
-        sPlayerbotSpellRepository->Initialize();
+        PlayerbotSpellRepository::Instance().Initialize();
 
         LOG_INFO("server.loading", "Playerbots World Thread Processor initialized");
     }
