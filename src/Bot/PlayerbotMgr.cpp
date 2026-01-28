@@ -228,7 +228,7 @@ void PlayerbotHolder::HandlePlayerBotLoginCallback(PlayerbotLoginQueryHolder con
 
     sRandomPlayerbotMgr.OnPlayerLogin(bot);
     auto op = std::make_unique<OnBotLoginOperation>(bot->GetGUID(), masterAccountId);
-    sPlayerbotWorldProcessor->QueueOperation(std::move(op));
+    PlayerbotWorldThreadProcessor::instance().QueueOperation(std::move(op));
 
     PlayerbotHolder::botLoading.erase(holder.GetGuid());
 }
@@ -351,7 +351,7 @@ void PlayerbotHolder::LogoutPlayerBot(ObjectGuid guid)
 
         // Queue group cleanup operation for world thread
         auto cleanupOp = std::make_unique<BotLogoutGroupCleanupOperation>(guid);
-        sPlayerbotWorldProcessor->QueueOperation(std::move(cleanupOp));
+        PlayerbotWorldThreadProcessor::instance().QueueOperation(std::move(cleanupOp));
 
         LOG_DEBUG("playerbots", "Bot {} logging out", bot->GetName().c_str());
         bot->SaveToDB(false, false);
@@ -590,27 +590,27 @@ void PlayerbotHolder::OnBotLogin(Player* const bot)
             {
                 // Queue ConvertToRaid operation
                 auto convertOp = std::make_unique<GroupConvertToRaidOperation>(master->GetGUID());
-                sPlayerbotWorldProcessor->QueueOperation(std::move(convertOp));
+                PlayerbotWorldThreadProcessor::instance().QueueOperation(std::move(convertOp));
             }
             if (mgroup->isRaidGroup())
             {
                 // Queue AddMember operation
                 auto addOp = std::make_unique<GroupInviteOperation>(master->GetGUID(), bot->GetGUID());
-                sPlayerbotWorldProcessor->QueueOperation(std::move(addOp));
+                PlayerbotWorldThreadProcessor::instance().QueueOperation(std::move(addOp));
             }
         }
         else
         {
             // Queue AddMember operation
             auto addOp = std::make_unique<GroupInviteOperation>(master->GetGUID(), bot->GetGUID());
-            sPlayerbotWorldProcessor->QueueOperation(std::move(addOp));
+            PlayerbotWorldThreadProcessor::instance().QueueOperation(std::move(addOp));
         }
     }
     else if (master && !group)
     {
         // Queue group creation and AddMember operation
         auto inviteOp = std::make_unique<GroupInviteOperation>(master->GetGUID(), bot->GetGUID());
-        sPlayerbotWorldProcessor->QueueOperation(std::move(inviteOp));
+        PlayerbotWorldThreadProcessor::instance().QueueOperation(std::move(inviteOp));
     }
     // if (master)
     // {

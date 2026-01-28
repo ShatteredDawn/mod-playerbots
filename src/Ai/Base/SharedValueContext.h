@@ -12,8 +12,6 @@
 #include "PvpValues.h"
 #include "QuestValues.h"
 
-class PlayerbotAI;
-
 class SharedValueContext : public NamedObjectContext<UntypedValue>
 {
 public:
@@ -69,8 +67,8 @@ private:
     SharedValueContext(const SharedValueContext&) = delete;
     SharedValueContext& operator=(const SharedValueContext&) = delete;
 
-    SharedValueContext(const SharedValueContext&&) = delete;
-    SharedValueContext& operator=(const SharedValueContext&&) = delete;
+    SharedValueContext(SharedValueContext&&) = delete;
+    SharedValueContext& operator=(SharedValueContext&&) = delete;
 
     static UntypedValue* bg_masters(PlayerbotAI* botAI) { return new BgMastersValue(botAI); }
     static UntypedValue* drop_map(PlayerbotAI* botAI) { return new DropMapValue(botAI); }

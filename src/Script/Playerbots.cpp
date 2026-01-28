@@ -358,7 +358,7 @@ public:
 
     void OnUpdate(uint32 diff) override
     {
-        sPlayerbotWorldProcessor->Update(diff);
+        PlayerbotWorldThreadProcessor::instance().Update(diff);
         sRandomPlayerbotMgr.UpdateAI(diff);  // World thread only
     }
 };

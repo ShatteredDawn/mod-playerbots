@@ -117,8 +117,8 @@ private:
     PlayerbotsMgr(const PlayerbotsMgr&) = delete;
     PlayerbotsMgr& operator=(const PlayerbotsMgr&) = delete;
 
-    PlayerbotsMgr(const PlayerbotsMgr&&) = delete;
-    PlayerbotsMgr& operator=(const PlayerbotsMgr&&) = delete;
+    PlayerbotsMgr(PlayerbotsMgr&&) = delete;
+    PlayerbotsMgr& operator=(PlayerbotsMgr&&) = delete;
 
     std::unordered_map<ObjectGuid, PlayerbotAIBase*> _playerbotsAIMap;
     std::unordered_map<ObjectGuid, PlayerbotAIBase*> _playerbotsMgrMap;

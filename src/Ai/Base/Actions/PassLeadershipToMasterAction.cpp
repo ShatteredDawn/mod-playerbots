@@ -16,7 +16,7 @@ bool PassLeadershipToMasterAction::Execute(Event event)
         if (master && master != bot && bot->GetGroup() && bot->GetGroup()->IsMember(master->GetGUID()))
         {
             auto setLeaderOp = std::make_unique<GroupSetLeaderOperation>(bot->GetGUID(), master->GetGUID());
-            sPlayerbotWorldProcessor->QueueOperation(std::move(setLeaderOp));
+            PlayerbotWorldThreadProcessor::instance().QueueOperation(std::move(setLeaderOp));
 
             if (!message.empty())
                 botAI->TellMasterNoFacing(message);

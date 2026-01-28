@@ -460,8 +460,8 @@ private:
     PlayerbotAIConfig(const PlayerbotAIConfig&) = delete;
     PlayerbotAIConfig& operator=(const PlayerbotAIConfig&) = delete;
 
-    PlayerbotAIConfig(const PlayerbotAIConfig&&) = delete;
-    PlayerbotAIConfig& operator=(const PlayerbotAIConfig&&) = delete;
+    PlayerbotAIConfig(PlayerbotAIConfig&&) = delete;
+    PlayerbotAIConfig& operator=(PlayerbotAIConfig&&) = delete;
 };
 
 #define sPlayerbotAIConfig PlayerbotAIConfig::instance()

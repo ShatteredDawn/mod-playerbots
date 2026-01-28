@@ -31,7 +31,7 @@ bool InviteToGroupAction::Invite(Player* inviter, Player* player)
             if (!group->isRaidGroup() && group->GetMembersCount() > 4)
             {
                 auto convertOp = std::make_unique<GroupConvertToRaidOperation>(inviter->GetGUID());
-                sPlayerbotWorldProcessor->QueueOperation(std::move(convertOp));
+                PlayerbotWorldThreadProcessor::instance().QueueOperation(std::move(convertOp));
             }
     }
 
@@ -96,7 +96,7 @@ bool InviteNearbyToGroupAction::Execute(Event event)
             bot->GetGroup()->GetMembersCount() > 3)
         {
             auto convertOp = std::make_unique<GroupConvertToRaidOperation>(bot->GetGUID());
-            sPlayerbotWorldProcessor->QueueOperation(std::move(convertOp));
+            PlayerbotWorldThreadProcessor::instance().QueueOperation(std::move(convertOp));
         }
 
         if (sPlayerbotAIConfig.inviteChat && sRandomPlayerbotMgr.IsRandomBot(bot))
@@ -230,7 +230,7 @@ bool InviteGuildToGroupAction::Execute(Event event)
             bot->GetGroup()->GetMembersCount() > 3)
         {
             auto convertOp = std::make_unique<GroupConvertToRaidOperation>(bot->GetGUID());
-            sPlayerbotWorldProcessor->QueueOperation(std::move(convertOp));
+            PlayerbotWorldThreadProcessor::instance().QueueOperation(std::move(convertOp));
         }
 
         if (sPlayerbotAIConfig.inviteChat &&
@@ -373,7 +373,7 @@ bool LfgAction::Execute(Event event)
             else
             {
                 auto convertOp = std::make_unique<GroupConvertToRaidOperation>(requester->GetGUID());
-                sPlayerbotWorldProcessor->QueueOperation(std::move(convertOp));
+                PlayerbotWorldThreadProcessor::instance().QueueOperation(std::move(convertOp));
             }
         }
 
