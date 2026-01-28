@@ -678,7 +678,7 @@ bool PlayerbotAIConfig::Initialize()
 
     if (sPlayerbotAIConfig.randomBotSuggestDungeons)
     {
-        sPlayerbotDungeonRepository->LoadDungeonSuggestions();
+        PlayerbotDungeonRepository::instance().LoadDungeonSuggestions();
     }
 
     excludedHunterPetFamilies.clear();
