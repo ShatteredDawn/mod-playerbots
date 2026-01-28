@@ -667,7 +667,7 @@ bool PlayerbotAIConfig::Initialize()
         sRandomPlayerbotMgr.Init();
     }
 
-    sPlayerbotGuildMgr->Init();
+    PlayerbotGuildMgr::instance().Init();
     sRandomItemMgr.Init();
     sRandomItemMgr.InitAfterAhBot();
     sPlayerbotTextMgr->LoadBotTexts();

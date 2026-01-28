@@ -4,10 +4,7 @@
 #include "DatabaseEnv.h"
 #include "Guild.h"
 #include "GuildMgr.h"
-#include "RandomPlayerbotMgr.h"
 #include "ScriptMgr.h"
-
-PlayerbotGuildMgr::PlayerbotGuildMgr(){}
 
 void PlayerbotGuildMgr::Init()
 {
@@ -306,7 +303,7 @@ class BotGuildCacheWorldScript : public WorldScript
             if (_validateTimer >= _validateInterval) // Validate every hour
             {
                 _validateTimer = 0;
-                sPlayerbotGuildMgr->ValidateGuildCache();
+                PlayerbotGuildMgr::instance().ValidateGuildCache();
                 LOG_INFO("playerbots", "Scheduled guild cache validation");
             }
         }

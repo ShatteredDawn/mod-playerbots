@@ -6007,7 +6007,7 @@ bool PlayerbotAI::IsInRealGuild()
     if (!bot->GetGuildId())
         return false;
 
-    return sPlayerbotGuildMgr->IsRealGuild(bot->GetGuildId());
+    return PlayerbotGuildMgr::instance().IsRealGuild(bot->GetGuildId());
 }
 
 void PlayerbotAI::QueueChatResponse(const ChatQueuedReply chatReply) { chatReplies.push_back(std::move(chatReply)); }

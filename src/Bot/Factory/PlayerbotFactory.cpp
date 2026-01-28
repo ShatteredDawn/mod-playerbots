@@ -3949,21 +3949,21 @@ void PlayerbotFactory::InitGuild()
         return;
     }
 
-    std::string guildName = sPlayerbotGuildMgr->AssignToGuild(bot);
+    std::string guildName = PlayerbotGuildMgr::instance().AssignToGuild(bot);
     if (guildName.empty())
         return;
 
     Guild* guild = sGuildMgr->GetGuildByName(guildName);
     if (!guild)
     {
-        if (!sPlayerbotGuildMgr->CreateGuild(bot, guildName))
+        if (!PlayerbotGuildMgr::instance().CreateGuild(bot, guildName))
             LOG_ERROR("playerbots","Failed to create guild {} for bot {}", guildName, bot->GetName());
         return;
     }
     else
     {
         if (guild->AddMember(bot->GetGUID(),urand(GR_OFFICER, GR_INITIATE)))
-            sPlayerbotGuildMgr->OnGuildUpdate(guild);
+            PlayerbotGuildMgr::instance().OnGuildUpdate(guild);
         else
             LOG_ERROR("playerbots","Bot {} failed to join guild {}.", bot->GetName(), guildName);
     }
