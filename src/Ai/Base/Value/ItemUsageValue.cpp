@@ -99,7 +99,7 @@ ItemUsage ItemUsageValue::Calculate()
         }
     }
 
-    if (bot->GetGuildId() && sGuildTaskMgr->IsGuildTaskItem(itemId, bot->GetGuildId()))
+    if (bot->GetGuildId() && GuildTaskMgr::instance().IsGuildTaskItem(itemId, bot->GetGuildId()))
         return ITEM_USAGE_GUILD_TASK;
 
     ItemUsage equip = QueryItemUsageForEquip(proto, randomPropertyId);

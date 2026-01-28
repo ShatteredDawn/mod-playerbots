@@ -703,8 +703,8 @@ bool GuildTaskMgr::HandleConsoleCommand(ChatHandler* /* handler */, char const* 
                 if (value == GUILD_TASK_TYPE_ITEM)
                 {
                     name << "ItemTask";
-                    uint32 itemId = sGuildTaskMgr->GetTaskValue(owner, guildId, "itemTask");
-                    uint32 itemCount = sGuildTaskMgr->GetTaskValue(owner, guildId, "itemCount");
+                    uint32 itemId = GuildTaskMgr::instance().GetTaskValue(owner, guildId, "itemTask");
+                    uint32 itemCount = GuildTaskMgr::instance().GetTaskValue(owner, guildId, "itemCount");
 
                     if (ItemTemplate const* proto = sObjectMgr->GetItemTemplate(itemId))
                     {
@@ -735,7 +735,7 @@ bool GuildTaskMgr::HandleConsoleCommand(ChatHandler* /* handler */, char const* 
                 else if (value == GUILD_TASK_TYPE_KILL)
                 {
                     name << "KillTask";
-                    uint32 creatureId = sGuildTaskMgr->GetTaskValue(owner, guildId, "killTask");
+                    uint32 creatureId = GuildTaskMgr::instance().GetTaskValue(owner, guildId, "killTask");
 
                     if (CreatureTemplate const* proto = sObjectMgr->GetCreatureTemplate(creatureId))
                     {
@@ -758,22 +758,22 @@ bool GuildTaskMgr::HandleConsoleCommand(ChatHandler* /* handler */, char const* 
                     continue;
 
                 uint32 advertValidIn = 0;
-                uint32 advert = sGuildTaskMgr->GetTaskValue(owner, guildId, "advertisement", &advertValidIn);
+                uint32 advert = GuildTaskMgr::instance().GetTaskValue(owner, guildId, "advertisement", &advertValidIn);
                 if (advert && advertValidIn < validIn)
                     name << " advert in " << formatTime(advertValidIn);
 
                 uint32 thanksValidIn = 0;
-                uint32 thanks = sGuildTaskMgr->GetTaskValue(owner, guildId, "thanks", &thanksValidIn);
+                uint32 thanks = GuildTaskMgr::instance().GetTaskValue(owner, guildId, "thanks", &thanksValidIn);
                 if (thanks && thanksValidIn < validIn)
                     name << " thanks in " << formatTime(thanksValidIn);
 
                 uint32 rewardValidIn = 0;
-                uint32 reward = sGuildTaskMgr->GetTaskValue(owner, guildId, "reward", &rewardValidIn);
+                uint32 reward = GuildTaskMgr::instance().GetTaskValue(owner, guildId, "reward", &rewardValidIn);
                 if (reward && rewardValidIn < validIn)
                     name << " reward in " << formatTime(rewardValidIn);
 
                 uint32 paymentValidIn = 0;
-                uint32 payment = sGuildTaskMgr->GetTaskValue(owner, guildId, "payment", &paymentValidIn);
+                uint32 payment = GuildTaskMgr::instance().GetTaskValue(owner, guildId, "payment", &paymentValidIn);
                 if (payment && paymentValidIn < validIn)
                     name << " payment " << ChatHelper::formatMoney(payment) << " in " << formatTime(paymentValidIn);
 
@@ -788,8 +788,8 @@ bool GuildTaskMgr::HandleConsoleCommand(ChatHandler* /* handler */, char const* 
 
     if (cmd == "cleanup")
     {
-        sGuildTaskMgr->CleanupAdverts();
-        sGuildTaskMgr->RemoveDuplicatedAdverts();
+        GuildTaskMgr::instance().CleanupAdverts();
+        GuildTaskMgr::instance().RemoveDuplicatedAdverts();
         return true;
     }
 
@@ -840,10 +840,10 @@ bool GuildTaskMgr::HandleConsoleCommand(ChatHandler* /* handler */, char const* 
                     continue;
 
                 if (reward)
-                    sGuildTaskMgr->Reward(trans, owner, guildId);
+                    GuildTaskMgr::instance().Reward(trans, owner, guildId);
 
                 if (advert)
-                    sGuildTaskMgr->SendAdvertisement(trans, owner, guildId);
+                    GuildTaskMgr::instance().SendAdvertisement(trans, owner, guildId);
             } while (result->NextRow());
 
             CharacterDatabase.CommitTransaction(trans);

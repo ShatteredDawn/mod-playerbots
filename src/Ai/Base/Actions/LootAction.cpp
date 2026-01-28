@@ -435,7 +435,7 @@ bool StoreLootAction::Execute(Event event)
             if (Group* group = bot->GetGroup())
                 for (GroupReference* ref = group->GetFirstMember(); ref; ref = ref->next())
                     if (ref->GetSource() != bot)
-                        sGuildTaskMgr->CheckItemTask(itemid, itemcount, ref->GetSource(), bot);
+                        GuildTaskMgr::instance().CheckItemTask(itemid, itemcount, ref->GetSource(), bot);
         }
 
         WorldPacket* packet = new WorldPacket(CMSG_AUTOSTORE_LOOT_ITEM, 1);

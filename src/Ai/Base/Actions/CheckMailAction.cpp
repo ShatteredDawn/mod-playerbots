@@ -80,7 +80,7 @@ void CheckMailAction::ProcessMail(Mail* mail, Player* owner, CharacterDatabaseTr
         if (!item)
             continue;
 
-        if (!sGuildTaskMgr->CheckItemTask(i->item_template, item->GetCount(), owner, bot, true))
+        if (!GuildTaskMgr::instance().CheckItemTask(i->item_template, item->GetCount(), owner, bot, true))
         {
             std::ostringstream body;
             body << "Hello, " << owner->GetName() << ",\n";

@@ -96,7 +96,7 @@ bool TradeStatusAction::Execute(Event event)
                     craftData.AddObtained(itemId, count);
                 }
 
-                sGuildTaskMgr->CheckItemTask(itemId, count, trader, bot);
+                GuildTaskMgr::instance().CheckItemTask(itemId, count, trader, bot);
             }
 
             for (std::map<uint32, uint32>::iterator i = takenItemIds.begin(); i != takenItemIds.end(); ++i)

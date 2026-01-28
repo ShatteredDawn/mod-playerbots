@@ -1560,7 +1560,7 @@ bool RandomPlayerbotMgr::ProcessBot(Player* bot)
             //         if (guild->GetLeaderGUID() == player->GetGUID())
             //         {
             //             for (std::vector<Player*>::iterator i = players.begin(); i != players.end(); ++i)
-            //                 sGuildTaskMgr->Update(*i, player);
+            //                 GuildTaskMgr::instance().Update(*i, player);
             //         }
 
             //         uint32 accountId = sCharacterCache->GetCharacterAccountIdByGuid(guild->GetLeaderGUID());

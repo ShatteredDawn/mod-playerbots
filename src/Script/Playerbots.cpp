@@ -389,7 +389,7 @@ public:
     void OnPlayerbotCheckKillTask(Player* player, Unit* victim) override
     {
         if (player)
-            sGuildTaskMgr->CheckKillTask(player, victim);
+            GuildTaskMgr::instance().CheckKillTask(player, victim);
     }
 
     void OnPlayerbotCheckPetitionAccount(Player* player, bool& found) override
