@@ -1974,10 +1974,10 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
                 {
                     WorldPosition pos(mapId, x, y, z, orient);
                     if (forHorde)
-                        sFlightMasterCache->AddHordeFlightMaster(guid, pos);
+                        FlightMasterCache::Instance().AddHordeFlightMaster(guid, pos);
 
                     if (forAlliance)
-                        sFlightMasterCache->AddAllianceFlightMaster(guid, pos);
+                        FlightMasterCache::Instance().AddAllianceFlightMaster(guid, pos);
                 }
                 const AreaTableEntry* area = sAreaTableStore.LookupEntry(map->GetAreaId(PHASEMASK_NORMAL, x, y, z));
                 uint32 zoneId = area->zone ? area->zone : area->ID;
