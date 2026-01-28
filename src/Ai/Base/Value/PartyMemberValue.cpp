@@ -4,6 +4,7 @@
  */
 
 #include "PartyMemberValue.h"
+#include "Corpse.h"
 
 #include "Playerbots.h"
 #include "ServerFacade.h"

@@ -248,7 +248,7 @@ bool ChooseRpgTargetAction::Execute(Event event)
     }
 
     std::mt19937 gen(time(0));
-    sTravelMgr->weighted_shuffle(guidps.begin(), guidps.end(), relevances.begin(), relevances.end(), gen);
+    TravelMgr::instance().weighted_shuffle(guidps.begin(), guidps.end(), relevances.begin(), relevances.end(), gen);
 
     GuidPosition guidP(guidps.front());
     if (!guidP)

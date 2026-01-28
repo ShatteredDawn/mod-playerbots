@@ -61,7 +61,7 @@ bool GoAction::Execute(Event event)
         else
         {
             botAI->TellMasterNoFacing("Clearing travel target");
-            target->setTarget(sTravelMgr->nullTravelDestination, sTravelMgr->nullWorldPosition);
+            target->setTarget(TravelMgr::instance().nullTravelDestination, TravelMgr::instance().nullWorldPosition);
             target->setForced(false);
             return true;
         }

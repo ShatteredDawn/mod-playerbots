@@ -17,6 +17,8 @@
 #include "TransportMgr.h"
 #include "VMapFactory.h"
 #include "VMapMgr2.h"
+#include "Map.h"
+#include "Corpse.h"
 #include "CellImpl.h"
 
 WorldPosition::WorldPosition(std::string const str)
@@ -245,7 +247,7 @@ float WorldPosition::distance(WorldPosition* center)
         return relPoint(center).size();
 
     // this -> mapTransfer | mapTransfer -> center
-    return sTravelMgr->mapTransDistance(*this, *center);
+    return TravelMgr::instance().mapTransDistance(*this, *center);
 };
 
 float WorldPosition::fDist(WorldPosition* center)
@@ -254,7 +256,7 @@ float WorldPosition::fDist(WorldPosition* center)
         return sqrt(sqDistance2d(center));
 
     // this -> mapTransfer | mapTransfer -> center
-    return sTravelMgr->fastMapTransDistance(*this, *center);
+    return TravelMgr::instance().fastMapTransDistance(*this, *center);
 };
 
 float mapTransfer::fDist(WorldPosition start, WorldPosition end)
@@ -633,7 +635,7 @@ void WorldPosition::loadMapAndVMap(uint32 mapId, uint8 x, uint8 y)
             {
                 std::ostringstream out;
                 out << sPlayerbotAIConfig.GetTimestampStr();
-                out << "+00,\"mmap\", " << x << "," << y << "," << (sTravelMgr->isBadMmap(mapId, x, y) ? "0" : "1")
+                out << "+00,\"mmap\", " << x << "," << y << "," << (TravelMgr::instance().isBadMmap(mapId, x, y) ? "0" : "1")
                     << ",";
                 printWKT(fromGridCoord(GridCoord(x, y)), out, 1, true);
                 sPlayerbotAIConfig.log(fileName, out.str().c_str());
@@ -644,7 +646,7 @@ void WorldPosition::loadMapAndVMap(uint32 mapId, uint8 x, uint8 y)
         // This needs to be disabled or maps will not load.
         // Needs more testing to check for impact on movement.
         if (false)
-            if (!sTravelMgr->isBadVmap(mapId, x, y))
+            if (!TravelMgr::instance().isBadVmap(mapId, x, y))
             {
                 // load VMAPs for current map/grid...
                 const MapEntry* i_mapEntry = sMapStore.LookupEntry(mapId);
@@ -661,10 +663,10 @@ void WorldPosition::loadMapAndVMap(uint32 mapId, uint8 x, uint8 y)
                     case VMAP::VMAP_LOAD_RESULT_ERROR:
                         // LOG_ERROR("playerbots", "Could not load VMAP name:{}, id:{}, x:{}, y:{} (vmap rep.: x:{},
                         // y:{})", mapName, mapId, x, y, x, y);
-                        sTravelMgr->addBadVmap(mapId, x, y);
+                        TravelMgr::instance().addBadVmap(mapId, x, y);
                         break;
                     case VMAP::VMAP_LOAD_RESULT_IGNORED:
-                        sTravelMgr->addBadVmap(mapId, x, y);
+                        TravelMgr::instance().addBadVmap(mapId, x, y);
                         // LOG_INFO("playerbots", "Ignored VMAP name:{}, id:{}, x:{}, y:{} (vmap rep.: x:{}, y:{})",
                         // mapName, mapId, x, y, x, y);
                         break;
@@ -674,24 +676,24 @@ void WorldPosition::loadMapAndVMap(uint32 mapId, uint8 x, uint8 y)
                 {
                     std::ostringstream out;
                     out << sPlayerbotAIConfig.GetTimestampStr();
-                    out << "+00,\"vmap\", " << x << "," << y << ", " << (sTravelMgr->isBadVmap(mapId, x, y) ? "0" : "1")
+                    out << "+00,\"vmap\", " << x << "," << y << ", " << (TravelMgr::instance().isBadVmap(mapId, x, y) ? "0" : "1")
                         << ",";
                     printWKT(frommGridCoord(mGridCoord(x, y)), out, 1, true);
                     sPlayerbotAIConfig.log(fileName, out.str().c_str());
                 }
             }
 
-        if (!sTravelMgr->isBadMmap(mapId, x, y))
+        if (!TravelMgr::instance().isBadMmap(mapId, x, y))
         {
             // load navmesh
             if (!MMAP::MMapFactory::createOrGetMMapMgr()->loadMap(mapId, x, y))
-                sTravelMgr->addBadMmap(mapId, x, y);
+                TravelMgr::instance().addBadMmap(mapId, x, y);
 
             if (sPlayerbotAIConfig.hasLog(fileName))
             {
                 std::ostringstream out;
                 out << sPlayerbotAIConfig.GetTimestampStr();
-                out << "+00,\"mmap\", " << x << "," << y << "," << (sTravelMgr->isBadMmap(mapId, x, y) ? "0" : "1")
+                out << "+00,\"mmap\", " << x << "," << y << "," << (TravelMgr::instance().isBadMmap(mapId, x, y) ? "0" : "1")
                     << ",";
                 printWKT(fromGridCoord(GridCoord(x, y)), out, 1, true);
                 sPlayerbotAIConfig.log(fileName, out.str().c_str());
@@ -1070,7 +1072,7 @@ std::vector<WorldPosition*> TravelDestination::sortedPoints(WorldPosition* pos)
 
 std::vector<WorldPosition*> TravelDestination::nextPoint(WorldPosition* pos, bool ignoreFull)
 {
-    return sTravelMgr->getNextPoint(pos, ignoreFull ? points : getPoints());
+    return TravelMgr::instance().getNextPoint(pos, ignoreFull ? points : getPoints());
 }
 
 bool TravelDestination::isFull(bool ignoreFull)
@@ -1107,7 +1109,7 @@ bool QuestRelationTravelDestination::isActive(Player* bot)
         if (!bot->GetMap()->GetEntry()->IsWorldMap() || !bot->CanTakeQuest(questTemplate, false))
             return false;
 
-        //uint32 dialogStatus = sTravelMgr->getDialogStatus(bot, entry, questTemplate); //not used, shadowed by the next declaration, line marked for removal.
+        //uint32 dialogStatus = TravelMgr::instance().getDialogStatus(bot, entry, questTemplate); //not used, shadowed by the next declaration, line marked for removal.
 
         if (AI_VALUE(bool, "can fight equal"))
         {
@@ -1196,7 +1198,7 @@ bool QuestObjectiveTravelDestination::isActive(Player* bot)
     if (questTemplate->GetType() == QUEST_TYPE_ELITE && !AI_VALUE(bool, "can fight elite"))
         return false;
 
-    if (!sTravelMgr->getObjectiveStatus(bot, questTemplate, objective))
+    if (!TravelMgr::instance().getObjectiveStatus(bot, questTemplate, objective))
         return false;
 
     WorldPosition botPos(bot);
@@ -1434,8 +1436,8 @@ TravelTarget::~TravelTarget()
         return;
 
     releaseVisitors();
-    // sTravelMgr->botTargets.erase(std::remove(sTravelMgr->botTargets.begin(), sTravelMgr->botTargets.end(), this),
-    // sTravelMgr->botTargets.end());
+    // TravelMgr::instance().botTargets.erase(std::remove(TravelMgr::instance().botTargets.begin(), TravelMgr::instance().botTargets.end(), this),
+    // TravelMgr::instance().botTargets.end());
 }
 
 void TravelTarget::setTarget(TravelDestination* tDestination1, WorldPosition* wPosition1, bool groupCopy1)
@@ -1577,7 +1579,7 @@ bool TravelTarget::isTraveling()
 
     if (!botAI->HasStrategy("travel", BOT_STATE_NON_COMBAT))
     {
-        setTarget(sTravelMgr->nullTravelDestination, sTravelMgr->nullWorldPosition, true);
+        setTarget(TravelMgr::instance().nullTravelDestination, TravelMgr::instance().nullWorldPosition, true);
         return false;
     }
 
@@ -1609,7 +1611,7 @@ bool TravelTarget::isWorking()
 
     if (!botAI->HasStrategy("travel", BOT_STATE_NON_COMBAT))
     {
-        setTarget(sTravelMgr->nullTravelDestination, sTravelMgr->nullWorldPosition, true);
+        setTarget(TravelMgr::instance().nullTravelDestination, TravelMgr::instance().nullWorldPosition, true);
         return false;
     }
 
@@ -1766,7 +1768,7 @@ void TravelMgr::logQuestError(uint32 errorNr, Quest* quest, uint32 objective, ui
 
 void TravelMgr::LoadQuestTravelTable()
 {
-    if (!sTravelMgr->quests.empty())
+    if (!TravelMgr::instance().quests.empty())
         return;
 
     // Clearing store (for reloading case)
@@ -3896,7 +3898,7 @@ bool TravelMgr::getObjectiveStatus(Player* bot, Quest const* pQuest, uint32 obje
     if (bot->GetQuestStatus(questId) != QUEST_STATUS_INCOMPLETE)
         return false;
 
-    QuestStatusData* questStatus = sTravelMgr->getQuestStatus(bot, questId);
+    QuestStatusData* questStatus = TravelMgr::instance().getQuestStatus(bot, questId);
 
     uint32 reqCount = pQuest->RequiredItemCount[objective];
     uint32 hasCount = questStatus->ItemCount[objective];
@@ -4096,7 +4098,7 @@ void TravelMgr::setNullTravelTarget(Player* player)
     TravelTarget* target = playerBotAI->GetAiObjectContext()->GetValue<TravelTarget*>("travel target")->Get();
 
     if (target)
-        target->setTarget(sTravelMgr->nullTravelDestination, sTravelMgr->nullWorldPosition, true);
+        target->setTarget(TravelMgr::instance().nullTravelDestination, TravelMgr::instance().nullWorldPosition, true);
 }
 
 void TravelMgr::addMapTransfer(WorldPosition start, WorldPosition end, float portalDistance, bool makeShortcuts)

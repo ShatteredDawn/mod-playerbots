@@ -853,7 +853,7 @@ void PlayerbotAI::Reset(bool full)
         aiObjectContext->GetValue<LastMovement&>("last taxi")->Get().Set(nullptr);
         aiObjectContext->GetValue<TravelTarget*>("travel target")
             ->Get()
-            ->setTarget(sTravelMgr->nullTravelDestination, sTravelMgr->nullWorldPosition, true);
+            ->setTarget(TravelMgr::instance().nullTravelDestination, TravelMgr::instance().nullWorldPosition, true);
         aiObjectContext->GetValue<TravelTarget*>("travel target")->Get()->setStatus(TRAVEL_STATUS_EXPIRED);
         aiObjectContext->GetValue<TravelTarget*>("travel target")->Get()->setExpireIn(1000);
         rpgInfo = NewRpgInfo();

@@ -22,6 +22,7 @@
 #include "Timer.h"
 #include "PlayerbotAI.h"
 #include "Player.h"
+#include "Corpse.h"
 
 bool LowManaTrigger::IsActive()
 {

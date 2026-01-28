@@ -108,7 +108,7 @@ bool DebugAction::Execute(Event event)
 
         out << quest->GetTitle() << ": ";
 
-        QuestContainer* cont = sTravelMgr->quests[questId];
+        QuestContainer* cont = TravelMgr::instance().quests[questId];
 
         for (auto g : cont->questGivers)
         {
@@ -135,11 +135,11 @@ bool DebugAction::Execute(Event event)
     else if (text.find("quest") != std::string::npos)
     {
         std::ostringstream out;
-        out << sTravelMgr->quests.size() << " quests ";
+        out << TravelMgr::instance().quests.size() << " quests ";
 
         uint32 noT = 0, noG = 0, noO = 0;
 
-        for (auto q : sTravelMgr->quests)
+        for (auto q : TravelMgr::instance().quests)
         {
             if (q.second->questGivers.empty())
                 noG++;
@@ -164,7 +164,7 @@ bool DebugAction::Execute(Event event)
 
         // uint32 noT = 0, noG = 0, noO = 0; //not used, line marked for removal.
 
-        for (auto q : sTravelMgr->quests)
+        for (auto q : TravelMgr::instance().quests)
         {
             Quest const* quest = sObjectMgr->GetQuestTemplate(q.first);
 

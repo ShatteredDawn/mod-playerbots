@@ -1968,7 +1968,7 @@ void TravelNodeMap::generateTransportNodes()
 void TravelNodeMap::generateZoneMeanNodes()
 {
     // Zone means
-    for (auto& loc : sTravelMgr->exploreLocs)
+    for (auto& loc : TravelMgr::instance().exploreLocs)
     {
         std::vector<WorldPosition*> points;
 
@@ -2188,7 +2188,7 @@ void TravelNodeMap::generateAll()
     calcMapOffset();
 
     LOG_INFO("playerbots", "-Generating maptransfers");
-    sTravelMgr->loadMapTransfers();
+    TravelMgr::instance().loadMapTransfers();
 
     if (hasToGen || hasToFullGen)
     {
