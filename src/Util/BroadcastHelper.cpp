@@ -28,29 +28,29 @@ bool BroadcastHelper::BroadcastTest(PlayerbotAI* ai, Player* /* bot */)
 
     int32 rand = urand(0, 1);
 
-    if (rand == 1 && ai->SayToChannel(BOT_TEXT2("Posted to trade, %rand1, %rand2, %rand3", placeholders), ChatChannelId::TRADE))
+    if (rand == 1 && ai->SayToChannel(PlayerbotTextMgr::instance().GetBotText("Posted to trade, %rand1, %rand2, %rand3", placeholders), ChatChannelId::TRADE))
         return true;
-    else if (ai->SayToChannel(BOT_TEXT2("Posted to GuildRecruitment, %rand1, %rand2, %rand3", placeholders), ChatChannelId::GUILD_RECRUITMENT))
+    else if (ai->SayToChannel(PlayerbotTextMgr::instance().GetBotText("Posted to GuildRecruitment, %rand1, %rand2, %rand3", placeholders), ChatChannelId::GUILD_RECRUITMENT))
         return true;
 
-    return ai->SayToChannel(BOT_TEXT2("Posted to trade, %rand1, %rand2, %rand3", placeholders), ChatChannelId::TRADE);
+    return ai->SayToChannel(PlayerbotTextMgr::instance().GetBotText("Posted to trade, %rand1, %rand2, %rand3", placeholders), ChatChannelId::TRADE);
 
     //int32 rand = urand(1, 8);
-    if (rand == 1 && ai->SayToGuild(BOT_TEXT2("Posted to guild, %rand1, %rand2, %rand3", placeholders)))
+    if (rand == 1 && ai->SayToGuild(PlayerbotTextMgr::instance().GetBotText("Posted to guild, %rand1, %rand2, %rand3", placeholders)))
         return true;
-    else if (rand == 2 && ai->SayToWorld(BOT_TEXT2("Posted to world, %rand1, %rand2, %rand3", placeholders)))
+    else if (rand == 2 && ai->SayToWorld(PlayerbotTextMgr::instance().GetBotText("Posted to world, %rand1, %rand2, %rand3", placeholders)))
         return true;
-    else if (rand == 3 && ai->SayToChannel(BOT_TEXT2("Posted to general, %rand1, %rand2, %rand3", placeholders), ChatChannelId::GENERAL))
+    else if (rand == 3 && ai->SayToChannel(PlayerbotTextMgr::instance().GetBotText("Posted to general, %rand1, %rand2, %rand3", placeholders), ChatChannelId::GENERAL))
         return true;
-    else if (rand == 4 && ai->SayToChannel(BOT_TEXT2("Posted to trade, %rand1, %rand2, %rand3", placeholders), ChatChannelId::TRADE))
+    else if (rand == 4 && ai->SayToChannel(PlayerbotTextMgr::instance().GetBotText("Posted to trade, %rand1, %rand2, %rand3", placeholders), ChatChannelId::TRADE))
         return true;
-    else if (rand == 5 && ai->SayToChannel(BOT_TEXT2("Posted to LFG, %rand1, %rand2, %rand3", placeholders), ChatChannelId::LOOKING_FOR_GROUP))
+    else if (rand == 5 && ai->SayToChannel(PlayerbotTextMgr::instance().GetBotText("Posted to LFG, %rand1, %rand2, %rand3", placeholders), ChatChannelId::LOOKING_FOR_GROUP))
         return true;
-    else if (rand == 6 && ai->SayToChannel(BOT_TEXT2("Posted to LocalDefense, %rand1, %rand2, %rand3", placeholders), ChatChannelId::LOCAL_DEFENSE))
+    else if (rand == 6 && ai->SayToChannel(PlayerbotTextMgr::instance().GetBotText("Posted to LocalDefense, %rand1, %rand2, %rand3", placeholders), ChatChannelId::LOCAL_DEFENSE))
         return true;
-    else if (rand == 7 && ai->SayToChannel(BOT_TEXT2("Posted to WorldDefense, %rand1, %rand2, %rand3", placeholders), ChatChannelId::WORLD_DEFENSE))
+    else if (rand == 7 && ai->SayToChannel(PlayerbotTextMgr::instance().GetBotText("Posted to WorldDefense, %rand1, %rand2, %rand3", placeholders), ChatChannelId::WORLD_DEFENSE))
         return true;
-    else if (rand == 8 && ai->SayToChannel(BOT_TEXT2("Posted to GuildRecruitment, %rand1, %rand2, %rand3", placeholders), ChatChannelId::GUILD_RECRUITMENT))
+    else if (rand == 8 && ai->SayToChannel(PlayerbotTextMgr::instance().GetBotText("Posted to GuildRecruitment, %rand1, %rand2, %rand3", placeholders), ChatChannelId::GUILD_RECRUITMENT))
         return true;
 
     return false;
@@ -174,8 +174,8 @@ bool BroadcastHelper::BroadcastLootingItem(PlayerbotAI* ai, Player* bot, ItemTem
     placeholders["%item_link"] = ai->GetChatHelper()->FormatItem(proto);
     AreaTableEntry const* current_area = ai->GetCurrentArea();
     AreaTableEntry const* current_zone = ai->GetCurrentZone();
-    placeholders["%area_name"] = current_area ? ai->GetLocalizedAreaName(current_area) : BOT_TEXT1("string_unknown_area");
-    placeholders["%zone_name"] = current_zone ? ai->GetLocalizedAreaName(current_zone) : BOT_TEXT1("string_unknown_area");
+    placeholders["%area_name"] = current_area ? ai->GetLocalizedAreaName(current_area) : PlayerbotTextMgr::instance().GetBotText("string_unknown_area");
+    placeholders["%zone_name"] = current_zone ? ai->GetLocalizedAreaName(current_zone) : PlayerbotTextMgr::instance().GetBotText("string_unknown_area");
     placeholders["%my_class"] = ai->GetChatHelper()->FormatClass(bot->getClass());
     placeholders["%my_race"] = ai->GetChatHelper()->FormatRace(bot->getRace());
     placeholders["%my_level"] = std::to_string(bot->GetLevel());
@@ -187,7 +187,7 @@ bool BroadcastHelper::BroadcastLootingItem(PlayerbotAI* ai, Player* bot, ItemTem
             {
                 return BroadcastToChannelWithGlobalChance(
                     ai,
-                    BOT_TEXT2("broadcast_looting_item_poor", placeholders),
+                    PlayerbotTextMgr::instance().GetBotText("broadcast_looting_item_poor", placeholders),
                     { {TO_GUILD, 50}, {TO_WORLD, 50}, {TO_GENERAL, 100} }
                 );
             }
@@ -197,7 +197,7 @@ bool BroadcastHelper::BroadcastLootingItem(PlayerbotAI* ai, Player* bot, ItemTem
             {
                 return BroadcastToChannelWithGlobalChance(
                     ai,
-                    BOT_TEXT2("broadcast_looting_item_normal", placeholders),
+                    PlayerbotTextMgr::instance().GetBotText("broadcast_looting_item_normal", placeholders),
                     { {TO_GUILD, 50}, {TO_WORLD, 50}, {TO_GENERAL, 100} }
                 );
             }
@@ -207,7 +207,7 @@ bool BroadcastHelper::BroadcastLootingItem(PlayerbotAI* ai, Player* bot, ItemTem
             {
                 return BroadcastToChannelWithGlobalChance(
                     ai,
-                    BOT_TEXT2("broadcast_looting_item_uncommon", placeholders),
+                    PlayerbotTextMgr::instance().GetBotText("broadcast_looting_item_uncommon", placeholders),
                     { {TO_GUILD, 50}, {TO_WORLD, 50}, {TO_GENERAL, 100} }
                 );
             }
@@ -217,7 +217,7 @@ bool BroadcastHelper::BroadcastLootingItem(PlayerbotAI* ai, Player* bot, ItemTem
             {
                 return BroadcastToChannelWithGlobalChance(
                     ai,
-                    BOT_TEXT2("broadcast_looting_item_rare", placeholders),
+                    PlayerbotTextMgr::instance().GetBotText("broadcast_looting_item_rare", placeholders),
                     { {TO_GUILD, 50}, {TO_WORLD, 50}, {TO_GENERAL, 100} }
                 );
             }
@@ -227,7 +227,7 @@ bool BroadcastHelper::BroadcastLootingItem(PlayerbotAI* ai, Player* bot, ItemTem
             {
                 return BroadcastToChannelWithGlobalChance(
                     ai,
-                    BOT_TEXT2("broadcast_looting_item_epic", placeholders),
+                    PlayerbotTextMgr::instance().GetBotText("broadcast_looting_item_epic", placeholders),
                     { {TO_GUILD, 50}, {TO_WORLD, 50}, {TO_GENERAL, 100} }
                 );
             }
@@ -237,7 +237,7 @@ bool BroadcastHelper::BroadcastLootingItem(PlayerbotAI* ai, Player* bot, ItemTem
             {
                 return BroadcastToChannelWithGlobalChance(
                     ai,
-                    BOT_TEXT2("broadcast_looting_item_legendary", placeholders),
+                    PlayerbotTextMgr::instance().GetBotText("broadcast_looting_item_legendary", placeholders),
                     { {TO_GUILD, 50}, {TO_WORLD, 50}, {TO_GENERAL, 100} }
                 );
             }
@@ -247,7 +247,7 @@ bool BroadcastHelper::BroadcastLootingItem(PlayerbotAI* ai, Player* bot, ItemTem
             {
                 return BroadcastToChannelWithGlobalChance(
                     ai,
-                    BOT_TEXT2("broadcast_looting_item_artifact", placeholders),
+                    PlayerbotTextMgr::instance().GetBotText("broadcast_looting_item_artifact", placeholders),
                     { {TO_GUILD, 50}, {TO_WORLD, 50}, {TO_GENERAL, 100} }
                 );
             }
@@ -269,15 +269,15 @@ bool BroadcastHelper::BroadcastQuestAccepted(PlayerbotAI* ai, Player* bot, const
         placeholders["%quest_link"] = ai->GetChatHelper()->FormatQuest(quest);
         AreaTableEntry const* current_area = ai->GetCurrentArea();
         AreaTableEntry const* current_zone = ai->GetCurrentZone();
-        placeholders["%area_name"] = current_area ? ai->GetLocalizedAreaName(current_area) : BOT_TEXT1("string_unknown_area");
-        placeholders["%zone_name"] = current_zone ? ai->GetLocalizedAreaName(current_zone) : BOT_TEXT1("string_unknown_area");
+        placeholders["%area_name"] = current_area ? ai->GetLocalizedAreaName(current_area) : PlayerbotTextMgr::instance().GetBotText("string_unknown_area");
+        placeholders["%zone_name"] = current_zone ? ai->GetLocalizedAreaName(current_zone) : PlayerbotTextMgr::instance().GetBotText("string_unknown_area");
         placeholders["%my_class"] = ai->GetChatHelper()->FormatClass(bot->getClass());
         placeholders["%my_race"] = ai->GetChatHelper()->FormatRace(bot->getRace());
         placeholders["%my_level"] = std::to_string(bot->GetLevel());
 
         return BroadcastToChannelWithGlobalChance(
             ai,
-            BOT_TEXT2("broadcast_quest_accepted_generic", placeholders),
+            PlayerbotTextMgr::instance().GetBotText("broadcast_quest_accepted_generic", placeholders),
             { {TO_GUILD, 50}, {TO_WORLD, 50}, {TO_GENERAL, 100} }
         );
     }
@@ -292,8 +292,8 @@ bool BroadcastHelper::BroadcastQuestUpdateAddKill(PlayerbotAI* ai, Player* bot, 
     std::map<std::string, std::string> placeholders;
     AreaTableEntry const* current_area = ai->GetCurrentArea();
     AreaTableEntry const* current_zone = ai->GetCurrentZone();
-    placeholders["%area_name"] = current_area ? ai->GetLocalizedAreaName(current_area) : BOT_TEXT1("string_unknown_area");
-    placeholders["%zone_name"] = current_zone ? ai->GetLocalizedAreaName(current_zone) : BOT_TEXT1("string_unknown_area");
+    placeholders["%area_name"] = current_area ? ai->GetLocalizedAreaName(current_area) : PlayerbotTextMgr::instance().GetBotText("string_unknown_area");
+    placeholders["%zone_name"] = current_zone ? ai->GetLocalizedAreaName(current_zone) : PlayerbotTextMgr::instance().GetBotText("string_unknown_area");
     placeholders["%quest_link"] = ai->GetChatHelper()->FormatQuest(quest);
     placeholders["%quest_obj_name"] = obectiveName;
     placeholders["%my_class"] = ai->GetChatHelper()->FormatClass(bot->getClass());
@@ -309,7 +309,7 @@ bool BroadcastHelper::BroadcastQuestUpdateAddKill(PlayerbotAI* ai, Player* bot, 
     {
         return BroadcastToChannelWithGlobalChance(
             ai,
-            BOT_TEXT2("broadcast_quest_update_add_kill_objective_progress", placeholders),
+            PlayerbotTextMgr::instance().GetBotText("broadcast_quest_update_add_kill_objective_progress", placeholders),
             { {TO_GUILD, 50}, {TO_WORLD, 50}, {TO_GENERAL, 100} }
         );
     }
@@ -318,7 +318,7 @@ bool BroadcastHelper::BroadcastQuestUpdateAddKill(PlayerbotAI* ai, Player* bot, 
     {
         return BroadcastToChannelWithGlobalChance(
             ai,
-            BOT_TEXT2("broadcast_quest_update_add_kill_objective_completed", placeholders),
+            PlayerbotTextMgr::instance().GetBotText("broadcast_quest_update_add_kill_objective_completed", placeholders),
             { {TO_GUILD, 50}, {TO_WORLD, 50}, {TO_GENERAL, 100} }
         );
     }
@@ -333,8 +333,8 @@ bool BroadcastHelper::BroadcastQuestUpdateAddItem(PlayerbotAI* ai, Player* bot, 
     std::map<std::string, std::string> placeholders;
     AreaTableEntry const* current_area = ai->GetCurrentArea();
     AreaTableEntry const* current_zone = ai->GetCurrentZone();
-    placeholders["%area_name"] = current_area ? ai->GetLocalizedAreaName(current_area) : BOT_TEXT1("string_unknown_area");
-    placeholders["%zone_name"] = current_zone ? ai->GetLocalizedAreaName(current_zone) : BOT_TEXT1("string_unknown_area");
+    placeholders["%area_name"] = current_area ? ai->GetLocalizedAreaName(current_area) : PlayerbotTextMgr::instance().GetBotText("string_unknown_area");
+    placeholders["%zone_name"] = current_zone ? ai->GetLocalizedAreaName(current_zone) : PlayerbotTextMgr::instance().GetBotText("string_unknown_area");
     placeholders["%quest_link"] = ai->GetChatHelper()->FormatQuest(quest);
     std::string itemLinkFormatted = ai->GetChatHelper()->FormatItem(proto);
     placeholders["%item_link"] = itemLinkFormatted;
@@ -351,7 +351,7 @@ bool BroadcastHelper::BroadcastQuestUpdateAddItem(PlayerbotAI* ai, Player* bot, 
     {
         return BroadcastToChannelWithGlobalChance(
             ai,
-            BOT_TEXT2("broadcast_quest_update_add_item_objective_progress", placeholders),
+            PlayerbotTextMgr::instance().GetBotText("broadcast_quest_update_add_item_objective_progress", placeholders),
             { {TO_GUILD, 50}, {TO_WORLD, 50}, {TO_GENERAL, 100} }
         );
     }
@@ -360,7 +360,7 @@ bool BroadcastHelper::BroadcastQuestUpdateAddItem(PlayerbotAI* ai, Player* bot, 
     {
         return BroadcastToChannelWithGlobalChance(
             ai,
-            BOT_TEXT2("broadcast_quest_update_add_item_objective_completed", placeholders),
+            PlayerbotTextMgr::instance().GetBotText("broadcast_quest_update_add_item_objective_completed", placeholders),
             { {TO_GUILD, 50}, {TO_WORLD, 50}, {TO_GENERAL, 100} }
         );
     }
@@ -378,15 +378,15 @@ bool BroadcastHelper::BroadcastQuestUpdateFailedTimer(PlayerbotAI* ai, Player* b
         placeholders["%quest_link"] = ai->GetChatHelper()->FormatQuest(quest);
         AreaTableEntry const* current_area = ai->GetCurrentArea();
         AreaTableEntry const* current_zone = ai->GetCurrentZone();
-        placeholders["%area_name"] = current_area ? ai->GetLocalizedAreaName(current_area) : BOT_TEXT1("string_unknown_area");
-        placeholders["%zone_name"] = current_zone ? ai->GetLocalizedAreaName(current_zone) : BOT_TEXT1("string_unknown_area");
+        placeholders["%area_name"] = current_area ? ai->GetLocalizedAreaName(current_area) : PlayerbotTextMgr::instance().GetBotText("string_unknown_area");
+        placeholders["%zone_name"] = current_zone ? ai->GetLocalizedAreaName(current_zone) : PlayerbotTextMgr::instance().GetBotText("string_unknown_area");
         placeholders["%my_class"] = ai->GetChatHelper()->FormatClass(bot->getClass());
         placeholders["%my_race"] = ai->GetChatHelper()->FormatRace(bot->getRace());
         placeholders["%my_level"] = std::to_string(bot->GetLevel());
 
         return BroadcastToChannelWithGlobalChance(
             ai,
-            BOT_TEXT2("broadcast_quest_update_failed_timer", placeholders),
+            PlayerbotTextMgr::instance().GetBotText("broadcast_quest_update_failed_timer", placeholders),
             { {TO_GUILD, 50}, {TO_WORLD, 50}, {TO_GENERAL, 100} }
         );
     }
@@ -404,15 +404,15 @@ bool BroadcastHelper::BroadcastQuestUpdateComplete(PlayerbotAI* ai, Player* bot,
         placeholders["%quest_link"] = ai->GetChatHelper()->FormatQuest(quest);
         AreaTableEntry const* current_area = ai->GetCurrentArea();
         AreaTableEntry const* current_zone = ai->GetCurrentZone();
-        placeholders["%area_name"] = current_area ? ai->GetLocalizedAreaName(current_area) : BOT_TEXT1("string_unknown_area");
-        placeholders["%zone_name"] = current_zone ? ai->GetLocalizedAreaName(current_zone) : BOT_TEXT1("string_unknown_area");
+        placeholders["%area_name"] = current_area ? ai->GetLocalizedAreaName(current_area) : PlayerbotTextMgr::instance().GetBotText("string_unknown_area");
+        placeholders["%zone_name"] = current_zone ? ai->GetLocalizedAreaName(current_zone) : PlayerbotTextMgr::instance().GetBotText("string_unknown_area");
         placeholders["%my_class"] = ai->GetChatHelper()->FormatClass(bot->getClass());
         placeholders["%my_race"] = ai->GetChatHelper()->FormatRace(bot->getRace());
         placeholders["%my_level"] = std::to_string(bot->GetLevel());
 
         return BroadcastToChannelWithGlobalChance(
             ai,
-            BOT_TEXT2("broadcast_quest_update_complete", placeholders),
+            PlayerbotTextMgr::instance().GetBotText("broadcast_quest_update_complete", placeholders),
             { {TO_GUILD, 50}, {TO_WORLD, 50}, {TO_GENERAL, 100} }
         );
     }
@@ -430,15 +430,15 @@ bool BroadcastHelper::BroadcastQuestTurnedIn(PlayerbotAI* ai, Player* bot, Quest
         placeholders["%quest_link"] = ai->GetChatHelper()->FormatQuest(quest);
         AreaTableEntry const* current_area = ai->GetCurrentArea();
         AreaTableEntry const* current_zone = ai->GetCurrentZone();
-        placeholders["%area_name"] = current_area ? ai->GetLocalizedAreaName(current_area) : BOT_TEXT1("string_unknown_area");
-        placeholders["%zone_name"] = current_zone ? ai->GetLocalizedAreaName(current_zone) : BOT_TEXT1("string_unknown_area");
+        placeholders["%area_name"] = current_area ? ai->GetLocalizedAreaName(current_area) : PlayerbotTextMgr::instance().GetBotText("string_unknown_area");
+        placeholders["%zone_name"] = current_zone ? ai->GetLocalizedAreaName(current_zone) : PlayerbotTextMgr::instance().GetBotText("string_unknown_area");
         placeholders["%my_class"] = ai->GetChatHelper()->FormatClass(bot->getClass());
         placeholders["%my_race"] = ai->GetChatHelper()->FormatRace(bot->getRace());
         placeholders["%my_level"] = std::to_string(bot->GetLevel());
 
         return BroadcastToChannelWithGlobalChance(
             ai,
-            BOT_TEXT2("broadcast_quest_turned_in", placeholders),
+            PlayerbotTextMgr::instance().GetBotText("broadcast_quest_turned_in", placeholders),
             { {TO_GUILD, 50}, {TO_WORLD, 50}, {TO_GENERAL, 100} }
         );
     }
@@ -454,8 +454,8 @@ bool BroadcastHelper::BroadcastKill(PlayerbotAI* ai, Player* bot, Creature *crea
     placeholders["%victim_name"] = creature->GetName();
     AreaTableEntry const* current_area = ai->GetCurrentArea();
     AreaTableEntry const* current_zone = ai->GetCurrentZone();
-    placeholders["%area_name"] = current_area ? ai->GetLocalizedAreaName(current_area) : BOT_TEXT1("string_unknown_area");
-    placeholders["%zone_name"] = current_zone ? ai->GetLocalizedAreaName(current_zone) : BOT_TEXT1("string_unknown_area");
+    placeholders["%area_name"] = current_area ? ai->GetLocalizedAreaName(current_area) : PlayerbotTextMgr::instance().GetBotText("string_unknown_area");
+    placeholders["%zone_name"] = current_zone ? ai->GetLocalizedAreaName(current_zone) : PlayerbotTextMgr::instance().GetBotText("string_unknown_area");
     placeholders["%victim_level"] = creature->GetLevel();
     placeholders["%my_class"] = ai->GetChatHelper()->FormatClass(bot->getClass());
     placeholders["%my_race"] = ai->GetChatHelper()->FormatRace(bot->getRace());
@@ -472,7 +472,7 @@ bool BroadcastHelper::BroadcastKill(PlayerbotAI* ai, Player* bot, Creature *crea
         {
             return BroadcastToChannelWithGlobalChance(
                 ai,
-                BOT_TEXT2("broadcast_killed_pet", placeholders),
+                PlayerbotTextMgr::instance().GetBotText("broadcast_killed_pet", placeholders),
                 { {TO_GUILD, 50}, {TO_WORLD, 50}, {TO_GENERAL, 100} }
             );
         }
@@ -485,7 +485,7 @@ bool BroadcastHelper::BroadcastKill(PlayerbotAI* ai, Player* bot, Creature *crea
 
             return BroadcastToChannelWithGlobalChance(
                 ai,
-                BOT_TEXT2("broadcast_killed_player", placeholders),
+                PlayerbotTextMgr::instance().GetBotText("broadcast_killed_player", placeholders),
                 { {TO_WORLD_DEFENSE, 50}, {TO_LOCAL_DEFENSE, 50}, {TO_GUILD, 50}, {TO_WORLD, 50}, {TO_GENERAL, 100} }
             );
         }
@@ -499,7 +499,7 @@ bool BroadcastHelper::BroadcastKill(PlayerbotAI* ai, Player* bot, Creature *crea
                 {
                     return BroadcastToChannelWithGlobalChance(
                         ai,
-                        BOT_TEXT2("broadcast_killed_normal", placeholders),
+                        PlayerbotTextMgr::instance().GetBotText("broadcast_killed_normal", placeholders),
                         { {TO_GUILD, 50}, {TO_WORLD, 50}, {TO_GENERAL, 100} }
                     );
                 }
@@ -509,7 +509,7 @@ bool BroadcastHelper::BroadcastKill(PlayerbotAI* ai, Player* bot, Creature *crea
                 {
                     return BroadcastToChannelWithGlobalChance(
                         ai,
-                        BOT_TEXT2("broadcast_killed_elite", placeholders),
+                        PlayerbotTextMgr::instance().GetBotText("broadcast_killed_elite", placeholders),
                         { {TO_GUILD, 50}, {TO_WORLD, 50}, {TO_GENERAL, 100} }
                     );
                 }
@@ -519,7 +519,7 @@ bool BroadcastHelper::BroadcastKill(PlayerbotAI* ai, Player* bot, Creature *crea
                 {
                     return BroadcastToChannelWithGlobalChance(
                         ai,
-                        BOT_TEXT2("broadcast_killed_rareelite", placeholders),
+                        PlayerbotTextMgr::instance().GetBotText("broadcast_killed_rareelite", placeholders),
                         { {TO_GUILD, 50}, {TO_WORLD, 50}, {TO_GENERAL, 100} }
                     );
                 }
@@ -529,7 +529,7 @@ bool BroadcastHelper::BroadcastKill(PlayerbotAI* ai, Player* bot, Creature *crea
                 {
                     return BroadcastToChannelWithGlobalChance(
                         ai,
-                        BOT_TEXT2("broadcast_killed_worldboss", placeholders),
+                        PlayerbotTextMgr::instance().GetBotText("broadcast_killed_worldboss", placeholders),
                         { {TO_GUILD, 50}, {TO_WORLD, 50}, {TO_GENERAL, 100} }
                     );
                 }
@@ -539,7 +539,7 @@ bool BroadcastHelper::BroadcastKill(PlayerbotAI* ai, Player* bot, Creature *crea
                 {
                     return BroadcastToChannelWithGlobalChance(
                         ai,
-                        BOT_TEXT2("broadcast_killed_rare", placeholders),
+                        PlayerbotTextMgr::instance().GetBotText("broadcast_killed_rare", placeholders),
                         { {TO_GUILD, 50}, {TO_WORLD, 50}, {TO_GENERAL, 100} }
                     );
                 }
@@ -549,7 +549,7 @@ bool BroadcastHelper::BroadcastKill(PlayerbotAI* ai, Player* bot, Creature *crea
                 {
                     return BroadcastToChannelWithGlobalChance(
                         ai,
-                        BOT_TEXT2("broadcast_killed_unknown", placeholders),
+                        PlayerbotTextMgr::instance().GetBotText("broadcast_killed_unknown", placeholders),
                         { {TO_GUILD, 50}, {TO_WORLD, 50}, {TO_GENERAL, 100} }
                     );
                 }
@@ -571,8 +571,8 @@ bool BroadcastHelper::BroadcastLevelup(PlayerbotAI* ai, Player* bot)
     std::map<std::string, std::string> placeholders;
     AreaTableEntry const* current_area = ai->GetCurrentArea();
     AreaTableEntry const* current_zone = ai->GetCurrentZone();
-    placeholders["%area_name"] = current_area ? ai->GetLocalizedAreaName(current_area) : BOT_TEXT1("string_unknown_area");
-    placeholders["%zone_name"] = current_zone ? ai->GetLocalizedAreaName(current_zone) : BOT_TEXT1("string_unknown_area");
+    placeholders["%area_name"] = current_area ? ai->GetLocalizedAreaName(current_area) : PlayerbotTextMgr::instance().GetBotText("string_unknown_area");
+    placeholders["%zone_name"] = current_zone ? ai->GetLocalizedAreaName(current_zone) : PlayerbotTextMgr::instance().GetBotText("string_unknown_area");
     placeholders["%my_class"] = ai->GetChatHelper()->FormatClass(bot->getClass());
     placeholders["%my_race"] = ai->GetChatHelper()->FormatRace(bot->getRace());
     placeholders["%my_level"] = std::to_string(level);
@@ -582,7 +582,7 @@ bool BroadcastHelper::BroadcastLevelup(PlayerbotAI* ai, Player* bot)
     {
         return BroadcastToChannelWithGlobalChance(
             ai,
-            BOT_TEXT2("broadcast_levelup_max_level", placeholders),
+            PlayerbotTextMgr::instance().GetBotText("broadcast_levelup_max_level", placeholders),
             { {TO_GUILD, 30}, {TO_WORLD, 90}, {TO_GENERAL, 100} }
         );
     }
@@ -592,7 +592,7 @@ bool BroadcastHelper::BroadcastLevelup(PlayerbotAI* ai, Player* bot)
     {
         return BroadcastToChannelWithGlobalChance(
             ai,
-            BOT_TEXT2("broadcast_levelup_10x", placeholders),
+            PlayerbotTextMgr::instance().GetBotText("broadcast_levelup_10x", placeholders),
             { {TO_GUILD, 50}, {TO_WORLD, 90}, {TO_GENERAL, 100} }
         );
     }
@@ -600,7 +600,7 @@ bool BroadcastHelper::BroadcastLevelup(PlayerbotAI* ai, Player* bot)
     {
         return BroadcastToChannelWithGlobalChance(
             ai,
-            BOT_TEXT2("broadcast_levelup_generic", placeholders),
+            PlayerbotTextMgr::instance().GetBotText("broadcast_levelup_generic", placeholders),
             { {TO_GUILD, 90}, {TO_WORLD, 90}, {TO_GENERAL, 100} }
         );
     }
@@ -620,7 +620,7 @@ bool BroadcastHelper::BroadcastGuildMemberPromotion(PlayerbotAI* ai, Player* /* 
         placeholders["%other_race"] = ai->GetChatHelper()->FormatRace(player->getRace());
         placeholders["%other_level"] = std::to_string(player->GetLevel());
 
-        return ai->SayToGuild(BOT_TEXT2("broadcast_guild_promotion", placeholders));
+        return ai->SayToGuild(PlayerbotTextMgr::instance().GetBotText("broadcast_guild_promotion", placeholders));
     }
 
     return false;
@@ -636,7 +636,7 @@ bool BroadcastHelper::BroadcastGuildMemberDemotion(PlayerbotAI* ai, Player* /* b
         placeholders["%other_race"] = ai->GetChatHelper()->FormatRace(player->getRace());
         placeholders["%other_level"] = std::to_string(player->GetLevel());
 
-        return ai->SayToGuild(BOT_TEXT2("broadcast_guild_demotion", placeholders));
+        return ai->SayToGuild(PlayerbotTextMgr::instance().GetBotText("broadcast_guild_demotion", placeholders));
     }
 
     return false;
@@ -650,19 +650,19 @@ bool BroadcastHelper::BroadcastGuildGroupOrRaidInvite(PlayerbotAI* ai, Player* /
     placeholders["%name"] = player->GetName();
     AreaTableEntry const* current_area = ai->GetCurrentArea();
     AreaTableEntry const* current_zone = ai->GetCurrentZone();
-    placeholders["%area_name"] = current_area ? ai->GetLocalizedAreaName(current_area) : BOT_TEXT1("string_unknown_area");
-    placeholders["%zone_name"] = current_zone ? ai->GetLocalizedAreaName(current_zone) : BOT_TEXT1("string_unknown_area");
+    placeholders["%area_name"] = current_area ? ai->GetLocalizedAreaName(current_area) : PlayerbotTextMgr::instance().GetBotText("string_unknown_area");
+    placeholders["%zone_name"] = current_zone ? ai->GetLocalizedAreaName(current_zone) : PlayerbotTextMgr::instance().GetBotText("string_unknown_area");
 
     //TODO move texts to sql!
     if (group && group->isRaidGroup())
     {
         if (urand(0, 3))
         {
-            return ai->SayToGuild(BOT_TEXT2("Hey anyone want to raid in %zone_name", placeholders));
+            return ai->SayToGuild(PlayerbotTextMgr::instance().GetBotText("Hey anyone want to raid in %zone_name", placeholders));
         }
         else
         {
-            return ai->SayToGuild(BOT_TEXT2("Hey %name I'm raiding in %zone_name do you wan to join me?", placeholders));
+            return ai->SayToGuild(PlayerbotTextMgr::instance().GetBotText("Hey %name I'm raiding in %zone_name do you wan to join me?", placeholders));
         }
     }
     else
@@ -670,11 +670,11 @@ bool BroadcastHelper::BroadcastGuildGroupOrRaidInvite(PlayerbotAI* ai, Player* /
         //(bot->GetTeam() == ALLIANCE ? LANG_COMMON : LANG_ORCISH)
         if (urand(0, 3))
         {
-            return ai->SayToGuild(BOT_TEXT2("Hey anyone wanna group up in %zone_name?", placeholders));
+            return ai->SayToGuild(PlayerbotTextMgr::instance().GetBotText("Hey anyone wanna group up in %zone_name?", placeholders));
         }
         else
         {
-            return ai->SayToGuild(BOT_TEXT2("Hey %name do you want join my group? I'm heading for %zone_name", placeholders));
+            return ai->SayToGuild(PlayerbotTextMgr::instance().GetBotText("Hey %name do you want join my group? I'm heading for %zone_name", placeholders));
         }
     }
 
@@ -701,7 +701,7 @@ bool BroadcastHelper::BroadcastSuggestInstance(PlayerbotAI* ai, std::vector<std:
 
         return BroadcastToChannelWithGlobalChance(
             ai,
-            BOT_TEXT2("suggest_instance", placeholders),
+            PlayerbotTextMgr::instance().GetBotText("suggest_instance", placeholders),
             { {TO_LOOKING_FOR_GROUP, 50}, {TO_GUILD, 50}, {TO_WORLD, 50}, {TO_GENERAL, 100} }
         );
     }
@@ -730,7 +730,7 @@ bool BroadcastHelper::BroadcastSuggestQuest(PlayerbotAI* ai, std::vector<uint32>
 
         return BroadcastToChannelWithGlobalChance(
             ai,
-            BOT_TEXT2("suggest_quest", placeholders),
+            PlayerbotTextMgr::instance().GetBotText("suggest_quest", placeholders),
             { {TO_LOOKING_FOR_GROUP, 50}, {TO_GUILD, 50}, {TO_WORLD, 50}, {TO_GENERAL, 100} }
         );
     }
@@ -755,7 +755,7 @@ bool BroadcastHelper::BroadcastSuggestGrindMaterials(PlayerbotAI* ai, std::strin
 
         return BroadcastToChannelWithGlobalChance(
             ai,
-            BOT_TEXT2("suggest_trade", placeholders),
+            PlayerbotTextMgr::instance().GetBotText("suggest_trade", placeholders),
             { {TO_TRADE, 50}, {TO_LOOKING_FOR_GROUP, 50}, {TO_GUILD, 50}, {TO_WORLD, 50}, {TO_GENERAL, 100} }
         );
     }
@@ -787,7 +787,7 @@ bool BroadcastHelper::BroadcastSuggestGrindReputation(PlayerbotAI* ai, std::vect
 
         return BroadcastToChannelWithGlobalChance(
             ai,
-            BOT_TEXT2("suggest_faction", placeholders),
+            PlayerbotTextMgr::instance().GetBotText("suggest_faction", placeholders),
             { {TO_LOOKING_FOR_GROUP, 50}, {TO_GUILD, 50}, {TO_WORLD, 50}, {TO_GENERAL, 100} }
         );
     }
@@ -814,7 +814,7 @@ bool BroadcastHelper::BroadcastSuggestSell(PlayerbotAI* ai, const ItemTemplate* 
 
         return BroadcastToChannelWithGlobalChance(
             ai,
-            BOT_TEXT2("suggest_sell", placeholders),
+            PlayerbotTextMgr::instance().GetBotText("suggest_sell", placeholders),
             { {TO_TRADE, 90}, {TO_GENERAL, 100} }
         );
     }
@@ -833,15 +833,15 @@ bool BroadcastHelper::BroadcastSuggestSomething(PlayerbotAI* ai, Player* bot)
 
         AreaTableEntry const* current_area = ai->GetCurrentArea();
         AreaTableEntry const* current_zone = ai->GetCurrentZone();
-        placeholders["%area_name"] = current_area ? ai->GetLocalizedAreaName(current_area) : BOT_TEXT1("string_unknown_area");
-        placeholders["%zone_name"] = current_zone ? ai->GetLocalizedAreaName(current_zone) : BOT_TEXT1("string_unknown_area");
+        placeholders["%area_name"] = current_area ? ai->GetLocalizedAreaName(current_area) : PlayerbotTextMgr::instance().GetBotText("string_unknown_area");
+        placeholders["%zone_name"] = current_zone ? ai->GetLocalizedAreaName(current_zone) : PlayerbotTextMgr::instance().GetBotText("string_unknown_area");
         placeholders["%my_class"] = ai->GetChatHelper()->FormatClass(bot->getClass());
         placeholders["%my_race"] = ai->GetChatHelper()->FormatRace(bot->getRace());
         placeholders["%my_level"] = std::to_string(bot->GetLevel());
 
         return BroadcastToChannelWithGlobalChance(
             ai,
-            BOT_TEXT2("suggest_something", placeholders),
+            PlayerbotTextMgr::instance().GetBotText("suggest_something", placeholders),
             { {TO_GUILD, 10}, {TO_WORLD, 70}, {TO_GENERAL, 100} }
         );
     }
@@ -860,20 +860,20 @@ bool BroadcastHelper::BroadcastSuggestSomethingToxic(PlayerbotAI* ai, Player* bo
 
         std::map<std::string, std::string> placeholders;
 
-        placeholders["%random_inventory_item_link"] = botItems.size() > 0 ? ai->GetChatHelper()->FormatItem(botItems[rand() % botItems.size()]->GetTemplate()) : BOT_TEXT1("string_empty_link");
+        placeholders["%random_inventory_item_link"] = botItems.size() > 0 ? ai->GetChatHelper()->FormatItem(botItems[rand() % botItems.size()]->GetTemplate()) : PlayerbotTextMgr::instance().GetBotText("string_empty_link");
 
         placeholders["%my_role"] = ChatHelper::FormatClass(bot, AiFactory::GetPlayerSpecTab(bot));
         AreaTableEntry const* current_area = ai->GetCurrentArea();
         AreaTableEntry const* current_zone = ai->GetCurrentZone();
-        placeholders["%area_name"] = current_area ? ai->GetLocalizedAreaName(current_area) : BOT_TEXT1("string_unknown_area");
-        placeholders["%zone_name"] = current_zone ? ai->GetLocalizedAreaName(current_zone) : BOT_TEXT1("string_unknown_area");
+        placeholders["%area_name"] = current_area ? ai->GetLocalizedAreaName(current_area) : PlayerbotTextMgr::instance().GetBotText("string_unknown_area");
+        placeholders["%zone_name"] = current_zone ? ai->GetLocalizedAreaName(current_zone) : PlayerbotTextMgr::instance().GetBotText("string_unknown_area");
         placeholders["%my_class"] = ai->GetChatHelper()->FormatClass(bot->getClass());
         placeholders["%my_race"] = ai->GetChatHelper()->FormatRace(bot->getRace());
         placeholders["%my_level"] = std::to_string(bot->GetLevel());
 
         return BroadcastToChannelWithGlobalChance(
             ai,
-            BOT_TEXT2("suggest_something_toxic", placeholders),
+            PlayerbotTextMgr::instance().GetBotText("suggest_something_toxic", placeholders),
             { {TO_GUILD, 10}, {TO_WORLD, 70}, {TO_GENERAL, 100} }
         );
     }
@@ -908,7 +908,7 @@ bool BroadcastHelper::BroadcastSuggestToxicLinks(PlayerbotAI* ai, Player* bot)
 
         std::map<std::string, std::string> placeholders;
 
-        placeholders["%random_inventory_item_link"] = botItems.size() > 0 ? ai->GetChatHelper()->FormatItem(botItems[rand() % botItems.size()]->GetTemplate()) : BOT_TEXT1("string_empty_link");
+        placeholders["%random_inventory_item_link"] = botItems.size() > 0 ? ai->GetChatHelper()->FormatItem(botItems[rand() % botItems.size()]->GetTemplate()) : PlayerbotTextMgr::instance().GetBotText("string_empty_link");
         placeholders["%prefix"] = sPlayerbotAIConfig.toxicLinksPrefix;
 
         if (incompleteQuests.size() > 0)
@@ -924,15 +924,15 @@ bool BroadcastHelper::BroadcastSuggestToxicLinks(PlayerbotAI* ai, Player* bot)
         placeholders["%my_role"] = ChatHelper::FormatClass(bot, AiFactory::GetPlayerSpecTab(bot));
         AreaTableEntry const* current_area = ai->GetCurrentArea();
         AreaTableEntry const* current_zone = ai->GetCurrentZone();
-        placeholders["%area_name"] = current_area ? ai->GetLocalizedAreaName(current_area) : BOT_TEXT1("string_unknown_area");
-        placeholders["%zone_name"] = current_zone ? ai->GetLocalizedAreaName(current_zone) : BOT_TEXT1("string_unknown_area");
+        placeholders["%area_name"] = current_area ? ai->GetLocalizedAreaName(current_area) : PlayerbotTextMgr::instance().GetBotText("string_unknown_area");
+        placeholders["%zone_name"] = current_zone ? ai->GetLocalizedAreaName(current_zone) : PlayerbotTextMgr::instance().GetBotText("string_unknown_area");
         placeholders["%my_class"] = ai->GetChatHelper()->FormatClass(bot->getClass());
         placeholders["%my_race"] = ai->GetChatHelper()->FormatRace(bot->getRace());
         placeholders["%my_level"] = std::to_string(bot->GetLevel());
 
         return BroadcastToChannelWithGlobalChance(
             ai,
-            BOT_TEXT2("suggest_toxic_links", placeholders),
+            PlayerbotTextMgr::instance().GetBotText("suggest_toxic_links", placeholders),
             { {TO_GUILD, 10}, {TO_WORLD, 70}, {TO_GENERAL, 100} }
         );
     }
@@ -950,7 +950,7 @@ bool BroadcastHelper::BroadcastSuggestThunderfury(PlayerbotAI* ai, Player* bot)
 
         return BroadcastToChannelWithGlobalChance(
             ai,
-            BOT_TEXT2("thunderfury_spam", placeholders),
+            PlayerbotTextMgr::instance().GetBotText("thunderfury_spam", placeholders),
             { {TO_WORLD, 70}, {TO_GENERAL, 100} }
         );
     }

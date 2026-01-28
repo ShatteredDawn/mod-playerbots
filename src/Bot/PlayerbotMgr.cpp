@@ -1658,7 +1658,7 @@ void PlayerbotMgr::OnPlayerLogin(Player* player)
         usedLocale = LOCALE_enUS; // fallback
 
     // set locale priority for bot texts
-    sPlayerbotTextMgr->AddLocalePriority(usedLocale);
+    PlayerbotTextMgr::instance().AddLocalePriority(usedLocale);
 
     if (sPlayerbotAIConfig.selfBotLevel > 2)
         HandlePlayerbotCommand("self", player);

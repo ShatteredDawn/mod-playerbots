@@ -132,7 +132,7 @@ namespace ai::buff
                     placeholders["%group_spell"] = groupName;
                     placeholders["%base_spell"] = baseName;
 
-                    std::string announceText = sPlayerbotTextMgr->GetBotTextOrDefault(key,
+                    std::string announceText = PlayerbotTextMgr::instance().GetBotTextOrDefault(key,
                     "Out of components for %group_spell. Using %base_spell!", placeholders);
 
                     announce(announceText);

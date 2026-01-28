@@ -670,8 +670,8 @@ bool PlayerbotAIConfig::Initialize()
     PlayerbotGuildMgr::instance().Init();
     sRandomItemMgr.Init();
     sRandomItemMgr.InitAfterAhBot();
-    sPlayerbotTextMgr->LoadBotTexts();
-    sPlayerbotTextMgr->LoadBotTextChance();
+    PlayerbotTextMgr::instance().LoadBotTexts();
+    PlayerbotTextMgr::instance().LoadBotTextChance();
     PlayerbotFactory::Init();
 
     AiObjectContext::BuildAllSharedContexts();

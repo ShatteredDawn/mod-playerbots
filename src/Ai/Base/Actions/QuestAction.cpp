@@ -366,7 +366,7 @@ bool QuestUpdateAddItemAction::Execute(Event event)
             placeholders["%quest_obj_required"] = std::to_string(requiredItemsCount);
             if (botAI->HasStrategy("debug quest", BotState::BOT_STATE_COMBAT) || botAI->HasStrategy("debug quest", BotState::BOT_STATE_NON_COMBAT))
             {
-                const auto text = BOT_TEXT2("%quest_link - %item_link %quest_obj_available/%quest_obj_required", placeholders);
+                const auto text = PlayerbotTextMgr::instance().GetBotText("%quest_link - %item_link %quest_obj_available/%quest_obj_required", placeholders);
                 botAI->Say(text);
                 LOG_INFO("playerbots", "{} => {}", bot->GetName(), text);
             }
@@ -454,7 +454,7 @@ bool QuestUpdateFailedTimerAction::Execute(Event event)
     {
         std::map<std::string, std::string> placeholders;
         placeholders["%quest_link"] = botAI->GetChatHelper()->FormatQuest(qInfo);
-        botAI->TellMaster(BOT_TEXT2("Failed timer for %quest_link, abandoning", placeholders));
+        botAI->TellMaster(PlayerbotTextMgr::instance().GetBotText("Failed timer for %quest_link, abandoning", placeholders));
         BroadcastHelper::BroadcastQuestUpdateFailedTimer(botAI, bot, qInfo);
     }
     else

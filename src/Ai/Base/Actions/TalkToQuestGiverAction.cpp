@@ -105,14 +105,14 @@ void TalkToQuestGiverAction::RewardNoItem(Quest const* quest, Object* questGiver
 
     if (bot->CanRewardQuest(quest, false))
     {
-        out << BOT_TEXT2("quest_status_completed", args);
+        out << PlayerbotTextMgr::instance().GetBotText("quest_status_completed", args);
         BroadcastHelper::BroadcastQuestTurnedIn(botAI, bot, quest);
 
         bot->RewardQuest(quest, 0, questGiver, false);
     }
     else
     {
-        out << BOT_TEXT2("quest_status_unable_to_complete", args);
+        out << PlayerbotTextMgr::instance().GetBotText("quest_status_unable_to_complete", args);
     }
 }
 
@@ -126,13 +126,13 @@ void TalkToQuestGiverAction::RewardSingleItem(Quest const* quest, Object* questG
 
     if (bot->CanRewardQuest(quest, index, false))
     {
-        out << BOT_TEXT2("quest_status_complete_single_reward", args);
+        out << PlayerbotTextMgr::instance().GetBotText("quest_status_complete_single_reward", args);
         BroadcastHelper::BroadcastQuestTurnedIn(botAI, bot, quest);
         bot->RewardQuest(quest, index, questGiver, true);
     }
     else
     {
-        out << BOT_TEXT2("quest_status_unable_to_complete", args);
+        out << PlayerbotTextMgr::instance().GetBotText("quest_status_unable_to_complete", args);
     }
 }
 

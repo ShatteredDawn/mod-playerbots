@@ -105,10 +105,10 @@ bool InviteNearbyToGroupAction::Execute(Event event)
             placeholders["%player"] = player->GetName();
 
             if (group && group->isRaidGroup())
-                bot->Say(BOT_TEXT2("join_raid", placeholders),
+                bot->Say(PlayerbotTextMgr::instance().GetBotText("join_raid", placeholders),
                          (bot->GetTeamId() == TEAM_ALLIANCE ? LANG_COMMON : LANG_ORCISH));
             else
-                bot->Say(BOT_TEXT2("join_group", placeholders),
+                bot->Say(PlayerbotTextMgr::instance().GetBotText("join_group", placeholders),
                          (bot->GetTeamId() == TEAM_ALLIANCE ? LANG_COMMON : LANG_ORCISH));
         }
 

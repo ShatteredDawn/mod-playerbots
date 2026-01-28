@@ -140,7 +140,7 @@ void SuggestWhatToDoAction::grindMaterials()
                     placeholders["%role"] = chat->formatClass(bot, AiFactory::GetPlayerSpecTab(bot));
                     placeholders["%category"] = item;
 
-                    spam(BOT_TEXT2("suggest_trade", placeholders), urand(0, 1) ? 0x3C : 0x18, !urand(0, 2), !urand(0,
+                    spam(PlayerbotTextMgr::instance().GetBotText("suggest_trade", placeholders), urand(0, 1) ? 0x3C : 0x18, !urand(0, 2), !urand(0,
     3)); return;
                 }
             }
