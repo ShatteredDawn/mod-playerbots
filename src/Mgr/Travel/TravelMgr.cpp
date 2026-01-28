@@ -1959,7 +1959,7 @@ void TravelMgr::LoadQuestTravelTable()
     bool loadQuestData = true;
     if (loadQuestData)
     {
-        questGuidpMap questMap = GAI_VALUE(questGuidpMap, "quest guidp map");
+        questGuidpMap questMap = SharedValueContext::instance().getGlobalValue<questGuidpMap>("quest guidp map")->Get();
 
         for (auto& q : questMap)
         {
