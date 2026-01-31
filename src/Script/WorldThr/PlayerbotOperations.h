@@ -501,6 +501,8 @@ public:
                 }
 
                 manager->OnBotLogin(bot);
+
+                return true;
             }
         }
 
