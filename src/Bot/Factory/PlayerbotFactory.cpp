@@ -1914,6 +1914,7 @@ void PlayerbotFactory::InitEquipment(bool incremental, bool second_chance)
         if (oldItem)
             continue;
 
+        bot->EquipNewItem(dest, bestItemForSlot, true);
         bot->AutoUnequipOffhandIfNeed();
         // if (newItem)
         // {
@@ -1982,6 +1983,7 @@ void PlayerbotFactory::InitEquipment(bool incremental, bool second_chance)
             {
                 continue;
             }
+            bot->EquipNewItem(dest, bestItemForSlot, true);
             bot->AutoUnequipOffhandIfNeed();
             // if (newItem)
             // {
@@ -2158,6 +2160,9 @@ void PlayerbotFactory::InitBags(bool destroyOld)
         {
             continue;
         }
+
+        bot->EquipNewItem(dest, newItemId, true);
+
         // if (newItem)
         // {
         //     newItem->AddToWorld();
