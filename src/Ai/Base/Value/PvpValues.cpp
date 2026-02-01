@@ -24,7 +24,7 @@ Player* FlagCarrierValue::GetBattlegroundFlagCarrier(Battleground& battleground)
 
     TeamId flagCarrierTeamIdLookup = TEAM_NEUTRAL;
 
-    if (mapId == MAP_EYE_OF_THE_STORM)
+    if (mapId == MAP_WARSONG_GULCH)
     {
         flagCarrierTeamIdLookup = this->sameTeam ? botTeamId : opposedTeamId;
     }
