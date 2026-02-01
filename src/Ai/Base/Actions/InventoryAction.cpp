@@ -375,6 +375,11 @@ std::string const InventoryAction::parseOutfitName(std::string const outfit)
 {
     const uint64_t pos = outfit.find("=");
 
+    if (pos == std::string::npos)
+    {
+        return outfit;
+    }
+
     return outfit.substr(0, pos);
 }
 
