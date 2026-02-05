@@ -10,12 +10,17 @@
 
 bool SecurityCheckAction::isUseful()
 {
-    return RandomPlayerbotMgr::instance().IsRandomBot(this->bot)
-        && this->botAI->GetMaster()
-        && this->botAI->GetMaster()->GetSession()->GetSecurity() < SEC_GAMEMASTER
-        && !GET_PLAYERBOT_AI(this->botAI->GetMaster());
-}
+    if (!RandomPlayerbotMgr::instance().IsRandomBot(this->bot))
+    {
+        return false;
+    }
 
+    Player* const master = this->botAI->GetMaster();
+
+    return master != nullptr
+        && master->GetSession()->GetSecurity() < SEC_GAMEMASTER
+        && !GET_PLAYERBOT_AI(master);
+}
 bool SecurityCheckAction::Execute(Event)
 {
     const Group* const group = bot->GetGroup();
@@ -33,14 +38,19 @@ bool SecurityCheckAction::Execute(Event)
         return false;
     }
 
-    if (
-        (this->botAI->GetGroupLeader()->GetSession()->GetSecurity() == SEC_PLAYER)
-        && (!this->bot->GetGuildId() || this->bot->GetGuildId() != this->botAI->GetGroupLeader()->GetGuildId())
-    )
+    if (botAI->GetGroupLeader()->GetSession()->GetSecurity() != SEC_PLAYER)
+    {
+        return true;
+    }
+
+    uint32_t guildId = this->bot->GetGuildId();
+
+    if (!guildId || guildId != botAI->GetGroupLeader()->GetGuildId())
     {
         this->botAI->TellError("I will play with this loot type only if I'm in your guild :/");
         this->botAI->ChangeStrategy("+passive,+stay", BOT_STATE_NON_COMBAT);
         this->botAI->ChangeStrategy("+passive,+stay", BOT_STATE_COMBAT);
     }
+
     return true;
 }

@@ -20,7 +20,7 @@ bool PassLeadershipToMasterAction::Execute(Event)
 
     const Group* const group = this->bot->GetGroup();
 
-    if (group == nullptr || !bot->GetGroup()->IsMember(master->GetGUID()))
+    if (group == nullptr || !this->bot->GetGroup()->IsMember(master->GetGUID()))
     {
         return false;
     }
@@ -44,10 +44,10 @@ bool PassLeadershipToMasterAction::Execute(Event)
 
 bool PassLeadershipToMasterAction::isUseful()
 {
-    return botAI->IsAlt() && bot->GetGroup() && bot->GetGroup()->IsLeader(bot->GetGUID());
+    return this->botAI->IsAlt() && this->bot->GetGroup() && this->bot->GetGroup()->IsLeader(this->bot->GetGUID());
 }
 
 bool GiveLeaderAction::isUseful()
 {
-    return botAI->HasActivePlayerMaster() && bot->GetGroup() && bot->GetGroup()->IsLeader(bot->GetGUID());
+    return this->botAI->HasActivePlayerMaster() && this->bot->GetGroup() && this->bot->GetGroup()->IsLeader(this->bot->GetGUID());
 }
