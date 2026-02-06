@@ -90,7 +90,8 @@ public:
             const std::string noTeamText = PlayerbotTextMgr::instance().GetBotTextOrDefault(
                 "pvp_no_arena_team",
                 "[PVP] I have no Arena Team.",
-                std::map<std::string, std::string>());
+                std::map<std::string, std::string>()
+            );
 
             this->bot->Whisper(noTeamText, LANG_UNIVERSAL, requester);
         }
