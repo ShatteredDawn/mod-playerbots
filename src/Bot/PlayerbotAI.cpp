@@ -2614,7 +2614,7 @@ std::string PlayerbotAI::GetLocalizedGameObjectName(uint32 entry)
     return name;
 }
 
-std::vector<Player*> PlayerbotAI::GetPlayersInGroup()
+std::vector<Player*> PlayerbotAI::GetRealPlayersInGroup()
 {
     std::vector<Player*> members;
 
@@ -2634,6 +2634,30 @@ std::vector<Player*> PlayerbotAI::GetPlayersInGroup()
 
         if (GET_PLAYERBOT_AI(member) && !GET_PLAYERBOT_AI(member)->IsRealPlayer())
             continue;
+
+        members.push_back(ref->GetSource());
+    }
+
+    return members;
+}
+
+std::vector<Player*> PlayerbotAI::GetAllPlayersInGroup()
+{
+    std::vector<Player*> members;
+
+    Group* group = bot->GetGroup();
+
+    if (!group)
+        return members;
+
+    for (GroupReference* ref = group->GetFirstMember(); ref; ref = ref->next())
+    {
+        Player* member = ref->GetSource();
+
+        if (!member)
+        {
+            continue;
+        }
 
         members.push_back(ref->GetSource());
     }
@@ -2749,9 +2773,9 @@ bool PlayerbotAI::SayToParty(const std::string& msg)
     ChatHandler::BuildChatPacket(data, CHAT_MSG_PARTY, msg.c_str(), LANG_UNIVERSAL, CHAT_TAG_NONE, bot->GetGUID(),
                                  bot->GetName());
 
-    for (auto reciever : GetPlayersInGroup())
+    for (auto receiver : GetRealPlayersInGroup())
     {
-        ServerFacade::instance().SendPacket(reciever, &data);
+        ServerFacade::instance().SendPacket(receiver, &data);
     }
 
     return true;
@@ -2766,9 +2790,9 @@ bool PlayerbotAI::SayToRaid(const std::string& msg)
     ChatHandler::BuildChatPacket(data, CHAT_MSG_RAID, msg.c_str(), LANG_UNIVERSAL, CHAT_TAG_NONE, bot->GetGUID(),
                                  bot->GetName());
 
-    for (auto reciever : GetPlayersInGroup())
+    for (auto receiver : GetRealPlayersInGroup())
     {
-        ServerFacade::instance().SendPacket(reciever, &data);
+        ServerFacade::instance().SendPacket(receiver, &data);
     }
 
     return true;
