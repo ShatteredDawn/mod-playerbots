@@ -585,13 +585,6 @@ bool Engine::listenAndExecute(Action& action, Event event)
         botAI->TellMasterNoFacing(out);
     }
 
-    const std::string& actionName = action.getName();
-
-	if (actionName == "manage inventory")
-	{
-		LOG_ERROR("playerbots", "Pre override result");
-	}
-
     actionExecuted = actionExecutionListeners.overrideResult(action, actionExecuted, event);
     actionExecutionListeners.after(action, actionExecuted, event);
     return actionExecuted;

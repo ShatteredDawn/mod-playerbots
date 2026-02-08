@@ -389,5 +389,7 @@ public:
 				return STAT_STAMINA;
 			}
 		}
+
+		return STAT_STAMINA;
 	}
 };

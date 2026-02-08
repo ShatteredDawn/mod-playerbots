@@ -2,13 +2,11 @@
 
 #include <cstdint>
 
-#include "SharedDefines.h"
 #include "ItemTemplate.h"
 
 #include "AbstractConsumableInspector.h"
 #include "ItemActionStruct.h"
 #include "ItemActionEnum.h"
-#include "GlobalPlayerInspector.h"
 
 class ConsumableElixirInspector : public AbstractConsumableInspector
 {

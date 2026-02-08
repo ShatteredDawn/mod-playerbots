@@ -7,8 +7,6 @@
 
 #include "AbstractConsumableInspector.h"
 #include "ItemActionStruct.h"
-#include "ItemActionEnum.h"
-#include "GlobalPlayerInspector.h"
 
 class ConsumableConsumableInspector : public AbstractConsumableInspector
 {

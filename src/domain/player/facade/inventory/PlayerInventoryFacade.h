@@ -1,23 +1,13 @@
 #pragma once
 
 #include <cstdint>
-#include <vector>
-
-#include "Packet.h"
-#include "ItemPackets.h"
-#include "ObjectGuid.h"
-#include "ObjectAccessor.h"
-#include "SharedDefines.h"
 #include "Player.h"
 #include "WorldSession.h"
-#include "SharedDefines.h"
-#include "DBCStructure.h"
 #include "AuctionHouseMgr.h"
 
 #include "AbstractPlayerFacade.h"
 #include "PlayerInventoryFacadeResultEnum.h"
 #include "GlobalPlayerInspector.h"
-#include "InventoryService.h"
 #include "GlobalItemInspector.h"
 
 class PlayerInventoryFacade : public AbstractPlayerFacade

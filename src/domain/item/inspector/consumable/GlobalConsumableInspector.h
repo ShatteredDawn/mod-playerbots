@@ -16,7 +16,7 @@ public:
 	) : AbstractConsumableInspector(playerLowGUID, itemLowGUID)
 	{}
 
-	bool isInspectable() const
+	bool isInspectable() const override
 	{
 		const uint8_t itemSubclass = this->getCurrentItemSubclass();
 
@@ -34,7 +34,7 @@ public:
 		return forbiddenItems.contains(itemTemplate->ItemId);
 	}
 
-	ItemActionStruct determineItemAction() const
+	ItemActionStruct determineItemAction() const override
 	{
 		if (!this->isInspectable())
 			return this->getDefaultItemAction();
