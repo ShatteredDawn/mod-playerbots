@@ -201,11 +201,11 @@ bool Engine::doNextAction(Unit*, uint32, bool minimal)
             }
         }
 
-        if (!action.isPossible())
+        if (relevance <= 0.0f || !action.isPossible())
         {
             this->multiplyAndPush(actionNode->getAlternatives(), relevance + 0.003f, false, event);
 
-            delete actionNode;  // Always delete after processing the action node
+            delete actionNode;
 
             continue;
         }
@@ -285,14 +285,8 @@ bool Engine::multiplyAndPush(
 {
     bool pushed = false;
 
-    for (NextAction nextAction : actions)
+    for (const NextAction& nextAction : actions)
     {
-        std::unique_ptr<Action> action = nextAction.factory(this->botAI);
-        // ActionNode* actionNode = new ActionNode({}, {}, {});
-        ActionNode* actionNode = this->CreateActionNode(action->getName());
-
-        actionNode->setAction(std::move(action));
-
         float k = nextAction.weight;
 
         if (forceRelevance > 0.0f)
@@ -300,16 +294,18 @@ bool Engine::multiplyAndPush(
             k = forceRelevance;
         }
 
-        if (k > 0)
+        if (k <= 0.0f)
         {
-            queue.Push(new ActionBasket(actionNode, k, skipPrerequisites, event));
-            pushed = true;
-
             continue;
         }
 
-        delete actionNode;
+        std::unique_ptr<Action> action = nextAction.factory(this->botAI);
+        ActionNode* actionNode = this->CreateActionNode(action->getName());
 
+        actionNode->setAction(std::move(action));
+        this->queue.Push(new ActionBasket(actionNode, k, skipPrerequisites, event));
+
+        pushed = true;
     }
 
     return pushed;
@@ -320,7 +316,6 @@ ActionResult Engine::ExecuteAction(NextAction::Factory actionFactory, Event even
     bool result = false;
 
     std::unique_ptr<Action> actionToExecute = actionFactory(this->botAI);
-    // ActionNode* actionNode = new ActionNode({}, {}, {});
     ActionNode* actionNode = this->CreateActionNode(actionToExecute->getName());
 
     actionNode->setAction(std::move(actionToExecute));
