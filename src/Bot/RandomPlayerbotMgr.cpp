@@ -252,11 +252,11 @@ void RandomPlayerbotMgr::LogPlayerLocation()
                 {
                     out << std::to_string(uint8(botAI->GetGrouperType())) << ",";
                     out << std::to_string(uint8(botAI->GetGuilderType())) << ",";
-                    out << (botAI->AllowActivity(ALL_ACTIVITY) ? "active" : "inactive") << ",";
+                    out << (botAI->allowActivity(ALL_ACTIVITY) ? "active" : "inactive") << ",";
                     out << (botAI->IsActive() ? "active" : "delay") << ",";
                     out << botAI->HandleRemoteCommand("state") << ",";
 
-                    if (botAI->AllowActivity(ALL_ACTIVITY))
+                    if (botAI->allowActivity(ALL_ACTIVITY))
                         activeBots++;
                 }
                 else
@@ -296,11 +296,11 @@ void RandomPlayerbotMgr::LogPlayerLocation()
                 {
                     out << std::to_string(uint8(botAI->GetGrouperType())) << ",";
                     out << std::to_string(uint8(botAI->GetGuilderType())) << ",";
-                    out << (botAI->AllowActivity(ALL_ACTIVITY) ? "active" : "inactive") << ",";
+                    out << (botAI->allowActivity(ALL_ACTIVITY) ? "active" : "inactive") << ",";
                     out << (botAI->IsActive() ? "active" : "delay") << ",";
                     out << botAI->HandleRemoteCommand("state") << ",";
 
-                    if (botAI->AllowActivity(ALL_ACTIVITY))
+                    if (botAI->allowActivity(ALL_ACTIVITY))
                         activeBots++;
                 }
                 else
@@ -3202,7 +3202,7 @@ void RandomPlayerbotMgr::PrintStats()
             continue;
         }
 
-        if (botAI->AllowActivity())
+        if (botAI->allowActivity())
             ++active;
 
         if (bot->isDead())
