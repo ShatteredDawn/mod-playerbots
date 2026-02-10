@@ -23,38 +23,36 @@ void PlayerbotAIBase::UpdateAI(uint32 elapsed, bool minimal)
     if (!CanUpdateAI())
         return;
 
-    UpdateAIInternal(elapsed, minimal);
+    this->UpdateAIInternal(elapsed, minimal);
     YieldThread(nullptr);
 }
 
 void PlayerbotAIBase::SetNextCheckDelay(uint32 const delay)
 {
-    // if (nextAICheckDelay < delay)
-    // LOG_DEBUG("playerbots", "Setting lesser delay {} -> {}", nextAICheckDelay, delay);
-
     nextAICheckDelay = delay;
-
-    // if (nextAICheckDelay > sPlayerbotAIConfig.globalCoolDown)
-    // LOG_DEBUG("playerbots",  "std::set next check delay: {}", nextAICheckDelay);
 }
 
 void PlayerbotAIBase::IncreaseNextCheckDelay(uint32 delay)
 {
     nextAICheckDelay += delay;
-
-    // if (nextAICheckDelay > sPlayerbotAIConfig.globalCoolDown)
-    //     LOG_DEBUG("playerbots",  "increase next check delay: {}", nextAICheckDelay);
 }
 
-bool PlayerbotAIBase::CanUpdateAI() { return nextAICheckDelay == 0; }
-
-void PlayerbotAIBase::YieldThread(Player* bot, uint32 delay)
+bool PlayerbotAIBase::CanUpdateAI()
 {
-    if (nextAICheckDelay < delay)
+    return this->nextAICheckDelay == 0;
+}
+
+// @TODO: This is extremely poorly named. This is NOT yielding the thread,
+// but rather setting the next check delay to the specified value if it is greater than the current value.
+void PlayerbotAIBase::YieldThread(const Player* bot, const uint32_t delay)
+{
+    if (this->nextAICheckDelay < delay)
     {
         // Adding a deterministic per-bot slight offset (0–200 ms) to stagger updates and prevent cpu spikes.
         uint32 offset = bot ? (bot->GetGUID().GetCounter() % 201) : 0;
-        nextAICheckDelay = delay + offset;
+    {
+        this->nextAICheckDelay = delay + offset;
+    }
     }
 }
 
