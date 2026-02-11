@@ -1430,8 +1430,8 @@ void PlayerbotAI::HandleBotOutgoingPacket(WorldPacket const& packet)
                         return;
 
                     if (message.starts_with(sPlayerbotAIConfig.toxicLinksPrefix) &&
-                        (GetChatHelper()->ExtractAllItemIds(message).size() > 0 ||
-                         GetChatHelper()->ExtractAllQuestIds(message).size() > 0) &&
+                        (GetChatHelper().ExtractAllItemIds(message).size() > 0 ||
+                         GetChatHelper().ExtractAllQuestIds(message).size() > 0) &&
                         sPlayerbotAIConfig.toxicLinksRepliesChance)
                     {
                         if (urand(0, 50) > 0 || urand(1, 100) > sPlayerbotAIConfig.toxicLinksRepliesChance)
@@ -1439,7 +1439,7 @@ void PlayerbotAI::HandleBotOutgoingPacket(WorldPacket const& packet)
                             return;
                         }
                     }
-                    else if ((GetChatHelper()->ExtractAllItemIds(message).count(19019) &&
+                    else if ((GetChatHelper().ExtractAllItemIds(message).count(19019) &&
                               sPlayerbotAIConfig.thunderfuryRepliesChance))
                     {
                         if (urand(0, 60) > 0 || urand(1, 100) > sPlayerbotAIConfig.thunderfuryRepliesChance)

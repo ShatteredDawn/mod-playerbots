@@ -41,7 +41,8 @@ bool TrainerAction::Execute(Event event)
     // NOTE: Original version uses SpellIds here, but occasionally only inserts
     // a single spell ID value from parameters. If someone wants to impl multiple
     // spells as parameters, check SkipSpellsListAction::parseIds as an example.
-    const uint32_t spellId = this->chat->parseSpell(param);
+    PlayerbotChatHandler handler(botAI->GetBot());
+    const uint32_t spellId = handler.extractSpellId(param);
 
     // @TODO: Move to a dedicated method instead of this boolean hell.
     const bool wasAskedToLearn = param.find("learn") != std::string::npos;
@@ -192,7 +193,7 @@ void TrainerAction::iterate(const Creature* const creature, const bool learnSpel
         totalCost += cost;
 
         std::ostringstream out{};
-        out << chat->FormatSpell(spellInfo) << chat->formatMoney(cost);
+        out << chat.FormatSpell(spellInfo) << chat.formatMoney(cost);
 
         if (learnSpells)
         {
@@ -256,7 +257,7 @@ void TrainerAction::tellFooter(const uint32_t totalCost)
 
     std::ostringstream out{};
 
-    out << "Total cost: " << this->chat->formatMoney(totalCost);
+    out << "Total cost: " << ChatHelper::formatMoney(totalCost);
 
     this->botAI->TellMaster(out);
 }

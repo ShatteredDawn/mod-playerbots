@@ -271,7 +271,7 @@ uint32_t MoneyNeededForValue::Calculate()
 
             if (this->bot->GetGuildId())
             {
-                Value<uint32_t>* const tabardCountValue = this->context->GetValue<uint32_t>("item count", this->chat->FormatQItem(5976));
+                Value<uint32_t>* const tabardCountValue = this->context->GetValue<uint32_t>("item count", ChatHelper::FormatQItem(5976));
 
                 if (tabardCountValue == nullptr || tabardCountValue->Get() == 0)
                 {
@@ -282,7 +282,7 @@ uint32_t MoneyNeededForValue::Calculate()
                 return 0;
             }
 
-            Value<uint32_t>* const guildCharterCountValue = this->context->GetValue<uint32_t>("item count", this->chat->FormatQItem(5863));
+            Value<uint32_t>* const guildCharterCountValue = this->context->GetValue<uint32_t>("item count", ChatHelper::FormatQItem(5863));
 
             if (guildCharterCountValue == nullptr || guildCharterCountValue->Get() == 0)
             {
