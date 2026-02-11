@@ -4,11 +4,10 @@
  */
 
 #include "AiObject.h"
-
 #include "PlayerbotAI.h"
 
 AiObject::AiObject(PlayerbotAI* botAI)
-    : PlayerbotAIAware(botAI), bot(botAI->GetBot()), context(botAI->GetAiObjectContext()), chat(botAI->GetChatHelper())
+    : PlayerbotAIAware(botAI), bot(botAI->GetBot()), context(botAI->GetAiObjectContext())
 {
 }
 

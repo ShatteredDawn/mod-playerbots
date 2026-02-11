@@ -63,11 +63,11 @@ public:
     static uint32 parseItemQuality(std::string const text);
     static bool parseItemClass(std::string const text, uint32* itemClass, uint32* itemSubClass);
     static uint32 parseSlot(std::string const text);
-    uint32 parseSkill(std::string const text);
+    static uint32 ParseSkill(std::string const text);
 
     static bool parseableItem(std::string const text);
 
-    void eraseAllSubStr(std::string& mainStr, std::string const toErase);
+    static void EraseAllSubStr(std::string& mainStr, std::string const toErase);
 
     static std::set<uint32> ExtractAllQuestIds(const std::string& text);
     static std::set<uint32> ExtractAllItemIds(const std::string& text);

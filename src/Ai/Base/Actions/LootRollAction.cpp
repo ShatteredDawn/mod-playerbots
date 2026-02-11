@@ -220,7 +220,7 @@ bool RollAction::Execute(Event event)
         bot->DoRandomRoll(0,100);
         return false;
     }
-    ItemIds itemIds = chat.parseItems(link);
+    ItemIds itemIds = ChatHelper::parseItems(link);
     if (itemIds.empty())
         return false;
     uint32 itemId = *itemIds.begin();

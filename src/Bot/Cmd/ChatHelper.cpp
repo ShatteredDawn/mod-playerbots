@@ -611,7 +611,7 @@ std::string const ChatHelper::FormatClass(uint8 cls) { return classes[cls]; }
 
 std::string const ChatHelper::FormatRace(uint8 race) { return races[race]; }
 
-uint32 ChatHelper::parseSkill(std::string const text)
+uint32_t ChatHelper::ParseSkill(std::string const text)
 {
     if (skills.find(text) != skills.end())
         return skills[text];
@@ -632,7 +632,7 @@ std::string const ChatHelper::FormatSkill(uint32 skill)
 
 std::string const ChatHelper::FormatBoolean(bool flag) { return flag ? "|cff00ff00ON|r" : "|cffffff00OFF|r"; }
 
-void ChatHelper::eraseAllSubStr(std::string& mainStr, std::string const toErase)
+void ChatHelper::EraseAllSubStr(std::string& mainStr, std::string const toErase)
 {
     size_t pos = std::string::npos;
 

@@ -193,7 +193,7 @@ void TrainerAction::iterate(const Creature* const creature, const bool learnSpel
         totalCost += cost;
 
         std::ostringstream out{};
-        out << chat.FormatSpell(spellInfo) << chat.formatMoney(cost);
+        out << ChatHelper::FormatSpell(spellInfo) << ChatHelper::formatMoney(cost);
 
         if (learnSpells)
         {

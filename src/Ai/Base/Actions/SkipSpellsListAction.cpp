@@ -57,7 +57,7 @@ bool SkipSpellsListAction::Execute(Event event)
             else
                 out << ", ";
 
-            out << chat.FormatSpell(spellInfo);
+            out << ChatHelper::FormatSpell(spellInfo);
         }
 
         botAI->TellMaster(out);
@@ -89,7 +89,7 @@ bool SkipSpellsListAction::Execute(Event event)
                 skipSpells.erase(j);
 
                 std::ostringstream out;
-                out << chat.FormatSpell(spellInfo) << " removed from ignored spells";
+                out << ChatHelper::FormatSpell(spellInfo) << " removed from ignored spells";
                 botAI->TellMaster(out);
                 return true;
             }
@@ -102,7 +102,7 @@ bool SkipSpellsListAction::Execute(Event event)
                 skipSpells.insert(spellId);
 
                 std::ostringstream out;
-                out << chat.FormatSpell(spellInfo) << " added to ignored spells";
+                out << ChatHelper::FormatSpell(spellInfo) << " added to ignored spells";
                 botAI->TellMaster(out);
                 return true;
             }

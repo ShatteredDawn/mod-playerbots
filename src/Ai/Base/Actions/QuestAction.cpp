@@ -250,14 +250,14 @@ bool QuestAction::AcceptQuest(Quest const* quest, ObjectGuid questGiver)
         if (bot->GetQuestStatus(questId) != QUEST_STATUS_NONE && bot->GetQuestStatus(questId) != QUEST_STATUS_REWARDED)
         {
             BroadcastHelper::BroadcastQuestAccepted(botAI, bot, quest);
-            out << "Accepted " << chat.FormatQuest(quest);
+            out << "Accepted " << ChatHelper::FormatQuest(quest);
             botAI->TellMaster(out);
             return true;
         }
         out << "Cannot accept";
     }
 
-    out << " " << chat.FormatQuest(quest);
+    out << " " << ChatHelper::FormatQuest(quest);
     botAI->TellMaster(out);
 
     return false;
@@ -362,7 +362,7 @@ bool QuestUpdateAddItemAction::Execute(Event event)
 
         for (auto const& pair : botAI->GetCurrentQuestsRequiringItemId(itemId))
         {
-            placeholders["%quest_link"] = chat.FormatQuest(pair.first);
+            placeholders["%quest_link"] = ChatHelper::FormatQuest(pair.first);
             uint32 requiredItemsCount = pair.second;
             placeholders["%quest_obj_required"] = std::to_string(requiredItemsCount);
             if (botAI->HasStrategy("debug quest", BotState::BOT_STATE_COMBAT) || botAI->HasStrategy("debug quest", BotState::BOT_STATE_NON_COMBAT))

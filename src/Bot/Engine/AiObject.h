@@ -24,7 +24,6 @@ protected:
     Player* bot;
     Player* GetMaster();
     AiObjectContext* context;
-    ChatHelper& chat;
 };
 
 class AiNamedObject : public AiObject
