@@ -113,7 +113,7 @@ PlayerbotAI::PlayerbotAI()
       aiObjectContext(nullptr),
       currentEngine(nullptr),
       currentState(BOT_STATE_NON_COMBAT),
-      chatHelper(this),
+      chatHelper(),
       chatFilter(this),
       security(nullptr)
 {
@@ -131,7 +131,7 @@ PlayerbotAI::PlayerbotAI(Player* bot)
     : PlayerbotAIBase(true),
       bot(bot),
       master(nullptr),
-      chatHelper(this),
+      chatHelper(),
       chatFilter(this),
       security(bot)  // reorder args - whipowill
 {

@@ -38,7 +38,7 @@ static bool substrContainsInMap(std::string const searchTerm, std::map<std::stri
     return false;
 }
 
-ChatHelper::ChatHelper(PlayerbotAI* botAI) : PlayerbotAIAware(botAI)
+ChatHelper::ChatHelper()
 {
     itemQualities["poor"] = ITEM_QUALITY_POOR;
     itemQualities["gray"] = ITEM_QUALITY_POOR;

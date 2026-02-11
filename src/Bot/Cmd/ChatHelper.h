@@ -29,10 +29,11 @@ struct ItemWithRandomProperty {
     int32 randomPropertyId{0};
 };
 
-class ChatHelper : public PlayerbotAIAware
+class ChatHelper
 {
 public:
-    ChatHelper(PlayerbotAI* botAI);
+    ChatHelper();
+    ~ChatHelper() = default;
 
     static std::string const formatMoney(uint32 copper);
     static uint32 parseMoney(std::string const text);
