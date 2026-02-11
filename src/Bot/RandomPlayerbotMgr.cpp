@@ -323,7 +323,7 @@ void RandomPlayerbotMgr::LogPlayerLocation()
     }
 }
 
-void RandomPlayerbotMgr::UpdateAIInternal(uint32, bool /*minimal*/)
+void RandomPlayerbotMgr::UpdateAIInternal(bool /*minimal*/)
 {
     if (totalPmo)
         totalPmo->finish();
@@ -2867,7 +2867,7 @@ bool RandomPlayerbotMgr::HandlePlayerbotConsoleCommand(ChatHandler*, char const*
 
     if (cmd == "update")
     {
-        sRandomPlayerbotMgr.UpdateAIInternal(0);
+        sRandomPlayerbotMgr.UpdateAIInternal();
         return true;
     }
 
