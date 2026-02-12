@@ -256,7 +256,7 @@ void PlayerbotAI::handleChatReplies()
         }
 
         ChatReplyAction::ChatReplyDo(
-            this->bot,
+            *this->bot,
             it->m_type,
             it->m_guid1,
             it->m_msg,
