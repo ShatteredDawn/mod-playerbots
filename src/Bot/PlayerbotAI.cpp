@@ -722,35 +722,35 @@ void PlayerbotAI::HandleCommands()
 {
     ExternalEventHelper helper(aiObjectContext);
 
-    for (auto it = chatCommands.begin(); it != chatCommands.end();)
+    for (std::list<ChatCommandHolder>::iterator it = chatCommands.begin(); it != chatCommands.end();)
     {
         time_t& checkTime = it->GetTime();
+
         if (checkTime && time(nullptr) < checkTime)
         {
             ++it;
             continue;
         }
 
-        Player* owner = it->GetOwner();
-        if (!owner)
+        Player* const owner = it->GetOwner();
+
+        if (owner == nullptr)
         {
             it = chatCommands.erase(it);
+
             continue;
         }
 
         const std::string& command = it->GetCommand();
+
         if (command.empty())
         {
             it = chatCommands.erase(it);
+
             continue;
         }
 
-        if (!helper.ParseChatCommand(command, owner) && it->GetType() == CHAT_MSG_WHISPER)
-        {
-            // ostringstream out; out << "Unknown command " << command;
-            // TellPlayer(out);
-            // helper.ParseChatCommand("help");
-        }
+        helper.ParseChatCommand(command, *owner);
 
         it = chatCommands.erase(it);
     }
