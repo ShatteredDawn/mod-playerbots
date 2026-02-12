@@ -356,7 +356,7 @@ bool QuestUpdateAddItemAction::Execute(Event event)
     if (itemPrototype)
     {
         std::map<std::string, std::string> placeholders;
-        placeholders["%item_link"] = botAI->GetChatHelper().FormatItem(itemPrototype);
+        placeholders["%item_link"] = ChatHelper::FormatItem(itemPrototype);
         uint32 availableItemsCount = botAI->GetInventoryItemsCountWithId(itemId);
         placeholders["%quest_obj_available"] = std::to_string(availableItemsCount);
 
@@ -451,7 +451,7 @@ bool QuestUpdateFailedTimerAction::Execute(Event event)
     if (qInfo)
     {
         std::map<std::string, std::string> placeholders;
-        placeholders["%quest_link"] = botAI->GetChatHelper().FormatQuest(qInfo);
+        placeholders["%quest_link"] = ChatHelper::FormatQuest(qInfo);
         botAI->TellMaster(PlayerbotTextMgr::instance().GetBotText("Failed timer for %quest_link, abandoning", placeholders));
         BroadcastHelper::BroadcastQuestUpdateFailedTimer(botAI, bot, qInfo);
     }

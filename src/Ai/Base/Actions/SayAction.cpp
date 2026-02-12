@@ -212,10 +212,8 @@ void ChatReplyAction::ChatReplyDo(Player* bot, const uint32 type, uint32 guid1, 
         return;
     }
 
-    const ChatHelper& chatHelper = botAI->GetChatHelper();
-
-    const std::set<uint32_t> itemIds = chatHelper.ExtractAllItemIds(msg);
-    const std::set<uint32_t> questIds = chatHelper.ExtractAllQuestIds(msg);
+    const std::set<uint32_t> itemIds = ChatHelper::ExtractAllItemIds(msg);
+    const std::set<uint32_t> questIds = ChatHelper::ExtractAllQuestIds(msg);
 
     //toxic links
     if (
@@ -248,7 +246,7 @@ bool ChatReplyAction::HandleThunderfuryReply(Player* bot, ChatChannelSource chat
 {
     std::map<std::string, std::string> placeholders;
     const auto thunderfury = sObjectMgr->GetItemTemplate(19019);
-    placeholders["%thunderfury_link"] = GET_PLAYERBOT_AI(bot)->GetChatHelper().FormatItem(thunderfury);
+    placeholders["%thunderfury_link"] = ChatHelper::FormatItem(thunderfury);
 
     std::string responseMessage = PlayerbotTextMgr::instance().GetBotText("thunderfury_spam", placeholders);
 
@@ -281,8 +279,6 @@ bool ChatReplyAction::HandleToxicLinksReply(Player& bot, ChatChannelSource chatC
         return false;
     }
 
-    const ChatHelper& chatHelper = botAI->GetChatHelper();
-
     std::vector<uint32> incompleteQuests{};
 
     for (uint16_t slot = 0; slot < MAX_QUEST_LOG_SIZE; ++slot)
@@ -311,14 +307,14 @@ bool ChatReplyAction::HandleToxicLinksReply(Player& bot, ChatChannelSource chatC
         { "%my_role", ChatHelper::FormatClass(&bot, AiFactory::GetPlayerSpecTab(&bot)) },
         { "%area_name", PlayerbotTextMgr::instance().GetBotText("string_unknown_area") },
         { "%zone_name", PlayerbotTextMgr::instance().GetBotText("string_unknown_area") },
-        { "%my_class", chatHelper.FormatClass(bot.getClass()) },
-        { "%my_race", chatHelper.FormatRace(bot.getRace()) },
+        { "%my_class", ChatHelper::FormatClass(bot.getClass()) },
+        { "%my_race", ChatHelper::FormatRace(bot.getRace()) },
         { "%my_level", std::to_string(bot.GetLevel()) }
     };
 
     if (!botItems.empty())
     {
-        placeholders.at("%random_inventory_item_link") = chatHelper.FormatItem(botItems[rand() % botItems.size()]->GetTemplate());
+        placeholders.at("%random_inventory_item_link") = ChatHelper::FormatItem(botItems[rand() % botItems.size()]->GetTemplate());
     }
 
     placeholders.at("%random_taken_quest_or_item_link") = placeholders.at("%random_inventory_item_link");
@@ -327,7 +323,7 @@ bool ChatReplyAction::HandleToxicLinksReply(Player& bot, ChatChannelSource chatC
     {
         const Quest* const quest = sObjectMgr->GetQuestTemplate(incompleteQuests[rand() % incompleteQuests.size()]);
 
-        placeholders.at("%random_taken_quest_or_item_link") = chatHelper.FormatQuest(quest);
+        placeholders.at("%random_taken_quest_or_item_link") = ChatHelper::FormatQuest(quest);
     }
 
     const AreaTableEntry* const current_area = botAI->GetCurrentArea();
@@ -384,9 +380,7 @@ bool ChatReplyAction::HandleWTBItemsReply(Player& bot, ChatChannelSource chatCha
         return false;
     }
 
-    const ChatHelper& chatHelper = botAI->GetChatHelper();
-
-    const std::set<uint32_t> messageItemIds = chatHelper.ExtractAllItemIds(msg);
+    const std::set<uint32_t> messageItemIds = ChatHelper::ExtractAllItemIds(msg);
 
     if (messageItemIds.empty())
     {
@@ -412,8 +406,8 @@ bool ChatReplyAction::HandleWTBItemsReply(Player& bot, ChatChannelSource chatCha
         { "%other_name", name },
         { "%area_name", PlayerbotTextMgr::instance().GetBotText("string_unknown_area") },
         { "%zone_name", PlayerbotTextMgr::instance().GetBotText("string_unknown_area") },
-        { "%my_class", chatHelper.FormatClass(bot.getClass()) },
-        { "%my_race", chatHelper.FormatRace(bot.getRace()) },
+        { "%my_class", ChatHelper::FormatClass(bot.getClass()) },
+        { "%my_race", ChatHelper::FormatRace(bot.getRace()) },
         { "%my_level", std::to_string(bot.GetLevel()) },
         { "%my_role", ChatHelper::FormatClass(&bot, AiFactory::GetPlayerSpecTab(&bot)) },
         { "%formatted_item_links", "" }
@@ -444,7 +438,7 @@ bool ChatReplyAction::HandleWTBItemsReply(Player& bot, ChatChannelSource chatCha
             continue;
         }
 
-        formattedLinks += chatHelper.FormatItem(proto, botAI->GetInventoryItemsCountWithId(matchingItemId));
+        formattedLinks += ChatHelper::FormatItem(proto, botAI->GetInventoryItemsCountWithId(matchingItemId));
         formattedLinks += " ";
     }
 
@@ -529,8 +523,7 @@ bool ChatReplyAction::HandleLFGQuestsReply(Player& bot, ChatChannelSource chatCh
         return false;
     }
 
-    const ChatHelper& chatHelper = botAI->GetChatHelper();
-    const std::set<uint32_t> messageQuestIds = chatHelper.ExtractAllQuestIds(msg);
+    const std::set<uint32_t> messageQuestIds = ChatHelper::ExtractAllQuestIds(msg);
 
     if (messageQuestIds.empty())
     {
@@ -561,8 +554,8 @@ bool ChatReplyAction::HandleLFGQuestsReply(Player& bot, ChatChannelSource chatCh
         { "%quest_links", "" },
         { "%area_name", PlayerbotTextMgr::instance().GetBotText("string_unknown_area") },
         { "%zone_name", PlayerbotTextMgr::instance().GetBotText("string_unknown_area") },
-        { "%my_class", chatHelper.FormatClass(bot.getClass()) },
-        { "%my_race", chatHelper.FormatRace(bot.getRace()) },
+        { "%my_class", ChatHelper::FormatClass(bot.getClass()) },
+        { "%my_race", ChatHelper::FormatRace(bot.getRace()) },
         { "%my_level", std::to_string(bot.GetLevel()) },
         { "%my_role", ChatHelper::FormatClass(&bot, AiFactory::GetPlayerSpecTab(&bot)) },
     };
@@ -588,7 +581,7 @@ bool ChatReplyAction::HandleLFGQuestsReply(Player& bot, ChatChannelSource chatCh
             continue;
         }
 
-        formattedQuestLinks += chatHelper.FormatQuest(quest);
+        formattedQuestLinks += ChatHelper::FormatQuest(quest);
     }
 
     const time_t now = std::time(nullptr);

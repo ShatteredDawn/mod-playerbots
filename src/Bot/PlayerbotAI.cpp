@@ -113,7 +113,6 @@ PlayerbotAI::PlayerbotAI()
       aiObjectContext(nullptr),
       currentEngine(nullptr),
       currentState(BOT_STATE_NON_COMBAT),
-      chatHelper(),
       chatFilter(this),
       security(nullptr)
 {
@@ -131,7 +130,6 @@ PlayerbotAI::PlayerbotAI(Player* bot)
     : PlayerbotAIBase(true),
       bot(bot),
       master(nullptr),
-      chatHelper(),
       chatFilter(this),
       security(bot)  // reorder args - whipowill
 {
@@ -1430,8 +1428,8 @@ void PlayerbotAI::HandleBotOutgoingPacket(WorldPacket const& packet)
                         return;
 
                     if (message.starts_with(sPlayerbotAIConfig.toxicLinksPrefix) &&
-                        (GetChatHelper().ExtractAllItemIds(message).size() > 0 ||
-                         GetChatHelper().ExtractAllQuestIds(message).size() > 0) &&
+                        (ChatHelper::ExtractAllItemIds(message).size() > 0 ||
+                         ChatHelper::ExtractAllQuestIds(message).size() > 0) &&
                         sPlayerbotAIConfig.toxicLinksRepliesChance)
                     {
                         if (urand(0, 50) > 0 || urand(1, 100) > sPlayerbotAIConfig.toxicLinksRepliesChance)
@@ -1439,7 +1437,7 @@ void PlayerbotAI::HandleBotOutgoingPacket(WorldPacket const& packet)
                             return;
                         }
                     }
-                    else if ((GetChatHelper().ExtractAllItemIds(message).count(19019) &&
+                    else if ((ChatHelper::ExtractAllItemIds(message).count(19019) &&
                               sPlayerbotAIConfig.thunderfuryRepliesChance))
                     {
                         if (urand(0, 60) > 0 || urand(1, 100) > sPlayerbotAIConfig.thunderfuryRepliesChance)
@@ -3806,7 +3804,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, Unit* target, Item* itemTarget)
                 pet->ToggleAutocast(spellInfo, !autocast);
                 std::ostringstream out;
                 out << (autocast ? "|cffff0000|Disabling" : "|cFF00ff00|Enabling") << " pet auto-cast for ";
-                out << chatHelper.FormatSpell(spellInfo);
+                out << ChatHelper::FormatSpell(spellInfo);
                 TellMaster(out);
                 return true;
         }
@@ -4063,7 +4061,7 @@ bool PlayerbotAI::CastSpell(uint32 spellId, float x, float y, float z, Item* ite
         pet->ToggleAutocast(spellInfo, !autocast);
         std::ostringstream out;
         out << (autocast ? "|cffff0000|Disabling" : "|cFF00ff00|Enabling") << " pet auto-cast for ";
-        out << chatHelper.FormatSpell(spellInfo);
+        out << ChatHelper::FormatSpell(spellInfo);
         TellMaster(out);
         return true;
     }
