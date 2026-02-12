@@ -12,18 +12,188 @@
 #include "ItemTemplate.h"
 #include "ObjectMgr.h"
 #include "Player.h"
+#include "PlayerbotAI.h"
 #include "SpellInfo.h"
 
-std::map<std::string, uint32> ChatHelper::consumableSubClasses;
-std::map<std::string, uint32> ChatHelper::tradeSubClasses;
-std::map<std::string, uint32> ChatHelper::itemQualities;
-std::map<std::string, uint32> ChatHelper::projectileSubClasses;
-std::map<std::string, uint32> ChatHelper::slots;
-std::map<std::string, uint32> ChatHelper::skills;
-std::map<std::string, ChatMsg> ChatHelper::chats;
-std::map<uint8, std::string> ChatHelper::classes;
-std::map<uint8, std::string> ChatHelper::races;
-std::map<uint8, std::map<uint8, std::string> > ChatHelper::specs;
+std::map<std::string, uint32> ChatHelper::consumableSubClasses{
+    { "potion", ITEM_SUBCLASS_POTION },
+    { "elixir", ITEM_SUBCLASS_ELIXIR },
+    { "flask", ITEM_SUBCLASS_FLASK },
+    { "scroll", ITEM_SUBCLASS_SCROLL },
+    { "food", ITEM_SUBCLASS_FOOD },
+    { "bandage", ITEM_SUBCLASS_BANDAGE },
+    { "enchant", ITEM_SUBCLASS_CONSUMABLE_OTHER },
+};
+std::map<std::string, uint32> ChatHelper::itemQualities{
+    { "poor", ITEM_QUALITY_POOR },
+    { "gray", ITEM_QUALITY_POOR },
+    { "normal", ITEM_QUALITY_NORMAL },
+    { "white", ITEM_QUALITY_NORMAL },
+    { "uncommon", ITEM_QUALITY_UNCOMMON },
+    { "green", ITEM_QUALITY_UNCOMMON },
+    { "rare", ITEM_QUALITY_RARE },
+    { "blue", ITEM_QUALITY_RARE },
+    { "epic", ITEM_QUALITY_EPIC },
+    { "violet", ITEM_QUALITY_EPIC },
+    { "legendary", ITEM_QUALITY_LEGENDARY },
+    { "yellow", ITEM_QUALITY_LEGENDARY },
+};
+std::map<std::string, uint32> ChatHelper::projectileSubClasses{
+    { "arrows", ITEM_SUBCLASS_ARROW },
+    { "bullets", ITEM_SUBCLASS_BULLET },
+};
+std::map<std::string, uint32> ChatHelper::slots{
+    { "head", EQUIPMENT_SLOT_HEAD },
+    { "neck", EQUIPMENT_SLOT_NECK },
+    { "shoulder", EQUIPMENT_SLOT_SHOULDERS },
+    { "shirt", EQUIPMENT_SLOT_BODY },
+    { "chest", EQUIPMENT_SLOT_CHEST },
+    { "waist", EQUIPMENT_SLOT_WAIST },
+    { "legs", EQUIPMENT_SLOT_LEGS },
+    { "feet", EQUIPMENT_SLOT_FEET },
+    { "wrist", EQUIPMENT_SLOT_WRISTS },
+    { "hands", EQUIPMENT_SLOT_HANDS },
+    { "finger 1", EQUIPMENT_SLOT_FINGER1 },
+    { "finger 2", EQUIPMENT_SLOT_FINGER2 },
+    { "trinket 1", EQUIPMENT_SLOT_TRINKET1 },
+    { "trinket 2", EQUIPMENT_SLOT_TRINKET2 },
+    { "back", EQUIPMENT_SLOT_BACK },
+    { "main hand", EQUIPMENT_SLOT_MAINHAND },
+    { "off hand", EQUIPMENT_SLOT_OFFHAND },
+    { "ranged", EQUIPMENT_SLOT_RANGED },
+    { "tabard", EQUIPMENT_SLOT_TABARD },
+};
+std::map<std::string, uint32> ChatHelper::skills{
+    { "first aid", SKILL_FIRST_AID },
+    { "fishing", SKILL_FISHING },
+    { "cooking", SKILL_COOKING },
+    { "alchemy", SKILL_ALCHEMY },
+    { "enchanting", SKILL_ENCHANTING },
+    { "engineering", SKILL_ENGINEERING },
+    { "leatherworking", SKILL_LEATHERWORKING },
+    { "blacksmithing", SKILL_BLACKSMITHING },
+    { "tailoring", SKILL_TAILORING },
+    { "herbalism", SKILL_HERBALISM },
+    { "mining", SKILL_MINING },
+    { "skinning", SKILL_SKINNING },
+    { "jewelcrafting", SKILL_JEWELCRAFTING },
+};
+std::map<std::string, ChatMsg> ChatHelper::chats{
+    { "party", CHAT_MSG_PARTY },
+    { "p", CHAT_MSG_PARTY },
+    { "guild", CHAT_MSG_GUILD },
+    { "g", CHAT_MSG_GUILD },
+    { "raid", CHAT_MSG_RAID },
+    { "r", CHAT_MSG_RAID },
+    { "whisper", CHAT_MSG_WHISPER },
+    { "w", CHAT_MSG_WHISPER },
+};
+std::map<uint8, std::string> ChatHelper::classes{
+    { CLASS_DRUID, "druid" },
+    { CLASS_HUNTER, "hunter" },
+    { CLASS_MAGE, "mage" },
+    { CLASS_PALADIN, "paladin" },
+    { CLASS_PRIEST, "priest" },
+    { CLASS_ROGUE, "rogue" },
+    { CLASS_SHAMAN, "shaman" },
+    { CLASS_WARLOCK, "warlock" },
+    { CLASS_WARRIOR, "warrior" },
+    { CLASS_DEATH_KNIGHT, "dk" },
+};
+std::map<uint8, std::string> ChatHelper::races{
+    { RACE_DWARF, "Dwarf" },
+    { RACE_GNOME, "Gnome" },
+    { RACE_HUMAN, "Human" },
+    { RACE_NIGHTELF, "Night Elf" },
+    { RACE_ORC, "Orc" },
+    { RACE_TAUREN, "Tauren" },
+    { RACE_TROLL, "Troll" },
+    { RACE_UNDEAD_PLAYER, "Undead" },
+    { RACE_BLOODELF, "Blood Elf" },
+    { RACE_DRAENEI, "Draenei" },
+};
+std::map<uint8, std::map<uint8, std::string> > ChatHelper::specs{
+    {
+        CLASS_DRUID,
+        {
+            { DRUID_TAB_BALANCE, "balance" },
+            { DRUID_TAB_FERAL, "feral combat" },
+            { DRUID_TAB_RESTORATION, "restoration" },
+        }
+    },
+    {
+        CLASS_HUNTER,
+        {
+            { HUNTER_TAB_BEAST_MASTERY, "beast mastery" },
+            { HUNTER_TAB_MARKSMANSHIP, "marksmanship" },
+            { HUNTER_TAB_SURVIVAL, "survival" },
+        }
+    },
+    {
+        CLASS_MAGE,
+        {
+            { MAGE_TAB_ARCANE, "arcane" },
+            { MAGE_TAB_FIRE, "fire" },
+            { MAGE_TAB_FROST, "frost" },
+        }
+    },
+    {
+        CLASS_PALADIN,
+        {
+            { PALADIN_TAB_HOLY, "holy" },
+            { PALADIN_TAB_PROTECTION, "protection" },
+            { PALADIN_TAB_RETRIBUTION, "retribution" },
+        }
+    },
+    {
+        CLASS_PRIEST,
+        {
+            { PRIEST_TAB_DISCIPLINE, "discipline" },
+            { PRIEST_TAB_HOLY, "holy" },
+            { PRIEST_TAB_SHADOW, "shadow" },
+        }
+    },
+    {
+        CLASS_ROGUE,
+        {
+            { ROGUE_TAB_ASSASSINATION, "assasination" },
+            { ROGUE_TAB_COMBAT, "combat" },
+            { ROGUE_TAB_SUBTLETY, "subtlety" },
+        }
+    },
+    {
+        CLASS_SHAMAN,
+        {
+            { SHAMAN_TAB_ELEMENTAL, "elemental" },
+            { SHAMAN_TAB_ENHANCEMENT, "enhancement" },
+            { SHAMAN_TAB_RESTORATION, "restoration" },
+        }
+    },
+    {
+        CLASS_WARLOCK,
+        {
+            { WARLOCK_TAB_AFFLICTION, "affliction" },
+            { WARLOCK_TAB_DEMONOLOGY, "demonology" },
+            { WARLOCK_TAB_DESTRUCTION, "destruction" },
+        }
+    },
+    {
+        CLASS_WARRIOR,
+        {
+            { WARRIOR_TAB_ARMS, "arms" },
+            { WARRIOR_TAB_FURY, "fury" },
+            { WARRIOR_TAB_PROTECTION, "protection" },
+        }
+    },
+    {
+        CLASS_DEATH_KNIGHT,
+        {
+            { DEATH_KNIGHT_TAB_BLOOD, "blood" },
+            { DEATH_KNIGHT_TAB_FROST, "frost" },
+            { DEATH_KNIGHT_TAB_UNHOLY, "unholy" },
+        }
+    }
+};
 
 template <class T>
 static bool substrContainsInMap(std::string const searchTerm, std::map<std::string, T> searchIn)
@@ -36,137 +206,6 @@ static bool substrContainsInMap(std::string const searchTerm, std::map<std::stri
     }
 
     return false;
-}
-
-ChatHelper::ChatHelper()
-{
-    itemQualities["poor"] = ITEM_QUALITY_POOR;
-    itemQualities["gray"] = ITEM_QUALITY_POOR;
-    itemQualities["normal"] = ITEM_QUALITY_NORMAL;
-    itemQualities["white"] = ITEM_QUALITY_NORMAL;
-    itemQualities["uncommon"] = ITEM_QUALITY_UNCOMMON;
-    itemQualities["green"] = ITEM_QUALITY_UNCOMMON;
-    itemQualities["rare"] = ITEM_QUALITY_RARE;
-    itemQualities["blue"] = ITEM_QUALITY_RARE;
-    itemQualities["epic"] = ITEM_QUALITY_EPIC;
-    itemQualities["violet"] = ITEM_QUALITY_EPIC;
-    itemQualities["legendary"] = ITEM_QUALITY_LEGENDARY;
-    itemQualities["yellow"] = ITEM_QUALITY_LEGENDARY;
-
-    consumableSubClasses["potion"] = ITEM_SUBCLASS_POTION;
-    consumableSubClasses["elixir"] = ITEM_SUBCLASS_ELIXIR;
-    consumableSubClasses["flask"] = ITEM_SUBCLASS_FLASK;
-    consumableSubClasses["scroll"] = ITEM_SUBCLASS_SCROLL;
-    consumableSubClasses["food"] = ITEM_SUBCLASS_FOOD;
-    consumableSubClasses["bandage"] = ITEM_SUBCLASS_BANDAGE;
-    consumableSubClasses["enchant"] = ITEM_SUBCLASS_CONSUMABLE_OTHER;
-
-    projectileSubClasses["arrows"] = ITEM_SUBCLASS_ARROW;
-    projectileSubClasses["bullets"] = ITEM_SUBCLASS_BULLET;
-
-    slots["head"] = EQUIPMENT_SLOT_HEAD;
-    slots["neck"] = EQUIPMENT_SLOT_NECK;
-    slots["shoulder"] = EQUIPMENT_SLOT_SHOULDERS;
-    slots["shirt"] = EQUIPMENT_SLOT_BODY;
-    slots["chest"] = EQUIPMENT_SLOT_CHEST;
-    slots["waist"] = EQUIPMENT_SLOT_WAIST;
-    slots["legs"] = EQUIPMENT_SLOT_LEGS;
-    slots["feet"] = EQUIPMENT_SLOT_FEET;
-    slots["wrist"] = EQUIPMENT_SLOT_WRISTS;
-    slots["hands"] = EQUIPMENT_SLOT_HANDS;
-    slots["finger 1"] = EQUIPMENT_SLOT_FINGER1;
-    slots["finger 2"] = EQUIPMENT_SLOT_FINGER2;
-    slots["trinket 1"] = EQUIPMENT_SLOT_TRINKET1;
-    slots["trinket 2"] = EQUIPMENT_SLOT_TRINKET2;
-    slots["back"] = EQUIPMENT_SLOT_BACK;
-    slots["main hand"] = EQUIPMENT_SLOT_MAINHAND;
-    slots["off hand"] = EQUIPMENT_SLOT_OFFHAND;
-    slots["ranged"] = EQUIPMENT_SLOT_RANGED;
-    slots["tabard"] = EQUIPMENT_SLOT_TABARD;
-
-    skills["first aid"] = SKILL_FIRST_AID;
-    skills["fishing"] = SKILL_FISHING;
-    skills["cooking"] = SKILL_COOKING;
-    skills["alchemy"] = SKILL_ALCHEMY;
-    skills["enchanting"] = SKILL_ENCHANTING;
-    skills["engineering"] = SKILL_ENGINEERING;
-    skills["leatherworking"] = SKILL_LEATHERWORKING;
-    skills["blacksmithing"] = SKILL_BLACKSMITHING;
-    skills["tailoring"] = SKILL_TAILORING;
-    skills["herbalism"] = SKILL_HERBALISM;
-    skills["mining"] = SKILL_MINING;
-    skills["skinning"] = SKILL_SKINNING;
-    skills["jewelcrafting"] = SKILL_JEWELCRAFTING;
-
-    chats["party"] = CHAT_MSG_PARTY;
-    chats["p"] = CHAT_MSG_PARTY;
-    chats["guild"] = CHAT_MSG_GUILD;
-    chats["g"] = CHAT_MSG_GUILD;
-    chats["raid"] = CHAT_MSG_RAID;
-    chats["r"] = CHAT_MSG_RAID;
-    chats["whisper"] = CHAT_MSG_WHISPER;
-    chats["w"] = CHAT_MSG_WHISPER;
-
-    classes[CLASS_DRUID] = "druid";
-    specs[CLASS_DRUID][0] = "balance";
-    specs[CLASS_DRUID][1] = "feral combat";
-    specs[CLASS_DRUID][2] = "restoration";
-
-    classes[CLASS_HUNTER] = "hunter";
-    specs[CLASS_HUNTER][0] = "beast mastery";
-    specs[CLASS_HUNTER][1] = "marksmanship";
-    specs[CLASS_HUNTER][2] = "survival";
-
-    classes[CLASS_MAGE] = "mage";
-    specs[CLASS_MAGE][0] = "arcane";
-    specs[CLASS_MAGE][1] = "fire";
-    specs[CLASS_MAGE][2] = "frost";
-
-    classes[CLASS_PALADIN] = "paladin";
-    specs[CLASS_PALADIN][0] = "holy";
-    specs[CLASS_PALADIN][1] = "protection";
-    specs[CLASS_PALADIN][2] = "retribution";
-
-    classes[CLASS_PRIEST] = "priest";
-    specs[CLASS_PRIEST][0] = "discipline";
-    specs[CLASS_PRIEST][1] = "holy";
-    specs[CLASS_PRIEST][2] = "shadow";
-
-    classes[CLASS_ROGUE] = "rogue";
-    specs[CLASS_ROGUE][0] = "assasination";
-    specs[CLASS_ROGUE][1] = "combat";
-    specs[CLASS_ROGUE][2] = "subtlety";
-
-    classes[CLASS_SHAMAN] = "shaman";
-    specs[CLASS_SHAMAN][0] = "elemental";
-    specs[CLASS_SHAMAN][1] = "enhancement";
-    specs[CLASS_SHAMAN][2] = "restoration";
-
-    classes[CLASS_WARLOCK] = "warlock";
-    specs[CLASS_WARLOCK][0] = "affliction";
-    specs[CLASS_WARLOCK][1] = "demonology";
-    specs[CLASS_WARLOCK][2] = "destruction";
-
-    classes[CLASS_WARRIOR] = "warrior";
-    specs[CLASS_WARRIOR][0] = "arms";
-    specs[CLASS_WARRIOR][1] = "fury";
-    specs[CLASS_WARRIOR][2] = "protection";
-
-    classes[CLASS_DEATH_KNIGHT] = "dk";
-    specs[CLASS_DEATH_KNIGHT][0] = "blood";
-    specs[CLASS_DEATH_KNIGHT][1] = "frost";
-    specs[CLASS_DEATH_KNIGHT][2] = "unholy";
-
-    races[RACE_DWARF] = "Dwarf";
-    races[RACE_GNOME] = "Gnome";
-    races[RACE_HUMAN] = "Human";
-    races[RACE_NIGHTELF] = "Night Elf";
-    races[RACE_ORC] = "Orc";
-    races[RACE_TAUREN] = "Tauren";
-    races[RACE_TROLL] = "Troll";
-    races[RACE_UNDEAD_PLAYER] = "Undead";
-    races[RACE_BLOODELF] = "Blood Elf";
-    races[RACE_DRAENEI] = "Draenei";
 }
 
 std::string const ChatHelper::formatMoney(uint32 copper)
@@ -553,13 +592,6 @@ bool ChatHelper::parseItemClass(std::string const text, uint32* itemClass, uint3
         return true;
     }
 
-    if (tradeSubClasses.find(text) != tradeSubClasses.end())
-    {
-        *itemClass = ITEM_CLASS_TRADE_GOODS;
-        *itemSubClass = tradeSubClasses[text];
-        return true;
-    }
-
     if (projectileSubClasses.find(text) != projectileSubClasses.end())
     {
         *itemClass = ITEM_CLASS_PROJECTILE;
@@ -582,7 +614,7 @@ bool ChatHelper::parseableItem(std::string const text)
 {
     return text.find("|Hitem:") != std::string::npos || text == "questitem" || text == "ammo" ||
            substrContainsInMap<uint32>(text, consumableSubClasses) ||
-           substrContainsInMap<uint32>(text, tradeSubClasses) || substrContainsInMap<uint32>(text, itemQualities) ||
+           substrContainsInMap<uint32>(text, itemQualities) ||
            substrContainsInMap<uint32>(text, slots) || substrContainsInMap<ChatMsg>(text, chats) ||
            substrContainsInMap<uint32>(text, skills) || parseMoney(text) > 0;
 }

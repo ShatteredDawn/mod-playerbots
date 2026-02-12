@@ -9,7 +9,6 @@
 #include <map>
 
 #include "ObjectGuid.h"
-#include "PlayerbotAIAware.h"
 #include "SharedDefines.h"
 
 class GameObject;
@@ -32,9 +31,6 @@ struct ItemWithRandomProperty {
 class ChatHelper
 {
 public:
-    ChatHelper();
-    ~ChatHelper() = default;
-
     static std::string const formatMoney(uint32 copper);
     static uint32 parseMoney(std::string const text);
     static ItemIds parseItems(std::string const text);
@@ -73,8 +69,16 @@ public:
     static std::set<uint32> ExtractAllItemIds(const std::string& text);
 
 private:
+    ChatHelper() = delete;
+    ~ChatHelper() = delete;
+
+    ChatHelper(ChatHelper const&) = delete;
+    ChatHelper& operator=(ChatHelper const&) = delete;
+
+    ChatHelper(ChatHelper&&) = delete;
+    ChatHelper& operator=(ChatHelper&&) = delete;
+
     static std::map<std::string, uint32> consumableSubClasses;
-    static std::map<std::string, uint32> tradeSubClasses;
     static std::map<std::string, uint32> itemQualities;
     static std::map<std::string, uint32> projectileSubClasses;
     static std::map<std::string, uint32> slots;
