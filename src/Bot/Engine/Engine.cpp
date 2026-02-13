@@ -322,18 +322,18 @@ ActionResult Engine::ExecuteAction(NextAction::Factory actionFactory, Event even
 
     Action& action = actionNode->getAction();
 
-    if (!action.isPossible())
-    {
-        delete actionNode;
-
-        return ACTION_RESULT_IMPOSSIBLE;
-    }
-
     if (!action.isUseful())
     {
         delete actionNode;
 
         return ACTION_RESULT_USELESS;
+    }
+
+    if (!action.isPossible())
+    {
+        delete actionNode;
+
+        return ACTION_RESULT_IMPOSSIBLE;
     }
 
     action.MakeVerbose();
