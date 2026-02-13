@@ -1654,54 +1654,59 @@ void PlayerbotAI::ChangeEngineOnNonCombat()
 
 void PlayerbotAI::DoNextAction(bool min)
 {
-    if (!bot->IsInWorld() || bot->IsBeingTeleported() || (GetMaster() && GetMaster()->IsBeingTeleported()))
+    if (!this->bot->IsInWorld() || this->bot->IsBeingTeleported() || (this->GetMaster() != nullptr && this->GetMaster()->IsBeingTeleported()))
     {
-        SetNextCheckDelay(sPlayerbotAIConfig.globalCoolDown);
+        this->SetNextCheckDelay(PlayerbotAIConfig::instance().globalCoolDown);
+
         return;
     }
 
     // Change engine if just died
-    bool isBotAlive = bot->IsAlive();
-    if (currentEngine != engines[BOT_STATE_DEAD] && !isBotAlive)
+    const bool isBotAlive = this->bot->IsAlive();
+
+    if (this->currentEngine != engines[BOT_STATE_DEAD] && !isBotAlive)
     {
         // Death Count to prevent skeleton piles
-        // Player* master = GetMaster();  // warning here - whipowill
-        if (!HasActivePlayerMaster() && !bot->InBattleground())
+        if (!this->HasActivePlayerMaster() && !this->bot->InBattleground())
         {
-            uint32 dCount = aiObjectContext->GetValue<uint32>("death count")->Get();
-            aiObjectContext->GetValue<uint32>("death count")->Set(++dCount);
+            uint32 dCount = this->aiObjectContext->GetValue<uint32>("death count")->Get();
+
+            this->aiObjectContext->GetValue<uint32>("death count")->Set(++dCount);
         }
 
-        aiObjectContext->GetValue<Unit*>("current target")->Set(nullptr);
-        aiObjectContext->GetValue<Unit*>("enemy player target")->Set(nullptr);
-        aiObjectContext->GetValue<ObjectGuid>("pull target")->Set(ObjectGuid::Empty);
-        aiObjectContext->GetValue<ObjectGuid>("pull strategy target")->Set(ObjectGuid::Empty);
-        aiObjectContext->GetValue<LootObject>("loot target")->Set(LootObject());
+        this->aiObjectContext->GetValue<Unit*>("current target")->Set(nullptr);
+        this->aiObjectContext->GetValue<Unit*>("enemy player target")->Set(nullptr);
+        this->aiObjectContext->GetValue<ObjectGuid>("pull target")->Set(ObjectGuid::Empty);
+        this->aiObjectContext->GetValue<ObjectGuid>("pull strategy target")->Set(ObjectGuid::Empty);
+        this->aiObjectContext->GetValue<LootObject>("loot target")->Set(LootObject());
 
-        ChangeEngine(BOT_STATE_DEAD);
+        this->ChangeEngine(BOT_STATE_DEAD);
+
         return;
     }
 
     // Change engine if just ressed (no movement update when rooted)
-    if (currentEngine == engines[BOT_STATE_DEAD] && isBotAlive && !bot->IsRooted())
+    if (this->currentEngine == this->engines[BOT_STATE_DEAD] && isBotAlive && !this->bot->IsRooted())
     {
-        bot->SendMovementFlagUpdate();
+        this->bot->SendMovementFlagUpdate();
 
-        ChangeEngine(BOT_STATE_NON_COMBAT);
+        this->ChangeEngine(BOT_STATE_NON_COMBAT);
+
         return;
     }
 
     // Clear targets if in combat but sticking with old data
-    if (currentEngine == engines[BOT_STATE_NON_COMBAT] && bot->IsInCombat())
+    if (this->currentEngine == this->engines[BOT_STATE_NON_COMBAT] && this->bot->IsInCombat())
     {
-        Unit* currentTarget = aiObjectContext->GetValue<Unit*>("current target")->Get();
+        Unit* currentTarget = this->aiObjectContext->GetValue<Unit*>("current target")->Get();
+
         if (currentTarget != nullptr)
         {
-            aiObjectContext->GetValue<Unit*>("current target")->Set(nullptr);
+            this->aiObjectContext->GetValue<Unit*>("current target")->Set(nullptr);
         }
     }
 
-    bool minimal = !this->allowActivity();
+    const bool minimal = !this->allowActivity();
 
     const GlobalPlayerInspector playerInspector(this->bot->GetGUID().GetRawValue());
 
@@ -1712,47 +1717,52 @@ void PlayerbotAI::DoNextAction(bool min)
 		return;
 	}
 
-    currentEngine->doNextAction(nullptr, 0, (minimal || min));
+    this->currentEngine->doNextAction(nullptr, 0, (minimal || min));
 
     if (minimal)
     {
-        if (!bot->isAFK() && !bot->InBattleground() && !HasRealPlayerMaster())
-            bot->ToggleAFK();
+        if (!this->bot->isAFK() && !this->bot->InBattleground() && !this->HasRealPlayerMaster())
+        {
+            this->bot->ToggleAFK();
+        }
 
-        SetNextCheckDelay(sPlayerbotAIConfig.passiveDelay);
+        this->SetNextCheckDelay(PlayerbotAIConfig::instance().passiveDelay);
+
         return;
     }
-    else if (bot->isAFK())
-        bot->ToggleAFK();
-
-    if (master && master->IsInWorld())
+    else if (this->bot->isAFK())
     {
-        float distance = ServerFacade::instance().GetDistance2d(bot, master);
+        this->bot->ToggleAFK();
+    }
 
-        if (master->m_movementInfo.HasMovementFlag(MOVEMENTFLAG_WALKING) && distance < 20.0f)
-            bot->m_movementInfo.AddMovementFlag(MOVEMENTFLAG_WALKING);
+    if (this->master && this->master->IsInWorld())
+    {
+        float distance = ServerFacade::instance().GetDistance2d(this->bot, this->master);
+
+        if (this->master->m_movementInfo.HasMovementFlag(MOVEMENTFLAG_WALKING) && distance < 20.0f)
+            this->bot->m_movementInfo.AddMovementFlag(MOVEMENTFLAG_WALKING);
         else
-            bot->m_movementInfo.RemoveMovementFlag(MOVEMENTFLAG_WALKING);
+            this->bot->m_movementInfo.RemoveMovementFlag(MOVEMENTFLAG_WALKING);
 
-        if (master->IsSitState() && nextAICheckDelay < 1000)
+        if (this->master->IsSitState() && nextAICheckDelay < 1000)
         {
-            if (!bot->isMoving() && distance < 10.0f)
-                bot->SetStandState(UNIT_STAND_STATE_SIT);
+            if (!this->bot->isMoving() && distance < 10.0f)
+                this->bot->SetStandState(UNIT_STAND_STATE_SIT);
         }
         else if (nextAICheckDelay < 1000)
-            bot->SetStandState(UNIT_STAND_STATE_STAND);
+            this->bot->SetStandState(UNIT_STAND_STATE_STAND);
     }
-    else if (bot->m_movementInfo.HasMovementFlag(MOVEMENTFLAG_WALKING))
-        bot->m_movementInfo.RemoveMovementFlag(MOVEMENTFLAG_WALKING);
-    else if ((nextAICheckDelay < 1000) && bot->IsSitState())
-        bot->SetStandState(UNIT_STAND_STATE_STAND);
+    else if (this->bot->m_movementInfo.HasMovementFlag(MOVEMENTFLAG_WALKING))
+        this->bot->m_movementInfo.RemoveMovementFlag(MOVEMENTFLAG_WALKING);
+    else if ((nextAICheckDelay < 1000) && this->bot->IsSitState())
+        this->bot->SetStandState(UNIT_STAND_STATE_STAND);
 
-    bool hasMountAura = bot->HasAuraType(SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED) ||
-                        bot->HasAuraType(SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED);
-    if (hasMountAura && !bot->IsMounted())
+    bool hasMountAura = this->bot->HasAuraType(SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED) ||
+                        this->bot->HasAuraType(SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED);
+    if (hasMountAura && !this->bot->IsMounted())
     {
-        bot->RemoveAurasByType(SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED);
-        bot->RemoveAurasByType(SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED);
+        this->bot->RemoveAurasByType(SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED);
+        this->bot->RemoveAurasByType(SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED);
     }
 }
 

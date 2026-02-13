@@ -1783,38 +1783,46 @@ void PlayerbotsMgr::RemovePlayerBotData(ObjectGuid const& guid, bool is_AI)
 
 PlayerbotAI* PlayerbotsMgr::GetPlayerbotAI(Player* player)
 {
-    if (!(sPlayerbotAIConfig.enabled) || !player)
+    if (player == nullptr || !(PlayerbotAIConfig::instance().enabled))
     {
         return nullptr;
     }
-    // if (player->GetSession()->isLogingOut() || player->IsDuringRemoveFromWorld())
-    // {
-    //     return nullptr;
-    // }
-    auto itr = _playerbotsAIMap.find(player->GetGUID());
-    if (itr != _playerbotsAIMap.end())
+
+    std::unordered_map<ObjectGuid, PlayerbotAIBase*>::iterator itr = this->_playerbotsAIMap.find(player->GetGUID());
+
+    if (itr == this->_playerbotsAIMap.end())
     {
-        if (itr->second->IsBotAI())
-            return dynamic_cast<PlayerbotAI*>(itr->second);
+        return nullptr;
     }
 
-    return nullptr;
+    if (!itr->second->IsBotAI())
+    {
+        return nullptr;
+    }
+
+    return dynamic_cast<PlayerbotAI*>(itr->second);
 }
 
 PlayerbotMgr* PlayerbotsMgr::GetPlayerbotMgr(Player* player)
 {
-    if (!(sPlayerbotAIConfig.enabled) || !player)
+    if (player == nullptr || !(PlayerbotAIConfig::instance().enabled))
     {
         return nullptr;
     }
-    auto itr = _playerbotsMgrMap.find(player->GetGUID());
-    if (itr != _playerbotsMgrMap.end())
+
+    std::unordered_map<ObjectGuid, PlayerbotAIBase*>::iterator itr = this->_playerbotsMgrMap.find(player->GetGUID());
+
+    if (itr == this->_playerbotsMgrMap.end())
     {
-        if (!itr->second->IsBotAI())
-            return dynamic_cast<PlayerbotMgr*>(itr->second);
+        return nullptr;
     }
 
-    return nullptr;
+    if (itr->second->IsBotAI())
+    {
+        return nullptr;
+    }
+
+    return dynamic_cast<PlayerbotMgr*>(itr->second);
 }
 
 void PlayerbotMgr::HandleSetSecurityKeyCommand(Player* player, const std::string& key)
