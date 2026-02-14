@@ -8,7 +8,7 @@
 
 PlayerbotAIBase::PlayerbotAIBase(bool isBotAI) : nextAICheckDelay(0), _isBotAI(isBotAI) {}
 
-void PlayerbotAIBase::UpdateAI(uint32_t elapsed, bool minimal)
+void PlayerbotAIBase::UpdateAI(uint32_t elapsed)
 {
     if (this->totalPmo != nullptr)
     {
@@ -31,7 +31,7 @@ void PlayerbotAIBase::UpdateAI(uint32_t elapsed, bool minimal)
         return;
     }
 
-    this->UpdateAIInternal(minimal);
+    this->UpdateAIInternal();
     this->YieldThread(nullptr);
 }
 

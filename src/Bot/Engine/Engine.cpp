@@ -144,7 +144,116 @@ void Engine::Init()
     }
 }
 
-bool Engine::doNextAction(Unit*, uint32, bool minimal)
+EngineIterationResultEnum Engine::iterate(const bool minimal) noexcept
+{
+    ActionBasket* const basket = this->queue.Peek();
+
+    if (basket == nullptr)
+    {
+        return EngineIterationResultEnum::STOP;
+    }
+
+    // for reference
+    float relevance = basket->getRelevance();
+    const bool skipPrerequisites = basket->isSkipPrerequisites();
+
+    if (minimal && (relevance < 100.0f))
+    {
+        return EngineIterationResultEnum::STOP;
+    }
+
+    const Event event = basket->getEvent();
+    // NOTE: Pop() deletes basket
+    ActionNode* const actionNode = this->queue.Pop();
+
+    if (actionNode == nullptr)
+    {
+        return EngineIterationResultEnum::STOP;
+    }
+
+    Action& action = actionNode->getAction();
+
+    if (!action.isUseful())
+    {
+        this->LogAction("A:%s - USELESS", action.getName().c_str());
+        lastRelevance = relevance;
+
+        // Always delete after processing the action node
+        delete actionNode;
+
+        return EngineIterationResultEnum::CONTINUE;
+    }
+
+    // Apply multipliers early to avoid unnecessary iterations
+    for (Multiplier* const multiplier : multipliers)
+    {
+        relevance *= multiplier->GetValue(action);
+        action.setRelevance(relevance);
+
+        if (relevance <= 0.0f)
+        {
+            this->LogAction("Multiplier %s made action %s useless", multiplier->getName().c_str(), action.getName().c_str());
+
+            delete actionNode;
+
+            return EngineIterationResultEnum::CONTINUE;
+        }
+    }
+
+    if (relevance <= 0.0f || !action.isPossible())
+    {
+        this->multiplyAndPush(actionNode->getAlternatives(), relevance + 0.003f, false, event);
+
+
+        delete actionNode;
+
+        return EngineIterationResultEnum::CONTINUE;
+    }
+
+    if (!skipPrerequisites)
+    {
+        this->LogAction("A:%s - PREREQ", action.getName().c_str());
+
+        if (this->multiplyAndPush(actionNode->getPrerequisites(), relevance + 0.002f, false, event))
+        {
+            this->PushAgain(actionNode, relevance + 0.001f, event);
+
+            return EngineIterationResultEnum::CONTINUE;
+        }
+    }
+
+    PerfMonitorOperation* const pmo = PerfMonitor::instance().start(PERF_MON_ACTION, action.getName(), &aiObjectContext->performanceStack);
+
+    bool actionExecuted = this->listenAndExecute(action, event);
+
+    if (pmo)
+    {
+        pmo->finish();
+    }
+
+    if (actionExecuted)
+    {
+        this->LogAction("A:%s - OK", action.getName().c_str());
+
+        this->multiplyAndPush(actionNode->getContinuers(), relevance, false, event);
+
+        lastRelevance = relevance;
+
+        // Safe memory management
+        delete actionNode;
+
+        return EngineIterationResultEnum::ACTION_EXECUTED;
+    }
+
+    this->multiplyAndPush(actionNode->getAlternatives(), relevance + 0.003f, false, event);
+
+    // Always delete after processing the action node
+    delete actionNode;
+
+    return EngineIterationResultEnum::CONTINUE;
+}
+
+bool Engine::doNextAction(bool minimal)
 {
     this->LogAction("--- AI Tick ---");
 
@@ -154,102 +263,39 @@ bool Engine::doNextAction(Unit*, uint32, bool minimal)
     }
 
     bool actionExecuted = false;
-    time_t currentTime = time(nullptr);
+    const time_t currentTime = time(nullptr);
 
     // Update triggers and push default actions
+
     this->ProcessTriggers(minimal);
     this->PushDefaultActions();
 
-    uint32 iterations = 0;
-    uint32 iterationsPerTick = this->queue.Size() * (minimal ? 2 : PlayerbotAIConfig::instance().iterationsPerTick);
+    const std::size_t queueSize = this->queue.Size();
+    std::size_t iterationsPerTick = queueSize * 2;
 
-    while (++iterations <= iterationsPerTick)
+    if (!minimal)
     {
-        ActionBasket* basket = this->queue.Peek();
-
-        if (!basket)
-            break;
-
-        float relevance = basket->getRelevance();  // for reference
-
-        if (minimal && (relevance < 100))
-            continue;
-
-        Event event = basket->getEvent();
-        ActionNode* actionNode = this->queue.Pop();  // NOTE: Pop() deletes basket
-        Action& action = actionNode->getAction();
-
-        if (!action.isUseful())
-        {
-            this->LogAction("A:%s - USELESS", action.getName().c_str());
-            lastRelevance = relevance;
-            delete actionNode;  // Always delete after processing the action node
-
-            continue;
-        }
-
-        // Apply multipliers early to avoid unnecessary iterations
-        for (Multiplier* multiplier : multipliers)
-        {
-            relevance *= multiplier->GetValue(action);
-            action.setRelevance(relevance);
-
-            if (relevance <= 0)
-            {
-                this->LogAction("Multiplier %s made action %s useless", multiplier->getName().c_str(), action.getName().c_str());
-                break;
-            }
-        }
-
-        if (relevance <= 0.0f || !action.isPossible())
-        {
-            this->multiplyAndPush(actionNode->getAlternatives(), relevance + 0.003f, false, event);
-
-            delete actionNode;
-
-            continue;
-        }
-
-        bool skipPrerequisites = basket->isSkipPrerequisites();
-
-        if (!skipPrerequisites)
-        {
-            this->LogAction("A:%s - PREREQ", action.getName().c_str());
-
-            if (this->multiplyAndPush(actionNode->getPrerequisites(), relevance + 0.002f, false, event))
-            {
-                this->PushAgain(actionNode, relevance + 0.001f, event);
-                continue;
-            }
-        }
-
-        PerfMonitorOperation* pmo = sPerfMonitor.start(PERF_MON_ACTION, action.getName(), &aiObjectContext->performanceStack);
-
-        actionExecuted = this->listenAndExecute(action, event);
-
-        if (pmo)
-            pmo->finish();
-
-        if (actionExecuted)
-        {
-            this->LogAction("A:%s - OK", action.getName().c_str());
-
-            this->multiplyAndPush(actionNode->getContinuers(), relevance, false, event);
-
-            lastRelevance = relevance;
-
-            delete actionNode;  // Safe memory management
-
-            break;
-        }
-
-        // LogAction("A:%s - FAILED", action->getName().c_str());
-        this->multiplyAndPush(actionNode->getAlternatives(), relevance + 0.003f, false, event);
-
-        delete actionNode;  // Always delete after processing the action node
+        iterationsPerTick = queueSize * PlayerbotAIConfig::instance().iterationsPerTick;
     }
 
-    if (time(nullptr) - currentTime > 1)
+    for (size_t i = 0; i < iterationsPerTick; ++i)
+    {
+        const EngineIterationResultEnum result = this->iterate(minimal);
+
+        if (result == EngineIterationResultEnum::ACTION_EXECUTED)
+        {
+            actionExecuted = true;
+
+            break;
+        }
+
+        if (result == EngineIterationResultEnum::STOP)
+        {
+            break;
+        }
+    }
+
+    if (time(nullptr) - currentTime > 1u)
     {
         this->LogAction("Execution time exceeded 1 second");
     }

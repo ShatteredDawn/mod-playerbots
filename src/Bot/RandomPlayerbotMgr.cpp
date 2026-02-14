@@ -323,7 +323,7 @@ void RandomPlayerbotMgr::LogPlayerLocation()
     }
 }
 
-void RandomPlayerbotMgr::UpdateAIInternal(bool /*minimal*/)
+void RandomPlayerbotMgr::UpdateAIInternal()
 {
     if (totalPmo)
         totalPmo->finish();

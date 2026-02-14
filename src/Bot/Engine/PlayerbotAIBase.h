@@ -19,8 +19,8 @@ public:
     void SetNextCheckDelay(const uint32_t delay);
     void IncreaseNextCheckDelay(const uint32_t delay);
     void YieldThread(const Player* bot, const uint32_t delay = PlayerbotAIConfig::instance().reactDelay);
-    virtual void UpdateAI(uint32 elapsed, bool minimal = false);
-    virtual void UpdateAIInternal(bool minimal = false) = 0;
+    virtual void UpdateAI(uint32 elapsed);
+    virtual void UpdateAIInternal() = 0;
     bool IsActive();
     bool IsBotAI() const;
 

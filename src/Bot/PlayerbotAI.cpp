@@ -438,7 +438,7 @@ void PlayerbotAI::handleNextTransportCheck() noexcept
  * End of refactoring area
  */
 
-void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
+void PlayerbotAI::UpdateAI(uint32_t elapsed)
 {
     // Handle the AI check delay
     if (this->nextAICheckDelay > elapsed)
@@ -514,7 +514,7 @@ void PlayerbotAI::UpdateAI(uint32 elapsed, bool minimal)
     this->UpdateAIGroupMaster();
 
     // Update internal AI
-    this->UpdateAIInternal(minimal);
+    this->UpdateAIInternal();
     this->YieldThread(this->bot, GetReactDelay());
 }
 
@@ -608,7 +608,7 @@ void PlayerbotAI::UpdateAIGroupMaster()
     }
 }
 
-void PlayerbotAI::UpdateAIInternal(bool minimal)
+void PlayerbotAI::UpdateAIInternal()
 {
     if (this->bot == nullptr)
     {
@@ -710,7 +710,7 @@ void PlayerbotAI::UpdateAIInternal(bool minimal)
     this->masterIncomingPacketHandlers.Handle(helper);
     this->masterOutgoingPacketHandlers.Handle(helper);
 
-    this->DoNextAction(minimal);
+    this->DoNextAction();
 
     if (pmo)
     {
@@ -1652,7 +1652,71 @@ void PlayerbotAI::ChangeEngineOnNonCombat()
     }
 }
 
-void PlayerbotAI::DoNextAction(bool min)
+void PlayerbotAI::handleBotDeath() noexcept
+{
+    if (!this->HasActivePlayerMaster() && !this->bot->InBattleground())
+    {
+        Value<uint32_t>* const deathCountValue = this->aiObjectContext->GetValue<uint32>("death count");
+
+        if (deathCountValue != nullptr)
+        {
+            const uint32_t dCount = deathCountValue->Get();
+
+            deathCountValue->Set(dCount + 1);
+        }
+    }
+
+    this->invalidateTarget();
+
+    Value<Unit*>* const enemyPlayerTargetValue = this->aiObjectContext->GetValue<Unit*>("enemy player target");
+
+    if (enemyPlayerTargetValue != nullptr)
+    {
+        enemyPlayerTargetValue->Set(nullptr);
+    }
+
+    Value<ObjectGuid>* const pullTargetValue = this->aiObjectContext->GetValue<ObjectGuid>("pull target");
+
+    if (pullTargetValue != nullptr)
+    {
+        pullTargetValue->Set(ObjectGuid::Empty);
+    }
+
+    Value<ObjectGuid>* const pullTargetStrategyValue = this->aiObjectContext->GetValue<ObjectGuid>("pull strategy target");
+
+    if (pullTargetStrategyValue != nullptr)
+    {
+        pullTargetStrategyValue->Set(ObjectGuid::Empty);
+    }
+
+    Value<LootObject>* const lootTargetValue = this->aiObjectContext->GetValue<LootObject>("loot target");
+
+    if (lootTargetValue != nullptr)
+    {
+        lootTargetValue->Set(LootObject());
+    }
+
+    this->ChangeEngine(BOT_STATE_DEAD);
+}
+
+void PlayerbotAI::handleBotResurrection() noexcept
+{
+    this->bot->SendMovementFlagUpdate();
+
+    this->ChangeEngine(BOT_STATE_NON_COMBAT);
+}
+
+void PlayerbotAI::invalidateTarget() noexcept
+{
+    Value<Unit*>* const currentTargetValue = this->aiObjectContext->GetValue<Unit*>("current target");
+
+    if (currentTargetValue != nullptr)
+    {
+        currentTargetValue->Set(nullptr);
+    }
+}
+
+void PlayerbotAI::DoNextAction()
 {
     if (!this->bot->IsInWorld() || this->bot->IsBeingTeleported() || (this->GetMaster() != nullptr && this->GetMaster()->IsBeingTeleported()))
     {
@@ -1661,36 +1725,18 @@ void PlayerbotAI::DoNextAction(bool min)
         return;
     }
 
-    // Change engine if just died
     const bool isBotAlive = this->bot->IsAlive();
 
-    if (this->currentEngine != engines[BOT_STATE_DEAD] && !isBotAlive)
+    if (this->currentEngine != this->engines[BOT_STATE_DEAD] && !isBotAlive)
     {
-        // Death Count to prevent skeleton piles
-        if (!this->HasActivePlayerMaster() && !this->bot->InBattleground())
-        {
-            uint32 dCount = this->aiObjectContext->GetValue<uint32>("death count")->Get();
-
-            this->aiObjectContext->GetValue<uint32>("death count")->Set(++dCount);
-        }
-
-        this->aiObjectContext->GetValue<Unit*>("current target")->Set(nullptr);
-        this->aiObjectContext->GetValue<Unit*>("enemy player target")->Set(nullptr);
-        this->aiObjectContext->GetValue<ObjectGuid>("pull target")->Set(ObjectGuid::Empty);
-        this->aiObjectContext->GetValue<ObjectGuid>("pull strategy target")->Set(ObjectGuid::Empty);
-        this->aiObjectContext->GetValue<LootObject>("loot target")->Set(LootObject());
-
-        this->ChangeEngine(BOT_STATE_DEAD);
+        this->handleBotDeath();
 
         return;
     }
 
-    // Change engine if just ressed (no movement update when rooted)
     if (this->currentEngine == this->engines[BOT_STATE_DEAD] && isBotAlive && !this->bot->IsRooted())
     {
-        this->bot->SendMovementFlagUpdate();
-
-        this->ChangeEngine(BOT_STATE_NON_COMBAT);
+        this->handleBotResurrection();
 
         return;
     }
@@ -1698,12 +1744,7 @@ void PlayerbotAI::DoNextAction(bool min)
     // Clear targets if in combat but sticking with old data
     if (this->currentEngine == this->engines[BOT_STATE_NON_COMBAT] && this->bot->IsInCombat())
     {
-        Unit* currentTarget = this->aiObjectContext->GetValue<Unit*>("current target")->Get();
-
-        if (currentTarget != nullptr)
-        {
-            this->aiObjectContext->GetValue<Unit*>("current target")->Set(nullptr);
-        }
+        this->invalidateTarget();
     }
 
     const bool minimal = !this->allowActivity();
@@ -1717,7 +1758,7 @@ void PlayerbotAI::DoNextAction(bool min)
 		return;
 	}
 
-    this->currentEngine->doNextAction(nullptr, 0, (minimal || min));
+    this->currentEngine->doNextAction(minimal);
 
     if (minimal)
     {

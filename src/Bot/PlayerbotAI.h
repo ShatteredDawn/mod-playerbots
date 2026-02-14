@@ -387,8 +387,20 @@ public:
     PlayerbotAI(Player* bot);
     virtual ~PlayerbotAI();
 
-    void UpdateAI(uint32 elapsed, bool minimal = false) override;
-    void UpdateAIInternal(bool minimal = false) override;
+    /**
+     * Refactoring area
+     */
+
+    void handleBotDeath() noexcept;
+    void handleBotResurrection() noexcept;
+    void invalidateTarget() noexcept;
+
+    /**
+     * End of refactoring area
+     */
+
+    void UpdateAI(uint32_t elapsed) override;
+    void UpdateAIInternal() override;
 
     void handleChatReplies();
 
@@ -402,7 +414,7 @@ public:
     void ChangeEngine(BotState type);
     void ChangeEngineOnCombat();
     void ChangeEngineOnNonCombat();
-    void DoNextAction(bool minimal = false);
+    void DoNextAction();
     virtual bool DoSpecificAction(NextAction::Factory actionFactory, Event event = Event(), bool silent = false);
     void ChangeStrategy(std::string const name, BotState type);
     void ClearStrategies(BotState type);
