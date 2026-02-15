@@ -76,22 +76,28 @@ public:
         if (group->AddMember(target))
         {
             LOG_DEBUG("playerbots", "GroupInviteOperation: Successfully added {} to group", target->GetName());
-            if (sPlayerbotAIConfig.summonWhenGroup && target->GetDistance(bot) > sPlayerbotAIConfig.sightDistance)
+
+            if (!PlayerbotAIConfig::instance().summonWhenGroup || target->GetDistance(bot) <= PlayerbotAIConfig::instance().sightDistance)
             {
-                PlayerbotAI* targetAI = sPlayerbotsMgr.GetPlayerbotAI(target);
-                if (targetAI)
-                {
-                    SummonAction summonAction(targetAI, "group summon");
-                    summonAction.Teleport(bot, target, true);
-                }
+                return true;
             }
+
+            PlayerbotAI* targetAI = PlayerbotsMgr::instance().GetPlayerbotAI(target);
+
+            if (targetAI == nullptr)
+            {
+                return true;
+            }
+
+            SummonAction summonAction(targetAI, "group summon");
+            summonAction.Teleport(bot, target, true);
+
             return true;
         }
-        else
-        {
-            LOG_ERROR("playerbots", "GroupInviteOperation: Failed to add {} to group", target->GetName());
-            return false;
-        }
+
+        LOG_ERROR("playerbots", "GroupInviteOperation: Failed to add {} to group", target->GetName());
+
+        return false;
     }
 
     ObjectGuid GetBotGuid() const override { return m_botGuid; }
