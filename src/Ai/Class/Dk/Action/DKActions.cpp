@@ -10,34 +10,40 @@
 #include "Playerbots.h"
 #include "SpellInfo.h"
 #include "SpellMgr.h"
-#include "DKActions.h"
 
 std::vector<NextAction> CastDeathchillAction::getPrerequisites()
 {
-    return {
-        CreateNextAction<CastFrostPresenceAction>(1.0f)
-    };
+    std::vector<NextAction> prerequisites = CastBuffSpellAction::getPrerequisites();
+
+    prerequisites.emplace_back(CreateNextAction<CastFrostPresenceAction>(1.0f));
+
+    return prerequisites;
 }
 
 std::vector<NextAction> CastUnholyMeleeSpellAction::getPrerequisites()
 {
-    return {
-        CreateNextAction<CastUnholyPresenceAction>(1.0f)
-    };
+    std::vector<NextAction> prerequisites = CastMeleeSpellAction::getPrerequisites();
+
+    prerequisites.emplace_back(CreateNextAction<CastUnholyPresenceAction>(1.0f));
+
+    return prerequisites;
 }
 
 std::vector<NextAction> CastFrostMeleeSpellAction::getPrerequisites()
 {
-    return {
-        CreateNextAction<CastFrostPresenceAction>(1.0f)
-    };
+    std::vector<NextAction> prerequisites = CastMeleeSpellAction::getPrerequisites();
+
+    prerequisites.emplace_back(CreateNextAction<CastFrostPresenceAction>(1.0f));
+
+    return prerequisites;
 }
 
 std::vector<NextAction> CastBloodMeleeSpellAction::getPrerequisites()
 {
-    return {
-        CreateNextAction<CastBloodPresenceAction>(1.0f)
-    };
+    std::vector<NextAction> prerequisites = CastMeleeSpellAction::getPrerequisites();
+    prerequisites.emplace_back(CreateNextAction<CastBloodPresenceAction>(1.0f));
+
+    return prerequisites;
 }
 
 bool CastRaiseDeadAction::Execute(Event event)

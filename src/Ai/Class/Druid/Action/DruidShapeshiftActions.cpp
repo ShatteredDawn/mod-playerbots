@@ -19,9 +19,9 @@ bool CastBearFormAction::isUseful()
 
 std::vector<NextAction> CastDireBearFormAction::getAlternatives()
 {
-    std::vector<NextAction> alternatives;
+    std::vector<NextAction> alternatives = CastBuffSpellAction::getAlternatives();
 
-    alternatives.push_back(CreateNextAction<CastBearFormAction>(1.0f));
+    alternatives.emplace_back(CreateNextAction<CastBearFormAction>(1.0f));
 
     return alternatives;
 }

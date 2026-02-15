@@ -15,7 +15,6 @@
 #include "RpgSubActions.h"
 #include "ServerFacade.h"
 #include "PossibleRpgTargetsValue.h"
-#include "RpgSubActions.h"
 
 bool ChooseRpgTargetAction::HasSameTarget(ObjectGuid guid, uint32 max, GuidVector const& nearGuids)
 {
