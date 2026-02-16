@@ -86,7 +86,7 @@ void GenericHunterNonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& tri
         new TriggerNode(
             "no ammo",
             {
-                CreateNextAction<EquipUpgradeAction>(ACTION_HIGH + 1.0f)
+                CreateNextAction<EquipUpgradesPacketAction>(ACTION_HIGH + 1.0f)
             }
         )
     );

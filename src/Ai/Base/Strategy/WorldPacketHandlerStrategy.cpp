@@ -135,7 +135,7 @@ void WorldPacketHandlerStrategy::InitTriggers(std::vector<TriggerNode*>& trigger
             "trade status",
             {
                 CreateNextAction<TradeStatusAction>(relevance),
-                CreateNextAction<EquipUpgradeAction>(relevance)
+                CreateNextAction<EquipUpgradesPacketAction>(relevance)
             }
         )
     );
