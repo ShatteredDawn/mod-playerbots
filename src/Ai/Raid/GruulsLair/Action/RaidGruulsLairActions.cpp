@@ -493,7 +493,7 @@ bool HighKingMaulgarMisdirectOlmAndBlindeyeAction::Execute(Event)
 // Gruul the Dragonkiller Actions
 
 // Position in center of the room
-bool GruulTheDragonkillerTanksPositionBossAction::Execute(Event event)
+bool GruulTheDragonkillerTanksPositionBossAction::Execute(Event)
 {
     Unit* gruul = AI_VALUE2(Unit*, "find target", "gruul the dragonkiller");
     if (!gruul)
