@@ -11,6 +11,7 @@
 #include "MageAiObjectContext.h"
 #include "PaladinAiObjectContext.h"
 #include "PriestAiObjectContext.h"
+#include "RaidZGTriggerContext.h"
 #include "RogueAiObjectContext.h"
 #include "ShamanAiObjectContext.h"
 #include "WarlockAiObjectContext.h"
