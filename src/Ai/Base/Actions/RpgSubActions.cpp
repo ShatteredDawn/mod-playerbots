@@ -9,6 +9,7 @@
 #include "BattleGroundJoinAction.h"
 #include "BuyAction.h"
 #include "CastCustomSpellAction.h"
+#include "BudgetValues.h"
 #include "ChooseRpgTargetAction.h"
 #include "DruidActions.h"
 #include "EmoteAction.h"
@@ -67,7 +68,11 @@ ObjectGuid RpgHelper::guid() { return (ObjectGuid)guidP(); }
 
 bool RpgHelper::InRange()
 {
-    return guidP() ? (guidP().sqDistance2d(bot) < INTERACTION_DISTANCE * INTERACTION_DISTANCE) : false;
+    GuidPosition gp = guidP();
+    if (!gp)
+        return false;
+
+    return gp.sqDistance2d(bot) < INTERACTION_DISTANCE * INTERACTION_DISTANCE;
 }
 
 void RpgHelper::setFacingTo(GuidPosition guidPosition)
@@ -312,6 +317,60 @@ Event RpgSellAction::ActionEvent(Event)
 NextAction::Factory RpgRepairAction::getActionFactory() const
 {
     return CreateNextAction<RepairAllAction>(1.0f).factory;
+}
+
+bool RpgTrainAction::isUseful()
+{
+    if (!rpg->InRange())
+        return false;
+
+    Creature* creature = rpg->guidP().GetCreature();
+    if (!creature)
+        return false;
+
+    if (!creature->IsInWorld() || creature->IsDuringRemoveFromWorld() || !creature->IsAlive())
+        return false;
+
+    return true;
+}
+
+bool RpgTrainAction::isPossible()
+{
+    GuidPosition gp = rpg->guidP();
+
+    CreatureTemplate const* cinfo = gp.GetCreatureTemplate();
+    if (!cinfo)
+        return false;
+
+    Trainer::Trainer* trainer = sObjectMgr->GetTrainer(cinfo->Entry);
+    if (!trainer)
+        return false;
+
+    if (!trainer->IsTrainerValidForPlayer(bot))
+        return false;
+
+    FactionTemplateEntry const* factionTemplate = sFactionTemplateStore.LookupEntry(cinfo->faction);
+    float reputationDiscount = bot->GetReputationPriceDiscount(factionTemplate);
+    uint32 currentGold = AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::spells);
+
+    for (auto& spell : trainer->GetSpells())
+    {
+        Trainer::Spell const* trainerSpell = trainer->GetSpell(spell.SpellId);
+        if (!trainerSpell)
+            continue;
+
+        if (!trainer->CanTeachSpell(bot, trainerSpell))
+            continue;
+
+        if (currentGold < static_cast<uint32>(floor(trainerSpell->MoneyCost * reputationDiscount)))
+            continue;
+
+        // we only check if at least one spell can be learned from the trainer;
+        // otherwise, the train action should not be allowed
+        return true;
+    }
+
+    return false;
 }
 
 NextAction::Factory RpgTrainAction::getActionFactory() const
