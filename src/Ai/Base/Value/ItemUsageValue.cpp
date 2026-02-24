@@ -92,7 +92,7 @@ ItemUsage ItemUsageValue::QueryItemUsageForConsumable(const ItemTemplate* const 
         return ITEM_USAGE_NONE;
     }
 
-    if (itemTemplate->MaxCount != 0 && this->bot->GetItemCount(itemTemplate->ItemId, false) >= itemTemplate->MaxCount)
+    if (itemTemplate->MaxCount != 0 && this->bot->GetItemCount(itemTemplate->ItemId, false) >= uint32_t(itemTemplate->MaxCount))
     {
         return ITEM_USAGE_NONE;
     }
