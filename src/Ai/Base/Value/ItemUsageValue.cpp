@@ -136,7 +136,7 @@ ItemUsage ItemUsageValue::Calculate()
     const ParsedItemUsage parsed = this->GetItemIdFromQualifier();
 
     const uint32_t itemId = parsed.itemId;
-    const uint32_t randomPropertyId = parsed.randomPropertyId;
+    const int32_t randomPropertyId = parsed.randomPropertyId;
 
     if (itemId == 0)
     {

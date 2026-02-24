@@ -120,6 +120,7 @@ public:
         creators["use"] = &ChatActionContext::use;
         creators["item count"] = &ChatActionContext::item_count;
         creators["equip"] = &ChatActionContext::equip;
+        creators["equip upgrades"] = &ChatActionContext::equip_upgrade;
         creators["unequip"] = &ChatActionContext::unequip;
         creators["sell"] = &ChatActionContext::sell;
         creators["buy"] = &ChatActionContext::buy;

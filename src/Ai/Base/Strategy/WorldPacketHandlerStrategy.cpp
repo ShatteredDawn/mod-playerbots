@@ -178,7 +178,7 @@ void WorldPacketHandlerStrategy::InitTriggers(std::vector<TriggerNode*>& trigger
                 CreateNextAction<UnlockItemAction>(relevance),
                 CreateNextAction<OpenItemAction>(relevance),
                 CreateNextAction<QueryItemUsageAction>(relevance),
-                CreateNextAction<EquipUpgradeAction>(relevance)
+                CreateNextAction<EquipUpgradesPacketAction>(relevance)
             }
         )
     );
@@ -186,7 +186,7 @@ void WorldPacketHandlerStrategy::InitTriggers(std::vector<TriggerNode*>& trigger
         new TriggerNode(
             "loot roll won",
             {
-                CreateNextAction<EquipUpgradeAction>(relevance)
+                CreateNextAction<EquipUpgradesPacketAction>(relevance)
             }
         )
     );
