@@ -934,6 +934,7 @@ bool MovementAction::IsMovingAllowed()
 
 bool MovementAction::Follow(Unit* target, float distance) { return Follow(target, distance, GetFollowAngle()); }
 
+// @TODO: This needs to be refactored into something cleaner and that does not directly involve an action.
 void MovementAction::UpdateMovementState()
 {
     const bool isCurrentlyRestricted =  // see if the bot is currently slowed, rooted, or otherwise unable to move
