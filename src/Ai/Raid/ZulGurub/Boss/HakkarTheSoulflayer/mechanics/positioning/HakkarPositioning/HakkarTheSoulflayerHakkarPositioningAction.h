@@ -4,14 +4,14 @@
 #include "AiObjectContext.h"
 #include "AttackAction.h"
 #include "PlayerbotAI.h"
-#include "raid/leader/RaidLeaderRegistry.h"
+#include "domain/core/raid/leader/RaidLeaderRegistry.h"
 
-class HighPriestVenoxisPhase1VenoxisPositioningAction : public AttackAction
+class HakkarTheSoulflayerHakkarPositioningAction : public AttackAction
 {
 public:
-    HighPriestVenoxisPhase1VenoxisPositioningAction(
+    HakkarTheSoulflayerHakkarPositioningAction(
         PlayerbotAI* botAI,
-        const std::string name = "high priest venoxis phase 1 venoxis positioning"
+        const std::string name = "hakkar the soulflayer hakkar positioning"
     ) : AttackAction(botAI, name) {}
 
     bool Execute(Event) override
@@ -33,10 +33,10 @@ public:
 
         const uint32_t instanceId = this->bot->GetInstanceId();
         RaidLeaderRegistry& raidRegistry = RaidLeaderRegistry::GetInstance();
-        const ZulGurubRaidLeader& raidLeader = raidRegistry.getOrBind<ZulGurubRaidLeader>(instanceId, this->bot->GetMapId());
-        const HighPriestVenoxisAssistant& highPriestVenoxisAssistant = raidLeader.getHighPriestVenoxisAssistant();
+        ZulGurubRaidLeader& raidLeader = raidRegistry.getOrBind<ZulGurubRaidLeader>(instanceId, this->bot->GetMapId());
+        const HakkarTheSoulflayerAssistant& hakkarTheSoulflayerAssistant = raidLeader.getHakkarTheSoulflayerAssistant();
 
-        Unit* const boss = highPriestVenoxisAssistant.findActiveBoss(*this->bot);
+        Unit* const boss = hakkarTheSoulflayerAssistant.findActiveBoss(*this->bot);
 
         if (boss == nullptr)
         {
@@ -57,9 +57,9 @@ public:
             return false;
         }
 
-        const Position bossIdealPosition = highPriestVenoxisAssistant.getVenoxisPosition();
+        const Position bossIdealPosition = hakkarTheSoulflayerAssistant.getHakkarPosition();
         const float distanceToIdealPosition = this->bot->GetExactDist2d(bossIdealPosition.GetPositionX(), bossIdealPosition.GetPositionY());
-        const float maxDistance = highPriestVenoxisAssistant.getVenoxisMaxPositionDistance();
+        const float maxDistance = hakkarTheSoulflayerAssistant.getHakkarMaxPositionDistance();
 
         if (distanceToIdealPosition < maxDistance)
         {

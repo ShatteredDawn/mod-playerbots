@@ -6,12 +6,11 @@
 #include "PlayerbotAI.h"
 #include "Value.h"
 
-#include "../../facade/HighPriestVenoxisFacade.h"
 // #include "HighPriestVenoxisPhase1HolyWrathAction.h"
 // #include "../VenoxisPositioning/HighPriestVenoxisPhase1VenoxisPositioningAction.h"
 // #include "../RazzashiCobrasPositioning/HighPriestVenoxisPhase1RazzashiCobrasPositioningAction.h"
-// #include "../RangedDPSPositioning/HighPriestVenoxisPhase1RangedPositioningAction.h"
 #include "GenericSpellActions.h"
+#include "raid/leader/RaidLeaderRegistry.h"
 
 
 class HighPriestVenoxisPhase1HolyWrathMultiplier : public Multiplier
@@ -31,17 +30,22 @@ public:
             return 1.0f;
         }
 
-        if (HighPriestVenoxisFacade::IsInPhase1(*this->bot) == false)
+        const uint32_t instanceId = this->bot->GetInstanceId();
+        RaidLeaderRegistry& raidRegistry = RaidLeaderRegistry::GetInstance();
+        const ZulGurubRaidLeader& raidLeader = raidRegistry.getOrBind<ZulGurubRaidLeader>(instanceId, this->bot->GetMapId());
+        const HighPriestVenoxisAssistant& highPriestVenoxisAssistant = raidLeader.getHighPriestVenoxisAssistant();
+
+        if (highPriestVenoxisAssistant.isInPhase1(*this->bot) == false)
         {
             return 1.0f;
         }
 
-        if (HighPriestVenoxisFacade::IsAtSafeDistanceFromVenoxis(*this->bot) == true)
+        if (highPriestVenoxisAssistant.isAtSafeDistanceFromVenoxis(*this->bot) == true)
         {
             return 1.0f;
         }
 
-        const std::vector<Unit*> cobras = HighPriestVenoxisFacade::FindRazzashiCobras(*this->bot);
+        const std::vector<Unit*> cobras = highPriestVenoxisAssistant.findRazzashiCobras(*this->bot);
 
         if (!cobras.empty())
         {
@@ -62,13 +66,6 @@ public:
         //     return 1.0f;
         // }
 
-        // const HighPriestVenoxisPhase1RangedPositioningAction* const rangedPositioningAction = dynamic_cast<const HighPriestVenoxisPhase1RangedPositioningAction*>(&action);
-
-        // if (rangedPositioningAction != nullptr)
-        // {
-        //     return 1.0f;
-        // }
-
         // const HighPriestVenoxisPhase1RazzashiCobrasPositioningAction* const razzashiCobrasPositioningAction = dynamic_cast<const HighPriestVenoxisPhase1RazzashiCobrasPositioningAction*>(&action);
 
         // if (razzashiCobrasPositioningAction != nullptr)
@@ -76,12 +73,12 @@ public:
         //     return 1.0f;
         // }
 
-        // const CastSpellAction* const castSpellAction = dynamic_cast<const CastSpellAction*>(&action);
+        const CastSpellAction* const castSpellAction = dynamic_cast<const CastSpellAction*>(&action);
 
-        // if (castSpellAction != nullptr)
-        // {
-        //     return 1.0f;
-        // }
+        if (castSpellAction != nullptr)
+        {
+            return 1.0f;
+        }
 
         return 0.0f;
     }

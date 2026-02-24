@@ -277,6 +277,12 @@ public:
     CastHandOfReckoningAction(PlayerbotAI* botAI) : CastSpellAction(botAI, "hand of reckoning") {}
 };
 
+class CastHandOfSalvationAction : public CastSpellAction
+{
+public:
+    CastHandOfSalvationAction(PlayerbotAI* botAI) : CastSpellAction(botAI, "hand of salvation") {}
+};
+
 class CastRighteousDefenseAction : public CastSpellAction
 {
 public:

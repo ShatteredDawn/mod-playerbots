@@ -3,8 +3,7 @@
 #include "AiObjectContext.h"
 #include "PlayerbotAI.h"
 #include "Trigger.h"
-
-#include "../../facade/HighPriestVenoxisFacade.h"
+#include "raid/leader/RaidLeaderRegistry.h"
 
 class HighPriestVenoxisPhase1VenoxisPositioningTrigger : public Trigger
 {
@@ -28,26 +27,31 @@ public:
             return false;
         }
 
-        if (HighPriestVenoxisFacade::IsInCombatWithVenoxis(*this->bot) == false)
+        const uint32_t instanceId = this->bot->GetInstanceId();
+        RaidLeaderRegistry& raidRegistry = RaidLeaderRegistry::GetInstance();
+        const ZulGurubRaidLeader& raidLeader = raidRegistry.getOrBind<ZulGurubRaidLeader>(instanceId, this->bot->GetMapId());
+        const HighPriestVenoxisAssistant& highPriestVenoxisAssistant = raidLeader.getHighPriestVenoxisAssistant();
+
+        if (highPriestVenoxisAssistant.isInCombatWithVenoxis(*this->bot) == false)
         {
             return false;
         }
 
-        if (HighPriestVenoxisFacade::IsInPhase1(*this->bot) == false)
+        if (highPriestVenoxisAssistant.isInPhase1(*this->bot) == false)
         {
             return false;
         }
 
-        const Unit* const boss = HighPriestVenoxisFacade::FindActiveBoss(*this->bot);
+        const Unit* const boss = highPriestVenoxisAssistant.findActiveBoss(*this->bot);
 
         if (boss == nullptr)
         {
             return false;
         }
 
-        const Position bossIdealPosition = HighPriestVenoxisFacade::GetVenoxisPosition();
+        const Position bossIdealPosition = highPriestVenoxisAssistant.getVenoxisPosition();
         const float distanceToIdealPosition = this->bot->GetExactDist2d(bossIdealPosition.GetPositionX(), bossIdealPosition.GetPositionY());
-        static constexpr float maxDistance = HighPriestVenoxisFacade::GetVenoxisMaxPositionDistance();
+        const float maxDistance = highPriestVenoxisAssistant.getVenoxisMaxPositionDistance();
 
         if (distanceToIdealPosition < maxDistance)
         {

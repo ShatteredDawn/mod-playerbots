@@ -5,7 +5,7 @@
 #include "MovementActions.h"
 #include "PlayerbotAI.h"
 
-#include "../../facade/HighPriestVenoxisFacade.h"
+#include "raid/leader/RaidLeaderRegistry.h"
 
 class HighPriestVenoxisPhase1HolyWrathAction : public MovementAction
 {
@@ -22,7 +22,11 @@ public:
             return false;
         }
 
-        Unit* const venoxis = HighPriestVenoxisFacade::FindActiveBoss(*this->bot);
+        const uint32_t instanceId = this->bot->GetInstanceId();
+        RaidLeaderRegistry& raidRegistry = RaidLeaderRegistry::GetInstance();
+        const ZulGurubRaidLeader& raidLeader = raidRegistry.getOrBind<ZulGurubRaidLeader>(instanceId, this->bot->GetMapId());
+        const HighPriestVenoxisAssistant& highPriestVenoxisAssistant = raidLeader.getHighPriestVenoxisAssistant();
+        Unit* const venoxis = highPriestVenoxisAssistant.findActiveBoss(*this->bot);
 
         if (venoxis == nullptr)
         {

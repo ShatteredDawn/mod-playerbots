@@ -4,7 +4,7 @@
 #include "PlayerbotAI.h"
 #include "Trigger.h"
 
-#include "../../facade/HighPriestVenoxisFacade.h"
+#include "raid/leader/RaidLeaderRegistry.h"
 
 class HighPriestVenoxisPhase1RazzashiCobrasDPSPriorityTrigger : public Trigger
 {
@@ -23,7 +23,12 @@ public:
             return false;
         }
 
-        if (HighPriestVenoxisFacade::IsInCombatWithVenoxis(*this->bot) == false)
+        const uint32_t instanceId = this->bot->GetInstanceId();
+        RaidLeaderRegistry& raidRegistry = RaidLeaderRegistry::GetInstance();
+        const ZulGurubRaidLeader& raidLeader = raidRegistry.getOrBind<ZulGurubRaidLeader>(instanceId, this->bot->GetMapId());
+        const HighPriestVenoxisAssistant& highPriestVenoxisAssistant = raidLeader.getHighPriestVenoxisAssistant();
+
+        if (highPriestVenoxisAssistant.isInCombatWithVenoxis(*this->bot) == false)
         {
             return false;
         }
@@ -33,7 +38,7 @@ public:
             return false;
         }
 
-        const std::vector<Unit*> razzashiCobras = HighPriestVenoxisFacade::FindRazzashiCobras(*this->bot);
+        const std::vector<Unit*> razzashiCobras = highPriestVenoxisAssistant.findRazzashiCobras(*this->bot);
 
         if (razzashiCobras.empty())
         {

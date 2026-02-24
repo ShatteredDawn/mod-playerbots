@@ -17,13 +17,21 @@
 
 #include "../definition/enum/HighPriestVenoxisEnum.h"
 #include "../definition/enum/RazzashiCobraEnum.h"
-#include "../../../facade/ZulGurubFacade.h"
 
 
-class HighPriestVenoxisFacade
+class HighPriestVenoxisAssistant
 {
 public:
-    [[nodiscard]] static Position GetVenoxisPosition() noexcept
+    HighPriestVenoxisAssistant() = default;
+    ~HighPriestVenoxisAssistant() = default;
+
+    HighPriestVenoxisAssistant(const HighPriestVenoxisAssistant&) = default;
+    HighPriestVenoxisAssistant& operator=(const HighPriestVenoxisAssistant&) = default;
+
+    HighPriestVenoxisAssistant(HighPriestVenoxisAssistant&&) = default;
+    HighPriestVenoxisAssistant& operator=(HighPriestVenoxisAssistant&&) = default;
+
+    [[nodiscard]] const Position getVenoxisPosition() const noexcept
     {
         return Position{
             -12026.866f,
@@ -32,40 +40,24 @@ public:
         };
     }
 
-    [[nodiscard]] static constexpr float GetVenoxisMaxPositionDistance() noexcept
+    [[nodiscard]] constexpr float getVenoxisMaxPositionDistance() const noexcept
     {
         return 4.0f;
     }
 
-    [[nodiscard]] static bool IsInCombatWithVenoxis(Player& bot) noexcept
+    [[nodiscard]] bool isInCombatWithVenoxis(Player& bot) const noexcept
     {
-        const Unit* const venoxis = HighPriestVenoxisFacade::FindActiveBoss(bot);
+        const Unit* const venoxis = this->findActiveBoss(bot);
 
         if (venoxis == nullptr)
         {
             return false;
         }
 
-        // This method seems to not be working properly.
-        // return bot.IsInCombatWith(venoxis);
-        return bot.IsInCombat() && venoxis->IsInCombat();
+        return bot.IsInCombatWith(venoxis) || venoxis->IsInCombatWith(&bot);
     }
 
-    [[nodiscard]] static Position GetRangedPosition() noexcept
-    {
-        return Position{
-            -11985.107f,
-            -1672.6897f,
-            32.31f,
-        };
-    }
-
-    [[nodiscard]] static constexpr float GetRangedMaxPositionDistance() noexcept
-    {
-        return 4.0f;
-    }
-
-    [[nodiscard]] static Position GetRazzashiCobrasPosition() noexcept
+    [[nodiscard]] const Position getRazzashiCobrasPosition() const noexcept
     {
         return Position{
             -11991.636f,
@@ -74,18 +66,13 @@ public:
         };
     }
 
-    [[nodiscard]] static constexpr float GetRazzashiCobrasMaxPositionDistance() noexcept
+    [[nodiscard]] constexpr float getRazzashiCobrasMaxPositionDistance() const noexcept
     {
         return 4.0f;
     }
 
-    [[nodiscard]] static Unit* FindActiveBoss(Player& bot) noexcept
+    [[nodiscard]] Unit* findActiveBoss(Player& bot) const noexcept
     {
-        if (ZulGurubFacade::IsInInstance(bot) == false)
-        {
-            return nullptr;
-        }
-
         if (!bot.IsInCombat())
         {
             return nullptr;
@@ -94,13 +81,8 @@ public:
         return bot.FindNearestCreature(uint32_t(HighPriestVenoxisEnum::ENTRY), PlayerbotAIConfig::instance().sightDistance, true);
     };
 
-    [[nodiscard]] static std::vector<Unit*> FindRazzashiCobras(Player& bot) noexcept
+    [[nodiscard]] std::vector<Unit*> findRazzashiCobras(Player& bot) const noexcept
     {
-        if (ZulGurubFacade::IsInInstance(bot) == false)
-        {
-            return {};
-        }
-
         if (!bot.IsInCombat())
         {
             return {};
@@ -141,9 +123,9 @@ public:
         return results;
     };
 
-    [[nodiscard]] static bool IsAtSafeDistanceFromVenoxis(Player& bot) noexcept
+    [[nodiscard]] bool isAtSafeDistanceFromVenoxis(Player& bot) const noexcept
     {
-        const Unit* const venoxis = FindActiveBoss(bot);
+        const Unit* const venoxis = this->findActiveBoss(bot);
 
         if (venoxis == nullptr)
         {
@@ -155,9 +137,9 @@ public:
         return distanceToVenoxis > float(HighPriestVenoxisEnum::PHASE_1_SAFE_DISTANCE);
     };
 
-    [[nodiscard]] static bool IsInPhase1(Player& bot) noexcept
+    [[nodiscard]] bool isInPhase1(Player& bot) const noexcept
     {
-        const Unit* const unit = HighPriestVenoxisFacade::FindActiveBoss(bot);
+        const Unit* const unit = this->findActiveBoss(bot);
 
         if (unit == nullptr)
         {
@@ -176,14 +158,4 @@ public:
 
         return unit->GetHealthPct() > float(HighPriestVenoxisEnum::PHASE_2_THRESHOLD);
     };
-
-private:
-    HighPriestVenoxisFacade() = delete;
-    ~HighPriestVenoxisFacade() = delete;
-
-    HighPriestVenoxisFacade(const HighPriestVenoxisFacade&) = delete;
-    HighPriestVenoxisFacade& operator=(const HighPriestVenoxisFacade&) = delete;
-
-    HighPriestVenoxisFacade(HighPriestVenoxisFacade&&) = delete;
-    HighPriestVenoxisFacade& operator=(HighPriestVenoxisFacade&&) = delete;
 };

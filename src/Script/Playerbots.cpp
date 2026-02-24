@@ -23,6 +23,9 @@
 #include "DatabaseEnv.h"
 #include "DatabaseLoader.h"
 #include "GuildTaskMgr.h"
+#include "HakkarTheSoulflayer/script/HakkarTheSoulflayerScript.h"
+#include "HakkarTheSoulflayer/script/HakkarTheSoulflayerPlayerScript.h"
+#include "HakkarTheSoulflayerUnitScriptPlayer.h"
 #include "PlayerScript.h"
 #include "PlayerbotAIConfig.h"
 #include "PlayerbotGuildMgr.h"
@@ -31,6 +34,7 @@
 #include "RandomPlayerbotMgr.h"
 #include "ScriptMgr.h"
 #include "PlayerbotCommandScript.h"
+#include "ZulGurubInstanceScript.h"
 #include "cmath"
 #include "BattleGroundTactics.h"
 
@@ -531,4 +535,8 @@ void AddPlayerbotsScripts()
     AddPlayerbotsCommandscripts();
     PlayerBotsGuildValidationScript();
     AddSC_TempestKeepBotScripts();
+    new ZulGurubInstanceScript();
+    new HakkarTheSoulflayerScript();
+    new HakkarTheSoulflayerPlayerScript();
+    new HakkarTheSoulflayerUnitScriptPlayer();
 }

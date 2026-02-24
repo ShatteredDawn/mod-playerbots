@@ -5,7 +5,7 @@
 #include "AttackAction.h"
 #include "PlayerbotAI.h"
 
-#include "../../facade/HighPriestVenoxisFacade.h"
+#include "raid/leader/RaidLeaderRegistry.h"
 
 class HighPriestVenoxisPhase1RazzashiCobrasDPSPriorityAction : public AttackAction
 {
@@ -22,7 +22,12 @@ public:
             return false;
         }
 
-        const std::vector<Unit*> razzashiCobras = HighPriestVenoxisFacade::FindRazzashiCobras(*this->bot);
+        const uint32_t instanceId = this->bot->GetInstanceId();
+        RaidLeaderRegistry& raidRegistry = RaidLeaderRegistry::GetInstance();
+        const ZulGurubRaidLeader& raidLeader = raidRegistry.getOrBind<ZulGurubRaidLeader>(instanceId, this->bot->GetMapId());
+        const HighPriestVenoxisAssistant& highPriestVenoxisAssistant = raidLeader.getHighPriestVenoxisAssistant();
+
+        const std::vector<Unit*> razzashiCobras = highPriestVenoxisAssistant.findRazzashiCobras(*this->bot);
 
         if (razzashiCobras.empty())
         {

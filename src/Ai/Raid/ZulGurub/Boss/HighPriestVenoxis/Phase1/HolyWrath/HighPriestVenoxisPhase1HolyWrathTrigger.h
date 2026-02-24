@@ -4,7 +4,7 @@
 #include "PlayerbotAI.h"
 #include "Trigger.h"
 
-#include "../../facade/HighPriestVenoxisFacade.h"
+#include "raid/leader/RaidLeaderRegistry.h"
 
 class HighPriestVenoxisPhase1HolyWrathTrigger : public Trigger
 {
@@ -23,7 +23,17 @@ public:
             return false;
         }
 
-        if (HighPriestVenoxisFacade::IsInCombatWithVenoxis(*this->bot) == false)
+        if (PlayerbotAI::IsTank(this->bot) == true)
+        {
+            return false;
+        }
+
+        const uint32_t instanceId = this->bot->GetInstanceId();
+        RaidLeaderRegistry& raidRegistry = RaidLeaderRegistry::GetInstance();
+        const ZulGurubRaidLeader& raidLeader = raidRegistry.getOrBind<ZulGurubRaidLeader>(instanceId, this->bot->GetMapId());
+        const HighPriestVenoxisAssistant& highPriestVenoxisAssistant = raidLeader.getHighPriestVenoxisAssistant();
+
+        if (highPriestVenoxisAssistant.isInCombatWithVenoxis(*this->bot) == false)
         {
             return false;
         }
@@ -33,12 +43,12 @@ public:
             return false;
         }
 
-        if (HighPriestVenoxisFacade::IsInPhase1(*this->bot) == false)
+        if (highPriestVenoxisAssistant.isInPhase1(*this->bot) == false)
         {
             return false;
         }
 
-        if (HighPriestVenoxisFacade::IsAtSafeDistanceFromVenoxis(*this->bot) == true)
+        if (highPriestVenoxisAssistant.isAtSafeDistanceFromVenoxis(*this->bot) == true)
         {
             return false;
         }

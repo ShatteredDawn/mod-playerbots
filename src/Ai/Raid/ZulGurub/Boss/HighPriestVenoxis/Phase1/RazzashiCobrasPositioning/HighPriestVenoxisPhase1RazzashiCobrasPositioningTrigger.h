@@ -4,7 +4,7 @@
 #include "PlayerbotAI.h"
 #include "Trigger.h"
 
-#include "../../facade/HighPriestVenoxisFacade.h"
+#include "raid/leader/RaidLeaderRegistry.h"
 
 class HighPriestVenoxisPhase1RazzashiCobrasPositioningTrigger : public Trigger
 {
@@ -33,12 +33,17 @@ public:
             return false;
         }
 
-        if (HighPriestVenoxisFacade::IsInCombatWithVenoxis(*this->bot) == false)
+        const uint32_t instanceId = this->bot->GetInstanceId();
+        RaidLeaderRegistry& raidRegistry = RaidLeaderRegistry::GetInstance();
+        const ZulGurubRaidLeader& raidLeader = raidRegistry.getOrBind<ZulGurubRaidLeader>(instanceId, this->bot->GetMapId());
+        const HighPriestVenoxisAssistant& highPriestVenoxisAssistant = raidLeader.getHighPriestVenoxisAssistant();
+
+        if (highPriestVenoxisAssistant.isInCombatWithVenoxis(*this->bot) == false)
         {
             return false;
         }
 
-        const std::vector<Unit*> razzashiCobras = HighPriestVenoxisFacade::FindRazzashiCobras(*this->bot);
+        const std::vector<Unit*> razzashiCobras = highPriestVenoxisAssistant.findRazzashiCobras(*this->bot);
 
         if (razzashiCobras.empty())
         {
@@ -57,9 +62,9 @@ public:
             return false;
         }
 
-        const Position cobrasIdealPosition = HighPriestVenoxisFacade::GetRazzashiCobrasPosition();
+        const Position cobrasIdealPosition = highPriestVenoxisAssistant.getRazzashiCobrasPosition();
         const float distanceToIdealPosition = this->bot->GetExactDist2d(cobrasIdealPosition.GetPositionX(), cobrasIdealPosition.GetPositionY());
-        static constexpr float maxDistance = HighPriestVenoxisFacade::GetRazzashiCobrasMaxPositionDistance();
+        const float maxDistance = highPriestVenoxisAssistant.getRazzashiCobrasMaxPositionDistance();
 
         if (distanceToIdealPosition < maxDistance)
         {

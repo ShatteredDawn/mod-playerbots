@@ -5,7 +5,7 @@
 #include "AttackAction.h"
 #include "PlayerbotAI.h"
 
-#include "../../facade/HighPriestVenoxisFacade.h"
+#include "raid/leader/RaidLeaderRegistry.h"
 
 class HighPriestVenoxisPhase1RazzashiCobrasPositioningAction : public AttackAction
 {
@@ -27,8 +27,12 @@ public:
             return false;
         }
 
-        const std::vector<Unit*> razzashiCobras = HighPriestVenoxisFacade::FindRazzashiCobras(*this->bot);
+        const uint32_t instanceId = this->bot->GetInstanceId();
+        RaidLeaderRegistry& raidRegistry = RaidLeaderRegistry::GetInstance();
+        const ZulGurubRaidLeader& raidLeader = raidRegistry.getOrBind<ZulGurubRaidLeader>(instanceId, this->bot->GetMapId());
+        const HighPriestVenoxisAssistant& highPriestVenoxisAssistant = raidLeader.getHighPriestVenoxisAssistant();
 
+        const std::vector<Unit*> razzashiCobras = highPriestVenoxisAssistant.findRazzashiCobras(*this->bot);
         for (Unit* const cobra : razzashiCobras)
         {
             if (cobra == nullptr)
@@ -51,8 +55,6 @@ public:
             {
                 this->Attack(cobra);
 
-                LOG_ERROR("playerbots", "cobra target is not a player");
-
                 return false;
             }
 
@@ -62,15 +64,13 @@ public:
             {
                 this->Attack(cobra);
 
-                LOG_ERROR("playerbots", "attacking cobra that is not tanked");
-
                 return false;
             }
         }
 
-        const Position cobrasIdealPosition = HighPriestVenoxisFacade::GetRazzashiCobrasPosition();
+        const Position cobrasIdealPosition = highPriestVenoxisAssistant.getRazzashiCobrasPosition();
         const float distanceToIdealPosition = this->bot->GetExactDist2d(cobrasIdealPosition.GetPositionX(), cobrasIdealPosition.GetPositionY());
-        static constexpr float maxDistance = HighPriestVenoxisFacade::GetRazzashiCobrasMaxPositionDistance();
+        const float maxDistance = highPriestVenoxisAssistant.getRazzashiCobrasMaxPositionDistance();
 
         if (distanceToIdealPosition < maxDistance)
         {
@@ -84,7 +84,7 @@ public:
         const float moveX = botPositionX + (dX / distanceToIdealPosition) * maxDistance;
         const float moveY = botPositionY + (dY / distanceToIdealPosition) * maxDistance;
 
-        return MoveTo(
+        return this->MoveTo(
             MAP_ZUL_GURUB,
             moveX,
             moveY,
