@@ -10,7 +10,7 @@
 #include "DBCStructure.h"
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
-#include "Playerbots.h"
+#include "PlayerbotAI.h"
 #include "SharedDefines.h"
 #include "SpellAuraDefines.h"
 #include "SpellAuraEffects.h"
@@ -41,96 +41,130 @@ void PossibleTargetsValue::FindUnits(std::list<Unit*>& targets)
 bool PossibleTargetsValue::AcceptUnit(Unit* unit)
 {
     if (!AttackersValue::IsPossibleTarget(unit, bot, range))
+    {
         return false;
+    }
+
+    if (!unit->IsPlayer())
+    {
+        return true;
+    }
 
     // Level-based PvP restrictions
-    if (unit->IsPlayer())
+    // Self-defense - always allow fighting back
+    if (this->bot->IsInCombatWith(unit) || unit->IsInCombatWith(this->bot))
     {
-        // Self-defense - always allow fighting back
-        if (bot->IsInCombat() && bot->GetVictim() == unit)
-            return true;  // Already fighting
+        // Already fighting
+        return true;
+    }
 
-        Unit* botAttacker = bot->getAttackerForHelper();
-        if (botAttacker)
+    // Skip restrictions in BG/Arena
+    if (this->bot->InBattleground() || this->bot->InArena())
+    {
+        return true;
+    }
+
+    const Unit* const botAttacker = this->bot->getAttackerForHelper();
+
+    if (botAttacker != nullptr)
+    {
+        if (botAttacker == unit)
         {
-            if (botAttacker == unit)
-                return true;  // Enemy attacking
+            // Enemy attacking
+            return true;
+        }
 
-            if (botAttacker->IsPet())
+        if (botAttacker->IsPet())
+        {
+            const Unit* const petOwner = botAttacker->GetOwner();
+
+            if (petOwner != nullptr && petOwner == unit)
             {
-                Unit* petOwner = botAttacker->GetOwner();
-                if (petOwner && petOwner == unit)
-                    return true;  // Enemy's pet attacking
+                // Enemy's pet attacking
+                return true;
             }
         }
+    }
 
-        // Skip restrictions in BG/Arena
-        if (bot->InBattleground() || bot->InArena())
-            return true;
+    // Skip restrictions if in duel with this player
+    if (this->bot->duel && this->bot->duel->Opponent == unit)
+    {
+        return true;
+    }
 
-        // Skip restrictions if in duel with this player
-        if (bot->duel && bot->duel->Opponent == unit)
-            return true;
+    // Capital cities - no restrictions
+    const uint32_t zoneId = this->bot->GetZoneId();
+    const bool inCapitalCity = (
+        zoneId == AREA_STORMWIND_CITY
+        || zoneId == AREA_IRONFORGE
+        || zoneId == AREA_DARNASSUS
+        || zoneId == AREA_THE_EXODAR
+        || zoneId == AREA_ORGRIMMAR
+        || zoneId == AREA_THUNDER_BLUFF
+        || zoneId == AREA_UNDERCITY
+        || zoneId == AREA_SILVERMOON_CITY
+    );
 
-        // Capital cities - no restrictions
-        uint32 zoneId = bot->GetZoneId();
-        bool inCapitalCity = (zoneId == AREA_STORMWIND_CITY ||
-                            zoneId == AREA_IRONFORGE        ||
-                            zoneId == AREA_DARNASSUS        ||
-                            zoneId == AREA_THE_EXODAR       ||
-                            zoneId == AREA_ORGRIMMAR        ||
-                            zoneId == AREA_THUNDER_BLUFF    ||
-                            zoneId == AREA_UNDERCITY        ||
-                            zoneId == AREA_SILVERMOON_CITY);
+    if (inCapitalCity)
+    {
+        return true;
+    }
 
-        if (inCapitalCity)
-            return true;
+    // Level difference check
+    const int8_t levelDifference = unit->GetLevel() - bot->GetLevel();
+    const uint8_t absLevelDifference = std::abs<uint8_t>(levelDifference);
 
-        // Level difference check
-        int32 levelDifference = unit->GetLevel() - bot->GetLevel();
-        int32 absLevelDifference = std::abs(levelDifference);
+    // Extreme difference - do not attack
+    if (levelDifference >= EXTREME_LEVEL_DIFF)
+    {
+        return false;
+    }
 
-        // Extreme difference - do not attack
-        if (levelDifference >= EXTREME_LEVEL_DIFF)
-            return false;
+    // Calculate attack chance based on level difference
+    // Default 100%: Bot and target's levels are very close
+    uint8_t attackChance = 100;
 
-        // Calculate attack chance based on level difference
-        uint32 attackChance = 100; // Default 100%: Bot and target's levels are very close
+    if (absLevelDifference < MID_LEVEL_DIFF && absLevelDifference >= LOW_LEVEL_DIFF)
+    {
+        attackChance = 75;
+    }
 
-        // There's a chance a bot might gank on an extremly low target
-        if ((absLevelDifference < EXTREME_LEVEL_DIFF && absLevelDifference >= HIGH_LEVEL_DIFF) ||
-            levelDifference <= -EXTREME_LEVEL_DIFF)
-            attackChance = 25;
+    if (absLevelDifference < HIGH_LEVEL_DIFF && absLevelDifference >= MID_LEVEL_DIFF)
+    {
+        attackChance = 50;
+    }
 
-        else if (absLevelDifference < HIGH_LEVEL_DIFF && absLevelDifference >= MID_LEVEL_DIFF)
-            attackChance = 50;
+    // There's a chance a bot might gank on an extremly low target
+    if (
+        (absLevelDifference < EXTREME_LEVEL_DIFF && absLevelDifference >= HIGH_LEVEL_DIFF)
+        || levelDifference <= -EXTREME_LEVEL_DIFF
+    )
+    {
+        attackChance = 25;
+    }
 
-        else if (absLevelDifference < MID_LEVEL_DIFF && absLevelDifference >= LOW_LEVEL_DIFF)
-            attackChance = 75;
+    // If probability check needed, use deterministic hash-based decision
+    if (attackChance < 100)
+    {
+        // Decisions remain stable for ATTACK_DECISION_TIME_WINDOW.
+        std::time_t timeWindow = std::time(nullptr) / ATTACK_DECISION_TIME_WINDOW;
 
-        // If probability check needed, use deterministic hash-based decision
-        if (attackChance < 100)
-        {
-            // Decisions remain stable for ATTACK_DECISION_TIME_WINDOW.
-            time_t timeWindow = time(nullptr) / ATTACK_DECISION_TIME_WINDOW;
+        // FNV-1a hash used to deterministically convert botGUID, targetGUID, and timeWindow
+        // into a consistent percentage chance without needing to cache previous decisions.
+        // See: http://www.isthe.com/chongo/tech/comp/fnv/
+        uint64_t hash = FNV_OFFSET_BASIS;
 
-            // FNV-1a hash used to deterministically convert botGUID, targetGUID, and timeWindow
-            // into a consistent percentage chance without needing to cache previous decisions.
-            // See: http://www.isthe.com/chongo/tech/comp/fnv/
-            uint64_t hash = FNV_OFFSET_BASIS;
+        // Diffuse bot GUID, target GUID, and time window into the hash
+        hash ^= bot->GetGUID().GetRawValue();
+        hash *= FNV_PRIME;
+        hash ^= unit->GetGUID().GetRawValue();
+        hash *= FNV_PRIME;
+        hash ^= static_cast<uint64_t>(timeWindow);
+        hash *= FNV_PRIME;
 
-            // Diffuse bot GUID, target GUID, and time window into the hash
-            hash ^= bot->GetGUID().GetRawValue();
-            hash *= FNV_PRIME;
-            hash ^= unit->GetGUID().GetRawValue();
-            hash *= FNV_PRIME;
-            hash ^= static_cast<uint64_t>(timeWindow);
-            hash *= FNV_PRIME;
-
-            // Convert hash to 0-99 range and compare against attack chance percentage.
-            // Ex: attackChance=75: hash 0-74 = attack (75%), hash 75-99 = don't attack (25%)
-            return (hash % 100) < attackChance;
-        }
+        // Convert hash to 0-99 range and compare against attack chance percentage.
+        // Ex: attackChance=75: hash 0-74 = attack (75%), hash 75-99 = don't attack (25%)
+        return (hash % 100) < attackChance;
     }
 
     return true;
@@ -146,30 +180,52 @@ void PossibleTriggersValue::FindUnits(std::list<Unit*>& targets)
 bool PossibleTriggersValue::AcceptUnit(Unit* unit)
 {
     if (!unit->HasUnitFlag(UNIT_FLAG_NOT_SELECTABLE))
-        return false;
-
-    Unit::AuraEffectList const& aurasPeriodicTriggerSpell =
-        unit->GetAuraEffectsByType(SPELL_AURA_PERIODIC_TRIGGER_SPELL);
-    Unit::AuraEffectList const& aurasPeriodicTriggerWithValueSpell =
-        unit->GetAuraEffectsByType(SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE);
-    for (const Unit::AuraEffectList& list : {aurasPeriodicTriggerSpell, aurasPeriodicTriggerWithValueSpell})
     {
-        for (auto i = list.begin(); i != list.end(); ++i)
+        return false;
+    }
+
+    const Unit::AuraEffectList& aurasPeriodicTriggerSpell = unit->GetAuraEffectsByType(SPELL_AURA_PERIODIC_TRIGGER_SPELL);
+    const Unit::AuraEffectList& aurasPeriodicTriggerWithValueSpell = unit->GetAuraEffectsByType(SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE);
+
+    const SpellMgr* const spellMgr = SpellMgr::instance();
+
+    if (spellMgr == nullptr)
+    {
+        return false;
+    }
+
+    for (const Unit::AuraEffectList& auraEffect : { aurasPeriodicTriggerSpell, aurasPeriodicTriggerWithValueSpell })
+    {
+        for (const AuraEffect* aurEff : auraEffect)
         {
-            AuraEffect* aurEff = *i;
+            if (aurEff == nullptr)
+            {
+                continue;
+            }
+
             const SpellInfo* spellInfo = aurEff->GetSpellInfo();
-            if (!spellInfo)
+
+            if (spellInfo == nullptr)
+            {
                 continue;
-            const SpellInfo* triggerSpellInfo =
-                sSpellMgr->GetSpellInfo(spellInfo->Effects[aurEff->GetEffIndex()].TriggerSpell);
-            if (!triggerSpellInfo)
+            }
+
+            const SpellInfo* triggerSpellInfo = spellMgr->GetSpellInfo(spellInfo->Effects[aurEff->GetEffIndex()].TriggerSpell);
+
+            if (triggerSpellInfo == nullptr)
+            {
                 continue;
-            for (int j = 0; j < MAX_SPELL_EFFECTS; j++)
+            }
+
+            for (std::size_t j = 0; j < MAX_SPELL_EFFECTS; ++j)
             {
                 if (triggerSpellInfo->Effects[j].Effect == SPELL_EFFECT_SCHOOL_DAMAGE)
+                {
                     return true;
+                }
             }
         }
     }
+
     return false;
 }
