@@ -6,13 +6,15 @@
 #include "EquipAction.h"
 #include <utility>
 
+#include "AiObjectContext.h"
 #include "Event.h"
 #include "ItemCountValue.h"
 #include "ItemUsageValue.h"
 #include "ItemVisitors.h"
-#include "Playerbots.h"
+#include "PlayerbotAI.h"
 #include "StatsWeightCalculator.h"
 #include "ItemPackets.h"
+#include "RandomPlayerbotMgr.h"
 
 bool EquipAction::Execute(Event event)
 {
