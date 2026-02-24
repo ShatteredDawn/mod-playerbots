@@ -883,38 +883,68 @@ std::vector<GameObjectData const*> WorldPosition::getGameObjectsNear(float radiu
     return worker.GetResult();
 }
 
-CreatureTemplate const* GuidPosition::GetCreatureTemplate()
+const CreatureTemplate* GuidPosition::GetCreatureTemplate() const
 {
-    return IsCreature() ? sObjectMgr->GetCreatureTemplate(GetEntry()) : nullptr;
+    if (this->IsCreature() == false)
+    {
+        return nullptr;
+    }
+
+    ObjectMgr* const objectMgr = ObjectMgr::instance();
+
+    if (objectMgr == nullptr)
+    {
+        return nullptr;
+    }
+
+    const uint32_t entry = this->GetEntry();
+
+    return objectMgr->GetCreatureTemplate(entry);
 }
 
-GameObjectTemplate const* GuidPosition::GetGameObjectTemplate()
+const GameObjectTemplate* GuidPosition::GetGameObjectTemplate() const
 {
-    return IsGameObject() ? sObjectMgr->GetGameObjectTemplate(GetEntry()) : nullptr;
+    if (this->IsGameObject() == false)
+    {
+        return nullptr;
+    }
+
+    ObjectMgr* const objectMgr = ObjectMgr::instance();
+
+    if (objectMgr == nullptr)
+    {
+        return nullptr;
+    }
+
+    const uint32_t entry = this->GetEntry();
+
+    return objectMgr->GetGameObjectTemplate(entry);
 }
 
 WorldObject* GuidPosition::GetWorldObject()
 {
-    if (!*this)
+    if (this->IsEmpty())
+    {
         return nullptr;
+    }
 
-    switch (GetHigh())
+    switch (this->GetHigh())
     {
         case HighGuid::Player:
-            return GetPlayer();
+            return this->GetPlayer();
         case HighGuid::Transport:
         case HighGuid::Mo_Transport:
         case HighGuid::GameObject:
-            return GetGameObject();
+            return this->GetGameObject();
         case HighGuid::Vehicle:
         case HighGuid::Unit:
-            return GetCreature();
+            return this->GetCreature();
         case HighGuid::Pet:
-            return getMap()->GetPet(*this);
+            return this->getMap()->GetPet(*this);
         case HighGuid::DynamicObject:
-            return getMap()->GetDynamicObject(*this);
+            return this->getMap()->GetDynamicObject(*this);
         case HighGuid::Corpse:
-            return getMap()->GetCorpse(*this);
+            return this->getMap()->GetCorpse(*this);
         default:
             return nullptr;
     }
@@ -924,70 +954,105 @@ WorldObject* GuidPosition::GetWorldObject()
 
 GameObject* GuidPosition::GetGameObject()
 {
-    if (!*this)
+    if (this->IsEmpty())
+    {
         return nullptr;
+    }
 
-    if (loadedFromDB)
-        return ObjectAccessor::GetSpawnedGameObjectByDBGUID(GetMapId(), GetCounter());
+    if (this->loadedFromDB)
+    {
+        return ObjectAccessor::GetSpawnedGameObjectByDBGUID(this->GetMapId(), this->GetCounter());
+    }
 
-    return getMap()->GetGameObject(*this); // fallback
+    return this->getMap()->GetGameObject(*this);
 }
 
 Unit* GuidPosition::GetUnit()
 {
-    if (!*this)
+    if (this->IsEmpty())
+    {
         return nullptr;
+    }
 
-    if (IsPlayer())
-        return GetPlayer();
+    if (this->IsPlayer())
+    {
+        return this->GetPlayer();
+    }
 
-    if (IsPet())
-        return getMap()->GetPet(*this);
+    if (this->IsPet())
+    {
+        return this->getMap()->GetPet(*this);
+    }
 
-    return GetCreature();
+    return this->GetCreature();
 }
 
 Creature* GuidPosition::GetCreature()
 {
-    if (!*this)
+    if (this->IsEmpty())
+    {
         return nullptr;
+    }
 
-    if (loadedFromDB)
-        return ObjectAccessor::GetSpawnedCreatureByDBGUID(GetMapId(), GetCounter());
+    if (this->loadedFromDB)
+    {
+        return ObjectAccessor::GetSpawnedCreatureByDBGUID(this->GetMapId(), this->GetCounter());
+    }
 
-    return getMap()->GetCreature(*this); // fallback
+    return this->getMap()->GetCreature(*this); // fallback
 }
 
 Player* GuidPosition::GetPlayer()
 {
-    if (!*this)
+    if (this->IsEmpty())
+    {
         return nullptr;
+    }
 
-    if (IsPlayer())
+    if (this->IsPlayer())
+    {
         return ObjectAccessor::FindPlayer(*this);
+    }
 
     return nullptr;
 }
 
-bool GuidPosition::HasNpcFlag(NPCFlags flag) { return IsCreature() && GetCreatureTemplate()->npcflag & flag; }
+bool GuidPosition::HasNpcFlag(NPCFlags flag)
+{
+    return this->IsCreature() && this->GetCreatureTemplate()->npcflag & flag;
+}
 
 bool GuidPosition::IsCreatureOrGOAccessible()
 {
-    Map* map = getMap();
-    if (!map || !map->IsGridLoaded(GetPositionX(), GetPositionY()))
-        return false;
+    const Map* const map = this->getMap();
 
-    if (IsCreature())
+    if (map == nullptr || !map->IsGridLoaded(this->GetPositionX(), this->GetPositionY()))
     {
-        Creature* creature = GetCreature();
-        if (creature && creature->IsInWorld() && creature->IsAlive())
-            return true;
+        return false;
     }
-    else if (IsGameObject())
+
+    if (this->IsCreature())
     {
-        GameObject* go = GetGameObject();
-        if (go && go->IsInWorld())
+        const Creature* creature = this->GetCreature();
+
+        if (creature != nullptr && creature->IsInWorld() && creature->IsAlive())
+        {
             return true;
+        }
+
+        return false;
+    }
+
+    if (this->IsGameObject())
+    {
+        const GameObject* const go = this->GetGameObject();
+
+        if (go != nullptr && go->IsInWorld())
+        {
+            return true;
+        }
+
+        return false;
     }
 
     return false;

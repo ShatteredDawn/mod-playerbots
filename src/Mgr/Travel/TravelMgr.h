@@ -412,8 +412,8 @@ public:
     GuidPosition(WorldObject* wo);
     GuidPosition(CreatureData const& creData);
     GuidPosition(GameObjectData const& goData);
-    CreatureTemplate const* GetCreatureTemplate();
-    GameObjectTemplate const* GetGameObjectTemplate();
+    [[nodiscard]] const CreatureTemplate* GetCreatureTemplate() const;
+    [[nodiscard]] const GameObjectTemplate* GetGameObjectTemplate() const;
 
     WorldObject* GetWorldObject();
     GameObject* GetGameObject();
