@@ -330,85 +330,137 @@ void EquipAction::EquipItem(Item* item)
 
 ItemIds EquipAction::SelectInventoryItemsToEquip()
 {
-    CollectItemsVisitor visitor;
-    IterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
+    CollectItemsVisitor visitor{};
 
-    ItemIds items;
-    for (auto i = visitor.items.begin(); i != visitor.items.end(); ++i)
+    this->IterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
+
+    ItemIds items{};
+
+    for (const Item* const item : visitor.items)
     {
-        Item* item = *i;
-        if (!item)
+        if (item == nullptr)
+        {
             continue;
+        }
 
-        ItemTemplate const* itemTemplate = item->GetTemplate();
-        if (!itemTemplate)
+        const ItemTemplate* const itemTemplate = item->GetTemplate();
+
+        if (itemTemplate == nullptr)
+        {
             continue;
+        }
 
         //TODO Expand to Glyphs and Gems, that can be placed in equipment
         //Pre-filter non-equipable items
         if (itemTemplate->InventoryType == INVTYPE_NON_EQUIP)
+        {
             continue;
+        }
 
-        int32 randomProperty = item->GetItemRandomPropertyId();
-        uint32 itemId = item->GetTemplate()->ItemId;
-        std::string itemUsageParam;
+        const int32_t randomProperty = item->GetItemRandomPropertyId();
+        const uint32_t itemId = item->GetTemplate()->ItemId;
+
+        std::string itemUsageParam = std::to_string(itemId);
+
         if (randomProperty != 0)
-            itemUsageParam = std::to_string(itemId) + "," + std::to_string(randomProperty);
-        else
-            itemUsageParam = std::to_string(itemId);
+        {
+            itemUsageParam += "," + std::to_string(randomProperty);
+        }
 
-        ItemUsage usage = AI_VALUE2(ItemUsage, "item upgrade", itemUsageParam);
+        Value<ItemUsage>* const itemUsageValue = this->context->GetValue<ItemUsage>("item usage", itemUsageParam);
+
+        if (itemUsageValue == nullptr)
+        {
+            continue;
+        }
+
+        const ItemUsage usage = itemUsageValue->Get();
+
         if (usage == ITEM_USAGE_EQUIP || usage == ITEM_USAGE_REPLACE || usage == ITEM_USAGE_BAD_EQUIP)
+        {
             items.insert(itemId);
+        }
     }
+
     return items;
 }
 
 bool EquipUpgradesPacketAction::Execute(Event event)
 {
-    if (!sPlayerbotAIConfig.autoEquipUpgradeLoot && !sRandomPlayerbotMgr.IsRandomBot(bot))
+    if (!PlayerbotAIConfig::instance().autoEquipUpgradeLoot && !RandomPlayerbotMgr::instance().IsRandomBot(bot))
+    {
         return false;
-    std::string const source = event.GetSource();
+    }
+
+    const std::string& source = event.GetSource();
+
     if (source == "trade status")
     {
-        WorldPacket p(event.getPacket());
-        p.rpos(0);
-        uint32 status;
-        p >> status;
+        WorldPacket packet{event.getPacket()};
+        uint32 status{};
+
+        packet.rpos(0);
+        packet >> status;
 
         if (status != TRADE_STATUS_TRADE_ACCEPT)
+        {
             return false;
+        }
     }
 
-    else if (source == "item push result")
+    if (source == "item push result")
     {
-        WorldPacket p(event.getPacket());
-        p.rpos(0);
-        ObjectGuid playerGuid;
-        uint32 received, created, sendChatMessage, itemSlot, itemId;
-        uint8 bagSlot;
+        WorldPacket packet{event.getPacket()};
+        ObjectGuid playerGuid{};
+        uint32_t received{};
+        uint32_t created{};
+        uint32_t sendChatMessage{};
+        uint32_t itemSlot{};
+        uint32_t itemId{};
+        uint8_t bagSlot{};
 
-        p >> playerGuid;
-        p >> received;
-        p >> created;
-        p >> sendChatMessage;
-        p >> bagSlot;
-        p >> itemSlot;
-        p >> itemId;
+        packet.rpos(0);
 
-        ItemTemplate const* item = sObjectMgr->GetItemTemplate(itemId);
-        if (item->InventoryType == INVTYPE_NON_EQUIP)
+        packet >> playerGuid;
+        packet >> received;
+        packet >> created;
+        packet >> sendChatMessage;
+        packet >> bagSlot;
+        packet >> itemSlot;
+        packet >> itemId;
+
+        ObjectMgr* const objectMgr = ObjectMgr::instance();
+
+        if (objectMgr == nullptr)
+        {
             return false;
+        }
+
+        const ItemTemplate* const itemTemplate = objectMgr->GetItemTemplate(itemId);
+
+        if (itemTemplate == nullptr)
+        {
+            return false;
+        }
+
+        if (itemTemplate->InventoryType == INVTYPE_NON_EQUIP)
+        {
+            return false;
+        }
     }
 
-    ItemIds items = SelectInventoryItemsToEquip();
-    EquipItems(items);
+    ItemIds items = this->SelectInventoryItemsToEquip();
+
+    this->EquipItems(items);
+
     return true;
 }
 
 bool EquipUpgradeAction::Execute(Event)
 {
-    ItemIds items = SelectInventoryItemsToEquip();
-    EquipItems(items);
+    ItemIds items = this->SelectInventoryItemsToEquip();
+
+    this->EquipItems(items);
+
     return true;
 }

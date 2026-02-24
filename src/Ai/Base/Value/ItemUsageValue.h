@@ -47,6 +47,9 @@ public:
     ItemUsage Calculate() override;
 
 protected:
+
+    [[nodiscard]] ItemUsage QueryItemUsageForSkill(const ItemTemplate* const itemTemplate);
+    [[nodiscard]] ItemUsage QueryItemUsageForConsumable(const ItemTemplate* const itemTemplate);
     ItemUsage QueryItemUsageForEquip(ItemTemplate const* proto, int32 randomPropertyId = 0);
     ItemUsage QueryItemUsageForAmmo(ItemTemplate const* proto);
     ParsedItemUsage GetItemIdFromQualifier();
