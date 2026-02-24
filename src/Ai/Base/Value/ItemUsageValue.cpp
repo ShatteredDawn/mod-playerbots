@@ -33,14 +33,14 @@ ItemUsage ItemUsageValue::QueryItemUsageForSkill(const ItemTemplate* const itemT
 
     ItemUsage usageIfNeeded = ITEM_USAGE_NONE;
 
-    if (stacks < 1)
-    {
-        usageIfNeeded = ITEM_USAGE_SKILL;
-    }
-
     if (stacks < 2)
     {
         usageIfNeeded = ITEM_USAGE_KEEP;
+    }
+
+    if (stacks < 1)
+    {
+        usageIfNeeded = ITEM_USAGE_SKILL;
     }
 
     if (this->IsItemNeededForSkill(itemTemplate))
