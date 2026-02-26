@@ -36,7 +36,7 @@ public:
 
         const uint32_t instanceId = this->bot->GetInstanceId();
         RaidLeaderRegistry& raidRegistry = RaidLeaderRegistry::GetInstance();
-        ZulGurubRaidLeader& raidLeader = raidRegistry.getOrBind<ZulGurubRaidLeader>(instanceId, this->bot->GetMapId());
+        ZulGurubRaidLeader& raidLeader = raidRegistry.getOrBind<ZulGurubRaidLeader>(instanceId, MAP_ZUL_GURUB);
         const HakkarTheSoulflayerAssistant& hakkarTheSoulflayerAssistant = raidLeader.getHakkarTheSoulflayerAssistant();
         SonOfHakkarAssistant& sonOfHakkarAssistant = raidLeader.getSonOfHakkarAssistant();
         const SonOfHakkarMemory& memory = sonOfHakkarAssistant.getMemory();

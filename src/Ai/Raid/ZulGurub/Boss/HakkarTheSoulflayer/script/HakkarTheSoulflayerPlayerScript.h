@@ -27,7 +27,7 @@ public:
 
         const uint32_t instanceId = player->GetInstanceId();
         RaidLeaderRegistry& raidRegistry = RaidLeaderRegistry::GetInstance();
-        ZulGurubRaidLeader& raidLeader = raidRegistry.getOrBind<ZulGurubRaidLeader>(instanceId, player->GetMapId());
+        ZulGurubRaidLeader& raidLeader = raidRegistry.getOrBind<ZulGurubRaidLeader>(instanceId, MAP_ZUL_GURUB);
         SonOfHakkarAssistant& sonOfHakkarAssistant = raidLeader.getSonOfHakkarAssistant();
 
         const SonOfHakkarMemory& memory = sonOfHakkarAssistant.getMemory();

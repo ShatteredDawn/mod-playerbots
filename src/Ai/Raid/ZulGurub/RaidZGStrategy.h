@@ -2,6 +2,8 @@
 
 #include "Boss/HighPriestVenoxis/Phase1/HolyWrath/HighPriestVenoxisPhase1HolyWrathAction.h"
 #include "Boss/HighPriestVenoxis/Phase1/HolyWrath/HighPriestVenoxisPhase1HolyWrathMultiplier.h"
+#include "Boss/GrilekTheWanderer/mechanics/Avatar/GrilekTheWandererAvatarAction.h"
+#include "Boss/GrilekTheWanderer/mechanics/Avatar/GrilekTheWandererAvatarMultiplier.h"
 #include "Boss/HighPriestVenoxis/Phase1/RazzashiCobrasDPSPriority/HighPriestVenoxisPhase1RazzashiCobrasDPSPriorityAction.h"
 #include "Boss/HighPriestVenoxis/Phase1/RazzashiCobrasPositioning/HighPriestVenoxisPhase1RazzashiCobrasPositioningAction.h"
 #include "Boss/HighPriestVenoxis/Phase1/VenoxisPositioning/HighPriestVenoxisPhase1VenoxisPositioningAction.h"
@@ -78,6 +80,17 @@ public:
             )
         );
 
+        // Gri'lek The Wanderer
+
+        triggers.push_back(
+            new TriggerNode(
+                "grilek the wanderer avatar",
+                {
+                    CreateNextAction<GrilekTheWandererAvatarAction>(ACTION_EMERGENCY + 10.0f)
+                }
+            )
+        );
+
         // Hakkar the Soulflayer
         triggers.push_back(
             new TriggerNode(
@@ -144,6 +157,9 @@ public:
 
         // High Priest Venoxis
         multipliers.push_back(new HighPriestVenoxisPhase1HolyWrathMultiplier(this->botAI));
+
+        // Gri'lek The Wanderer
+        multipliers.push_back(new GrilekTheWandererAvatarMultiplier(this->botAI));
 
         // Hakkar the Soulflayer
         multipliers.push_back(new HakkarTheSoulflayerPoisonousBloodMultiplier(this->botAI));

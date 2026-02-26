@@ -31,7 +31,7 @@ public:
 
         const uint32_t instanceId = unit->GetInstanceId();
         RaidLeaderRegistry& raidRegistry = RaidLeaderRegistry::GetInstance();
-        ZulGurubRaidLeader& raidLeader = raidRegistry.getOrBind<ZulGurubRaidLeader>(instanceId, unit->GetMapId());
+        ZulGurubRaidLeader& raidLeader = raidRegistry.getOrBind<ZulGurubRaidLeader>(instanceId, MAP_ZUL_GURUB);
         RaidTankAssistant& raidTankAssistant = raidLeader.getRaidTankAssistant();
         HakkarTheSoulflayerAssistant& hakkarTheSoulflayerAssistant = raidLeader.getHakkarTheSoulflayerAssistant();
         SonOfHakkarAssistant& sonOfHakkarAssistant = raidLeader.getSonOfHakkarAssistant();
@@ -63,7 +63,7 @@ public:
 
         const uint32_t instanceId = unit->GetInstanceId();
         RaidLeaderRegistry& raidRegistry = RaidLeaderRegistry::GetInstance();
-        ZulGurubRaidLeader& raidLeader = raidRegistry.getOrBind<ZulGurubRaidLeader>(instanceId, unit->GetMapId());
+        ZulGurubRaidLeader& raidLeader = raidRegistry.getOrBind<ZulGurubRaidLeader>(instanceId, MAP_ZUL_GURUB);
         const HakkarTheSoulflayerAssistant& hakkarTheSoulflayerAssistant = raidLeader.getHakkarTheSoulflayerAssistant();
         SonOfHakkarAssistant& sonOfHakkarAssistant = raidLeader.getSonOfHakkarAssistant();
 
@@ -107,7 +107,7 @@ public:
 
         const uint32_t instanceId = unit->GetInstanceId();
         RaidLeaderRegistry& raidRegistry = RaidLeaderRegistry::GetInstance();
-        ZulGurubRaidLeader& raidLeader = raidRegistry.getOrBind<ZulGurubRaidLeader>(instanceId, unit->GetMapId());
+        ZulGurubRaidLeader& raidLeader = raidRegistry.getOrBind<ZulGurubRaidLeader>(instanceId, MAP_ZUL_GURUB);
         HakkarTheSoulflayerAssistant& hakkarTheSoulflayerAssistant = raidLeader.getHakkarTheSoulflayerAssistant();
         SonOfHakkarAssistant& sonOfHakkarAssistant = raidLeader.getSonOfHakkarAssistant();
 

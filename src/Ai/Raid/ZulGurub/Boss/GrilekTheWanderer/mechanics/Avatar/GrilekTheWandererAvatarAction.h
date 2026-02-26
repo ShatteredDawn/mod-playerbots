@@ -7,12 +7,12 @@
 
 #include "raid/leader/RaidLeaderRegistry.h"
 
-class HighPriestVenoxisPhase1HolyWrathAction : public MovementAction
+class GrilekTheWandererAvatarAction : public MovementAction
 {
 public:
-    HighPriestVenoxisPhase1HolyWrathAction(
+    GrilekTheWandererAvatarAction(
         PlayerbotAI* botAI,
-        const std::string name = "high priest venoxis phase 1 holy wrath"
+        const std::string name = "grilek the wanderer avatar"
     ) : MovementAction(botAI, name) {}
 
     bool Execute(Event) override
@@ -25,22 +25,22 @@ public:
         const uint32_t instanceId = this->bot->GetInstanceId();
         RaidLeaderRegistry& raidRegistry = RaidLeaderRegistry::GetInstance();
         const ZulGurubRaidLeader& raidLeader = raidRegistry.getOrBind<ZulGurubRaidLeader>(instanceId, MAP_ZUL_GURUB);
-        const HighPriestVenoxisAssistant& highPriestVenoxisAssistant = raidLeader.getHighPriestVenoxisAssistant();
-        Unit* const venoxis = highPriestVenoxisAssistant.findActiveBoss(*this->bot);
+        const GrilekTheWandererAssistant& grilekTheWandererAssistant = raidLeader.getGrilekTheWandererAssistant();
+        Unit* const grilekTheWanderer = grilekTheWandererAssistant.findActiveBoss(*this->bot);
 
-        if (venoxis == nullptr)
+        if (grilekTheWanderer == nullptr)
         {
             return false;
         }
 
-        const float safeDistance = float(HighPriestVenoxisEnum::PHASE_1_SAFE_DISTANCE) - this->bot->GetDistance2d(venoxis);
+        const float safeDistance = float(GrilekTheWandererEnum::AVATAR_SAFE_DISTANCE) - this->bot->GetDistance2d(grilekTheWanderer);
 
         if (safeDistance <= 0.0f)
         {
             return false;
         }
 
-        this->MoveAway(venoxis, safeDistance);
+        this->MoveAway(grilekTheWanderer, safeDistance);
 
         return true;
     }

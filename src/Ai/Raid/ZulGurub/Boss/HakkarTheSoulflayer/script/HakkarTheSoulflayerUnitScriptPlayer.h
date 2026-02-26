@@ -36,6 +36,11 @@ public:
 
         PlayerbotAI* const botAI = PlayerbotsMgr::instance().GetPlayerbotAI(player);
 
+        if (botAI == nullptr)
+        {
+            return;
+        }
+
         botAI->SayToRaid("I have been infected with the soulflayer's corrupted blood!");
     }
 };
