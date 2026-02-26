@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AiObjectContext.h"
+#include "GrilekTheWandererAvatarTrigger.h"
 #include "HakkarTheSoulflayer/mechanics/son-of-hakkar/BringBackSonOfHakkar/HakkarTheSoulflayerBringBackSonOfHakkarTrigger.h"
 #include "HakkarTheSoulflayer/mechanics/blood-siphon/GoToPoisonousCloud/HakkarTheSoulflayerGoToPoisonousCloudTrigger.h"
 #include "HakkarTheSoulflayer/mechanics/cause-insanity/CauseInsanity/HakkarTheSoulflayerCauseInsanityTrigger.h"
@@ -27,6 +28,9 @@ public:
         creators["high priest venoxis phase 1 venoxis positioning"] = &RaidZGTriggerContext::highPriestVenoxisPhase1VenoxisPositioning;
         creators["high priest venoxis phase 1 razzashi cobras positioning"] = &RaidZGTriggerContext::highPriestVenoxisPhase1RazzashiCobrasPositioning;
         creators["high priest venoxis phase 1 razzashi cobras dps priority"] = &RaidZGTriggerContext::highPriestVenoxisPhase1RazzashiCobrasDPSPriority;
+
+        // Gri'lek the Wanderer
+        creators["grilek the wanderer avatar"] = &RaidZGTriggerContext::grilekTheWandererAvatarTrigger;
 
         // Hakkar the Soulflayer
         creators["hakkar the soulflayer go to poisonous cloud"] = &RaidZGTriggerContext::hakkarTheSoulflayerGoToPoisonousCloud;
@@ -64,6 +68,12 @@ private:
     static Trigger* highPriestVenoxisPhase1RazzashiCobrasDPSPriority(PlayerbotAI* botAI)
     {
         return new HighPriestVenoxisPhase1RazzashiCobrasDPSPriorityTrigger(botAI);
+    }
+
+    // Gri'lek the Wanderer
+    static Trigger* grilekTheWandererAvatarTrigger(PlayerbotAI* botAI)
+    {
+        return new GrilekTheWandererAvatarTrigger(botAI);
     }
 
     // Hakkar the Soulflayer

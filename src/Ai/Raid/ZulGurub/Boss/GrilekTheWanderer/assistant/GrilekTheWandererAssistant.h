@@ -15,6 +15,8 @@
 #include <unordered_map>
 
 
+#include "PlayerbotAIConfig.h"
+
 class GrilekTheWandererAssistant
 {
 public:
@@ -41,46 +43,58 @@ public:
 
     [[nodiscard]] Creature* findActiveBoss(Player& bot) const noexcept
     {
-        if (!bot.IsInCombat())
-        {
-            return nullptr;
-        }
+        return bot.FindNearestCreature(uint32_t(GrilekTheWandererEnum::ENTRY), PlayerbotAIConfig::instance().sightDistance, true);
+    }
 
-        Map* map = bot.GetMap();
+    // [[nodiscard]] Creature* findActiveBoss(Player& bot) const noexcept
+    // {
+    //     if (!bot.IsInCombat())
+    //     {
+    //         return nullptr;
+    //     }
 
-        if (map == nullptr)
-        {
-            return nullptr;
-        }
+    //     Map* map = bot.GetMap();
 
-        const std::unordered_multimap<ObjectGuid::LowType, Creature*> store = map->GetCreatureBySpawnIdStore();
-        const std::unordered_multimap<ObjectGuid::LowType, Creature*>::const_iterator it = store.find(uint32_t(GrilekTheWandererEnum::ENTRY));
-        const std::unordered_multimap<ObjectGuid::LowType, Creature*>::const_iterator end = store.end();
+    //     if (map == nullptr)
+    //     {
+    //         return nullptr;
+    //     }
 
-        if (it == end)
-        {
-            return nullptr;
-        }
+    //     const std::unordered_multimap<ObjectGuid::LowType, Creature*> store = map->GetCreatureBySpawnIdStore();
+    //     const std::unordered_multimap<ObjectGuid::LowType, Creature*>::const_iterator it = store.find(uint32_t(GrilekTheWandererEnum::ENTRY));
+    //     const std::unordered_multimap<ObjectGuid::LowType, Creature*>::const_iterator end = store.end();
 
-        Creature* grilekTheWanderer = it->second;
+    //     if (it == end)
+    //     {
+    //         LOG_ERROR("playerbots")
 
-        if (grilekTheWanderer == nullptr)
-        {
-            return nullptr;
-        }
+    //         return nullptr;
+    //     }
 
-        if (!grilekTheWanderer->IsAlive())
-        {
-            return nullptr;
-        }
+    //     Creature* grilekTheWanderer = it->second;
 
-         if (grilekTheWanderer->GetEntry() != uint32_t(GrilekTheWandererEnum::ENTRY))
-        {
-            return nullptr;
-        }
+    //     if (grilekTheWanderer == nullptr)
+    //     {
+    //         LOG_ERROR("playerbots", "Grilek not found in map.");
 
-        return grilekTheWanderer;
-    };
+    //         return nullptr;
+    //     }
+
+    //     if (!grilekTheWanderer->IsAlive())
+    //     {
+    //         LOG_ERROR("playerbots", "Grilek dead");
+    //         return nullptr;
+    //     }
+
+    //     if (grilekTheWanderer->GetEntry() != uint32_t(GrilekTheWandererEnum::ENTRY))
+    //     {
+    //         LOG_ERROR("playerbots", "Grilek entry does not match.");
+
+    //         return nullptr;
+    //     }
+
+    //     return grilekTheWanderer;
+    // };
 
     [[nodiscard]] bool isAtSafeDistanceFromGrilekTheWanderer(Player& bot) const noexcept
     {
