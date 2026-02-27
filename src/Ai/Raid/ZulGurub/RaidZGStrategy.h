@@ -1,5 +1,6 @@
 #pragma once
 
+#include "BloodlordMandokirWhirlwindAction.h"
 #include "Boss/HighPriestVenoxis/Phase1/HolyWrath/HighPriestVenoxisPhase1HolyWrathAction.h"
 #include "Boss/HighPriestVenoxis/Phase1/HolyWrath/HighPriestVenoxisPhase1HolyWrathMultiplier.h"
 #include "Boss/GrilekTheWanderer/mechanics/Avatar/GrilekTheWandererAvatarAction.h"
@@ -17,6 +18,7 @@
 #include "HakkarTheSoulflayer/mechanics/son-of-hakkar/MoveToSonOfHakkar/HakkarTheSoulflayerMoveToSonOfHakkarAction.h"
 #include "HakkarTheSoulflayer/mechanics/blood-siphon/PoisonousBlood/HakkarTheSoulflayerPoisonousBloodMultiplier.h"
 #include "HakkarTheSoulflayer/mechanics/son-of-hakkar/PullSonOfHakkar/HakkarTheSoulflayerPullSonOfHakkarAction.h"
+#include "HighPriestThekal/Phase1/HealthBalance/HighPriestThekalHealthBalanceAction.h"
 #include "Strategy.h"
 #include "Multiplier.h"
 #include "Trash/GurubashiBatRider/GurubashiBatRiderUnstableConcoctionAction.h"
@@ -80,6 +82,17 @@ public:
             )
         );
 
+        // Bloodlord Mandokir
+
+        triggers.push_back(
+            new TriggerNode(
+                "bloodlord mandokir whirlwind",
+                {
+                    CreateNextAction<BloodlordMandokirWhirlwindAction>(ACTION_EMERGENCY + 10.0f)
+                }
+            )
+        );
+
         // Gri'lek The Wanderer
 
         triggers.push_back(
@@ -87,6 +100,16 @@ public:
                 "grilek the wanderer avatar",
                 {
                     CreateNextAction<GrilekTheWandererAvatarAction>(ACTION_EMERGENCY + 10.0f)
+                }
+            )
+        );
+
+        // High Priest Thekal
+        triggers.push_back(
+            new TriggerNode(
+                "high priest thekal phase 1 health balance",
+                {
+                    CreateNextAction<HighPriestThekalHealthBalanceAction>(ACTION_EMERGENCY + 10.0f)
                 }
             )
         );

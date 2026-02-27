@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AiObjectContext.h"
+#include "BloodlordMandokirWhirlwindTrigger.h"
 #include "GrilekTheWandererAvatarTrigger.h"
 #include "HakkarTheSoulflayer/mechanics/son-of-hakkar/BringBackSonOfHakkar/HakkarTheSoulflayerBringBackSonOfHakkarTrigger.h"
 #include "HakkarTheSoulflayer/mechanics/blood-siphon/GoToPoisonousCloud/HakkarTheSoulflayerGoToPoisonousCloudTrigger.h"
@@ -9,6 +10,7 @@
 #include "HakkarTheSoulflayer/mechanics/positioning/HakkarPositioning/HakkarTheSoulflayerHakkarPositioningTrigger.h"
 #include "HakkarTheSoulflayer/mechanics/son-of-hakkar/MoveToSonOfHakkar/HakkarTheSoulflayerMoveToSonOfHakkarTrigger.h"
 #include "HakkarTheSoulflayer/mechanics/son-of-hakkar/PullSonOfHakkar/HakkarTheSoulflayerPullSonOfHakkarTrigger.h"
+#include "HighPriestThekal/Phase1/HealthBalance/HighPriestThekalHealthBalanceTrigger.h"
 #include "HighPriestVenoxisPhase1HolyWrathTrigger.h"
 #include "Trash/GurubashiBatRider/GurubashiBatRiderUnstableConcoctionTrigger.h"
 #include "Boss/HighPriestVenoxis/Phase1/VenoxisPositioning/HighPriestVenoxisPhase1VenoxisPositioningTrigger.h"
@@ -29,8 +31,14 @@ public:
         creators["high priest venoxis phase 1 razzashi cobras positioning"] = &RaidZGTriggerContext::highPriestVenoxisPhase1RazzashiCobrasPositioning;
         creators["high priest venoxis phase 1 razzashi cobras dps priority"] = &RaidZGTriggerContext::highPriestVenoxisPhase1RazzashiCobrasDPSPriority;
 
+        // Bloodlord Mandokir
+        creators["bloodlord mandokir whirlwind"] = &RaidZGTriggerContext::bloodlordMandokirWhirlwind;
+
         // Gri'lek the Wanderer
         creators["grilek the wanderer avatar"] = &RaidZGTriggerContext::grilekTheWandererAvatarTrigger;
+
+        // High Priest Thekal
+        creators["high priest thekal phase 1 health balance"] = &RaidZGTriggerContext::highPriestThekalHealthBalance;
 
         // Hakkar the Soulflayer
         creators["hakkar the soulflayer go to poisonous cloud"] = &RaidZGTriggerContext::hakkarTheSoulflayerGoToPoisonousCloud;
@@ -70,10 +78,22 @@ private:
         return new HighPriestVenoxisPhase1RazzashiCobrasDPSPriorityTrigger(botAI);
     }
 
+    // Bloodlord Mandokir
+    static Trigger* bloodlordMandokirWhirlwind(PlayerbotAI* botAI)
+    {
+        return new BloodlordMandokirWhirlwindTrigger(botAI);
+    }
+
     // Gri'lek the Wanderer
     static Trigger* grilekTheWandererAvatarTrigger(PlayerbotAI* botAI)
     {
         return new GrilekTheWandererAvatarTrigger(botAI);
+    }
+
+    // High Priest Thekal
+    static Trigger* highPriestThekalHealthBalance(PlayerbotAI* botAI)
+    {
+        return new HighPriestThekalHealthBalanceTrigger(botAI);
     }
 
     // Hakkar the Soulflayer
