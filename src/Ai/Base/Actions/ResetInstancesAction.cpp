@@ -11,9 +11,10 @@
 
 bool ResetInstancesAction::Execute(Event)
 {
-    WorldPacket packet(CMSG_RESET_INSTANCES, 0);
-    WorldPackets::Instance::ResetInstances resetInstance(std::move(packet));
-    bot->GetSession()->HandleResetInstancesOpcode(resetInstance);
+    WorldPacket packet{CMSG_RESET_INSTANCES, 0};
+    WorldPackets::Instance::ResetInstances resetInstance{std::move(packet)};
+
+    this->bot->GetSession()->HandleResetInstancesOpcode(resetInstance);
 
     return true;
 }
