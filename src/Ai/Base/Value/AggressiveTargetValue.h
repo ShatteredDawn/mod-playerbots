@@ -3,8 +3,7 @@
  * and/or modify it under version 3 of the License, or (at your option), any later version.
  */
 
-#ifndef _PLAYERBOT_AGGRESSIVETARGETVALUE_H
-#define _PLAYERBOT_AGGRESSIVETARGETVALUE_H
+#pragma once
 
 #include "TargetValue.h"
 
@@ -17,6 +16,7 @@ public:
     AggressiveTargetValue(PlayerbotAI* botAI, std::string const name = "aggressive target") : TargetValue(botAI, name) {}
 
     Unit* Calculate() override;
-};
 
-#endif
+private:
+    [[nodiscard]] Player* getContextualisedMaster() noexcept;
+};

@@ -5,57 +5,133 @@
 
 #include "AggressiveTargetValue.h"
 
-#include "Playerbots.h"
+#include "AiObjectContext.h"
+#include "Player.h"
+#include "PlayerbotAI.h"
 #include "ServerFacade.h"
 #include "SharedDefines.h"
 
+#include "PlayerbotMgr.h"
+
+Player* AggressiveTargetValue::getContextualisedMaster() noexcept
+{
+    Player* master = this->GetMaster();
+
+    if (master == nullptr)
+    {
+        return nullptr;
+    }
+
+    if (master == bot)
+    {
+        return nullptr;
+    }
+
+    if (master->GetMapId() != this->bot->GetMapId())
+    {
+        return nullptr;
+    }
+
+    if (master->IsBeingTeleported())
+    {
+        return nullptr;
+    }
+
+    const PlayerbotAI* const masterAI = PlayerbotsMgr::instance().GetPlayerbotAI(master);
+
+    if (masterAI == nullptr)
+    {
+        return nullptr;
+    }
+
+    return master;
+}
+
 Unit* AggressiveTargetValue::Calculate()
 {
-    Player* master = GetMaster();
+    Player* const master = this->getContextualisedMaster();
 
-    if (master && (master == bot || master->GetMapId() != bot->GetMapId() || master->IsBeingTeleported() ||
-                   !GET_PLAYERBOT_AI(master)))
-        master = nullptr;
+    Value<GuidVector>* const possibleTargetsValue = context->GetValue<GuidVector>("possible targets");
 
-    GuidVector targets = AI_VALUE(GuidVector, "possible targets");
-    if (targets.empty())
+    if (possibleTargetsValue == nullptr)
+    {
         return nullptr;
+    }
 
-    float aggroRange = sPlayerbotAIConfig.aggroDistance;
+    const GuidVector targets = possibleTargetsValue->Get();
+
+    if (targets.empty())
+    {
+        return nullptr;
+    }
+
+    const float aggroRange = PlayerbotAIConfig::instance().aggroDistance;
     float distance = 0;
     Unit* result = nullptr;
 
-    for (ObjectGuid const guid : targets)
+    for (const ObjectGuid guid : targets)
     {
-        Unit* unit = botAI->GetUnit(guid);
-        if (!unit || !unit->IsAlive())
-            continue;
+        Unit* const unit = botAI->GetUnit(guid);
+
+        if (unit == nullptr)
+        {
+            return nullptr;
+        }
+
+        if (!unit->IsAlive())
+        {
+            return nullptr;
+        }
 
         if (!unit->IsInWorld() || unit->IsDuringRemoveFromWorld())
-            continue;
+        {
+            return nullptr;
+        }
 
-        if (unit->ToCreature() && !unit->ToCreature()->GetCreatureTemplate()->lootid &&
-            bot->GetReactionTo(unit) >= REP_NEUTRAL)
-            continue;
+        const Creature* const creature = dynamic_cast<Creature*>(unit);
 
-        if (!bot->IsHostileTo(unit) && unit->GetNpcFlags() != UNIT_NPC_FLAG_NONE)
-            continue;
+        if (
+            creature != nullptr
+            && !creature->GetCreatureTemplate()->lootid
+            && this->bot->GetReactionTo(unit) >= REP_NEUTRAL
+        )
+        {
+            return nullptr;
+        }
 
-        if (abs(bot->GetPositionZ() - unit->GetPositionZ()) > INTERACTION_DISTANCE)
-            continue;
+        if (!this->bot->IsHostileTo(unit) && unit->GetNpcFlags() != UNIT_NPC_FLAG_NONE)
+        {
+            return nullptr;
+        }
 
-        if (!bot->InBattleground() && master && botAI->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT) &&
-            ServerFacade::instance().GetDistance2d(master, unit) > aggroRange)
-            continue;
+        if (abs(this->bot->GetPositionZ() - unit->GetPositionZ()) > INTERACTION_DISTANCE)
+        {
+            return nullptr;
+        }
 
-        if (!bot->IsWithinLOSInMap(unit))
-            continue;
+        if (
+            !this->bot->InBattleground()
+            && master != nullptr
+            && this->botAI->HasStrategy("follow", BotState::BOT_STATE_NON_COMBAT)
+            && ServerFacade::instance().GetDistance2d(master, unit) > aggroRange
+        )
+        {
+            return nullptr;
+        }
 
-        if (bot->GetDistance(unit) > aggroRange)
-            continue;
+        if (!this->bot->IsWithinLOSInMap(unit))
+        {
+            return nullptr;
+        }
 
-        float newdistance = bot->GetDistance(unit);
-        if (!result || (newdistance < distance))
+        if (this->bot->GetDistance(unit) > aggroRange)
+        {
+            return nullptr;
+        }
+
+        const float newdistance = this->bot->GetDistance(unit);
+
+        if (result == nullptr || (newdistance < distance))
         {
             distance = newdistance;
             result = unit;

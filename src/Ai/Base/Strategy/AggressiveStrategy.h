@@ -3,8 +3,7 @@
  * and/or modify it under version 3 of the License, or (at your option), any later version.
  */
 
-#ifndef _PLAYERBOT_AGGRESSIVESTRATEGY_H
-#define _PLAYERBOT_AGGRESSIVESTRATEGY_H
+#pragma once
 
 #include "NonCombatStrategy.h"
 
@@ -15,8 +14,10 @@ class AggressiveStrategy : public NonCombatStrategy
 public:
     AggressiveStrategy(PlayerbotAI* botAI) : NonCombatStrategy(botAI) {}
 
-    std::string const getName() override { return "aggressive"; }
+    const std::string getName() override
+    {
+        return "aggressive";
+    }
+
     void InitTriggers(std::vector<TriggerNode*>& triggers) override;
 };
-
-#endif

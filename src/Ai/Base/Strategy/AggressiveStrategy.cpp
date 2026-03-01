@@ -5,7 +5,8 @@
 
 #include "AggressiveStrategy.h"
 
-#include "Playerbots.h"
+#include "ChooseTargetActions.h"
+#include "CreateNextAction.h"
 
 void AggressiveStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
 {
@@ -13,7 +14,7 @@ void AggressiveStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
         new TriggerNode(
             "no target",
             {
-                NextAction("aggressive target", 4.0f)
+                CreateNextAction<AggressiveTargetAction>(4.0f)
             }
         )
     );

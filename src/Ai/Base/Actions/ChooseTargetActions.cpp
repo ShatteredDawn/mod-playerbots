@@ -32,10 +32,7 @@ bool AttackEnemyFlagCarrierAction::isUseful()
 
 bool AggressiveTargetAction::isUseful()
 {
-    if (bot->IsInCombat())
-        return false;
-
-    return true;
+    return !this->bot->IsInCombat();
 }
 
 bool AttackAnythingAction::isUseful()
