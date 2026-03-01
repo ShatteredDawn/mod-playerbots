@@ -5,307 +5,476 @@
 
 #include "TrainerAction.h"
 
+#include "AiObjectContext.h"
 #include "BudgetValues.h"
+#include "RandomPlayerbotMgr.h"
 #include "Event.h"
 #include "PlayerbotFactory.h"
-#include "Playerbots.h"
+#include "SpellMgr.h"
 #include "Trainer.h"
 
 bool TrainerAction::Execute(Event event)
 {
-    std::string const param = event.getParam();
+    const std::string param = event.getParam();
 
-    Creature* target = GetCreatureTarget();
-    if (!target)
-        return false;
+    Creature* const target = this->getCreatureTarget();
 
-    Trainer::Trainer* trainer = sObjectMgr->GetTrainer(target->GetEntry());
-    if (!trainer)
+    if (target == nullptr)
+    {
         return false;
+    }
+
+    ObjectMgr* const objectMgr = ObjectMgr::instance();
+
+    if (objectMgr == nullptr)
+    {
+        return false;
+    }
+
+    const Trainer::Trainer* const trainer = objectMgr->GetTrainer(target->GetEntry());
+
+    if (trainer == nullptr)
+    {
+        return false;
+    }
 
     // NOTE: Original version uses SpellIds here, but occasionally only inserts
     // a single spell ID value from parameters. If someone wants to impl multiple
     // spells as parameters, check SkipSpellsListAction::parseIds as an example.
-    uint32 spellId = chat->parseSpell(param);
+    const uint32_t spellId = this->chat->parseSpell(param);
 
-    bool learnSpells = param.find("learn") != std::string::npos || sRandomPlayerbotMgr.IsRandomBot(bot) ||
-                       (sPlayerbotAIConfig.allowLearnTrainerSpells &&
-                        // TODO: Rewrite to only exclude start primary profession skills and make config dependent.
-                        (trainer->GetTrainerType() != Trainer::Type::Tradeskill || !botAI->HasActivePlayerMaster()));
+    // @TODO: Move to a dedicated method instead of this boolean hell.
+    const bool wasAskedToLearn = param.find("learn") != std::string::npos;
+    const bool isRandomBot = RandomPlayerbotMgr::instance().IsRandomBot(bot);
+    const bool isTradeSkillTrainer = trainer->GetTrainerType() == Trainer::Type::Tradeskill;
+    const bool hasMaster = this->botAI->HasActivePlayerMaster();
+    const bool allowLearnTrainerSpells = PlayerbotAIConfig::instance().allowLearnTrainerSpells;
+    // TODO: Rewrite to only exclude start primary profession skills and make config dependent.
+    const bool isAllowedToAutomaticallyLearnSpells = allowLearnTrainerSpells && (!isTradeSkillTrainer || !hasMaster);
 
-    Iterate(target, learnSpells, spellId);
+    const bool learnSpells = wasAskedToLearn || isRandomBot || isAllowedToAutomaticallyLearnSpells;
+
+    this->iterate(target, learnSpells, spellId);
 
     return true;
 }
 
 bool TrainerAction::isUseful()
 {
-    Creature* target = GetCreatureTarget();
-    if (!target)
+    const Creature* const target = this->getCreatureTarget();
+
+    if (target == nullptr)
+    {
         return false;
+    }
 
     if (!target->IsInWorld() || target->IsDuringRemoveFromWorld() || !target->IsAlive())
+    {
         return false;
+    }
 
     return target->IsTrainer();
 }
 
 bool TrainerAction::isPossible()
 {
-    Creature* target = GetCreatureTarget();
-    if (!target)
-        return false;
+    const Creature* const target = this->getCreatureTarget();
 
-    Trainer::Trainer* trainer = sObjectMgr->GetTrainer(target->GetEntry());
-    if (!trainer)
+    if (target == nullptr)
+    {
         return false;
+    }
 
-    if (!trainer->IsTrainerValidForPlayer(bot))
+    ObjectMgr* const objectMgr = ObjectMgr::instance();
+
+    if (objectMgr == nullptr)
+    {
         return false;
+    }
+
+    const Trainer::Trainer* const trainer = objectMgr->GetTrainer(target->GetEntry());
+
+    if (trainer == nullptr)
+    {
+        return false;
+    }
+
+    if (!trainer->IsTrainerValidForPlayer(this->bot))
+    {
+        return false;
+    }
 
     if (trainer->GetSpells().empty())
+    {
         return false;
+    }
 
     return true;
 }
 
+// There are just two scenarios: the bot has a master or it doesn't. If the
+// bot has a master, the master should target a unit; otherwise, the bot
+// should target the unit itself.
 Unit* TrainerAction::GetTarget()
 {
-    // There are just two scenarios: the bot has a master or it doesn't. If the
-    // bot has a master, the master should target a unit; otherwise, the bot
-    // should target the unit itself.
-    if (Player* master = GetMaster())
-        return master->GetSelectedUnit();
+    const Player* const master = this->GetMaster();
 
-    return bot->GetSelectedUnit();
-}
-
-Creature* TrainerAction::GetCreatureTarget()
-{
-    Unit* target = GetTarget();
-    return target ? target->ToCreature() : nullptr;
-}
-
-void TrainerAction::Iterate(Creature* creature, bool learnSpells, uint32 spellId)
-{
-    TellHeader(creature);
-
-    Trainer::Trainer* trainer = sObjectMgr->GetTrainer(creature->GetEntry());
-    if (!trainer)
-        return;
-
-    float reputationDiscount = bot->GetReputationPriceDiscount(creature);
-    uint32 totalCost = 0;
-
-    for (auto& spell : trainer->GetSpells())
+    if (master == nullptr)
     {
-        // simplified version of Trainer::TeachSpell method
+        return this->bot->GetSelectedUnit();
+    }
 
-        Trainer::Spell const* trainerSpell = trainer->GetSpell(spell.SpellId);
-        if (!trainerSpell)
+    return master->GetSelectedUnit();
+}
+
+Creature* TrainerAction::getCreatureTarget() noexcept
+{
+    Unit* const target = this->GetTarget();
+
+    if (target == nullptr)
+    {
+        return nullptr;
+    }
+
+    return dynamic_cast<Creature*>(target);
+}
+
+void TrainerAction::iterate(const Creature* const creature, const bool learnSpells, const uint32_t spellId)
+{
+    ObjectMgr* const objectMgr = ObjectMgr::instance();
+
+    if (objectMgr == nullptr)
+    {
+        return;
+    }
+
+    Trainer::Trainer* const trainer = objectMgr->GetTrainer(creature->GetEntry());
+
+    if (trainer == nullptr)
+    {
+        return;
+    }
+
+    this->tellHeader(creature);
+
+    const float reputationDiscount = this->bot->GetReputationPriceDiscount(creature);
+
+    uint32_t totalCost = 0;
+
+    const SpellMgr* const spellMgr = SpellMgr::instance();
+
+    if (spellMgr == nullptr)
+    {
+        return;
+    }
+
+    // simplified version of Trainer::TeachSpell method
+    for (const Trainer::Spell& spell : trainer->GetSpells())
+    {
+        if (!trainer->CanTeachSpell(this->bot, &spell))
+        {
             continue;
+        }
 
-        if (!trainer->CanTeachSpell(bot, trainerSpell))
+        if (spellId && spell.SpellId != spellId)
+        {
             continue;
+        }
 
-        if (spellId && trainerSpell->SpellId != spellId)
+        const SpellInfo* const spellInfo = spellMgr->GetSpellInfo(spell.SpellId);
+
+        if (spellInfo == nullptr)
+        {
             continue;
+        }
 
-        SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(trainerSpell->SpellId);
-        if (!spellInfo)
-            continue;
-
-        uint32 cost = static_cast<uint32>(floor(trainerSpell->MoneyCost * reputationDiscount));
+        const uint32_t cost = uint32_t(floor(spell.MoneyCost * reputationDiscount));
         totalCost += cost;
 
-        std::ostringstream out;
+        std::ostringstream out{};
         out << chat->FormatSpell(spellInfo) << chat->formatMoney(cost);
 
         if (learnSpells)
-            Learn(spellInfo, cost, out);
-
-        botAI->TellMaster(out);
-    }
-
-    TellFooter(totalCost);
-}
-
-void TrainerAction::Learn(SpellInfo const* spellInfo, uint32 cost, std::ostringstream& out)
-{
-    if (!botAI->HasCheat(BotCheatMask::gold))
-    {
-        if (AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::spells) < cost)
         {
-            out << " - too expensive";
-            return;
+            out << this->learn(*spellInfo, cost);
         }
 
-        bot->ModifyMoney(-static_cast<int32>(cost));
+        this->botAI->TellMaster(out);
     }
 
-    if (spellInfo->HasEffect(SPELL_EFFECT_LEARN_SPELL))
-        bot->CastSpell(bot, spellInfo->Id, true);
-    else
-        bot->learnSpell(spellInfo->Id, false);
-
-    out << " - learned";
+    this->tellFooter(totalCost);
 }
 
-void TrainerAction::TellHeader(Creature* creature)
+const std::string TrainerAction::learn(const SpellInfo& spellInfo, const uint32_t cost)
 {
-    std::ostringstream out;
-    out << "--- Can learn from " << creature->GetName() << " ---";
-    botAI->TellMaster(out);
-}
-
-void TrainerAction::TellFooter(uint32 totalCost)
-{
-    if (totalCost)
+    if (!this->botAI->HasCheat(BotCheatMask::gold))
     {
-        std::ostringstream out;
-        out << "Total cost: " << chat->formatMoney(totalCost);
-        botAI->TellMaster(out);
+        Value<uint32_t>* const freeMoneyFor = this->context->GetValue<uint32_t>("free money for", uint32_t(NeedMoneyFor::spells));
+
+        if (freeMoneyFor == nullptr)
+        {
+           return " - cannot determine if I can afford it";
+        }
+
+        const uint32_t freeMoneyForSpells = freeMoneyFor->Get();
+
+        if (freeMoneyForSpells < cost)
+        {
+            return " - too expensive";
+        }
+
+        this->bot->ModifyMoney(-uint32_t(cost));
     }
+
+    if (spellInfo.HasEffect(SPELL_EFFECT_LEARN_SPELL))
+    {
+        this->bot->CastSpell(bot, spellInfo.Id, true);
+
+        return " - learned";
+    }
+
+    this->bot->learnSpell(spellInfo.Id, false);
+
+    return " - learned";
+}
+
+void TrainerAction::tellHeader(const Creature* const creature) const
+{
+    std::ostringstream out{};
+
+    out << "--- Can learn from " << creature->GetName() << " ---";
+
+    this->botAI->TellMaster(out);
+}
+
+void TrainerAction::tellFooter(const uint32_t totalCost)
+{
+    if (totalCost == 0)
+    {
+        return;
+    }
+
+    std::ostringstream out{};
+
+    out << "Total cost: " << this->chat->formatMoney(totalCost);
+
+    this->botAI->TellMaster(out);
+}
+
+void MaintenanceAction::performAltMaintenance()
+{
+    const PlayerbotAIConfig& configuration = PlayerbotAIConfig::instance();
+    PlayerbotFactory factory{this->bot, this->bot->GetLevel()};
+
+    if (configuration.altMaintenanceAttunementQs)
+    {
+        factory.InitAttunementQuests();
+    }
+
+    if (configuration.altMaintenanceBags)
+    {
+        factory.InitBags(false);
+    }
+
+    if (configuration.altMaintenanceAmmo)
+    {
+        factory.InitAmmo();
+    }
+
+    if (configuration.altMaintenanceFood)
+    {
+        factory.InitFood();
+    }
+
+    if (configuration.altMaintenanceReagents)
+    {
+        factory.InitReagents();
+    }
+
+    if (configuration.altMaintenanceConsumables)
+    {
+        factory.InitConsumables();
+    }
+
+    if (configuration.altMaintenancePotions)
+    {
+        factory.InitPotions();
+    }
+
+    if (configuration.altMaintenanceTalentTree)
+    {
+        factory.InitTalentsTree(true);
+    }
+
+    if (configuration.altMaintenancePet)
+    {
+        factory.InitPet();
+    }
+
+    if (configuration.altMaintenancePetTalents)
+    {
+        factory.InitPetTalents();
+    }
+
+    if (configuration.altMaintenanceSkills)
+    {
+        factory.InitSkills();
+    }
+
+    if (configuration.altMaintenanceClassSpells)
+    {
+        factory.InitClassSpells();
+    }
+
+    if (configuration.altMaintenanceAvailableSpells)
+    {
+        factory.InitAvailableSpells();
+    }
+
+    if (configuration.altMaintenanceReputation)
+    {
+        factory.InitReputation();
+    }
+
+    if (configuration.altMaintenanceSpecialSpells)
+    {
+        factory.InitSpecialSpells();
+    }
+
+    if (configuration.altMaintenanceMounts)
+    {
+        factory.InitMounts();
+    }
+
+    if (configuration.altMaintenanceGlyphs)
+    {
+        factory.InitGlyphs(false);
+    }
+
+    if (configuration.altMaintenanceKeyring)
+    {
+        factory.InitKeyring();
+    }
+
+    if (configuration.altMaintenanceGemsEnchants && this->bot->GetLevel() >= configuration.minEnchantingBotLevel)
+    {
+        factory.ApplyEnchantAndGemsNew();
+    }
+
+    this->bot->DurabilityRepairAll(false, 1.0f, false);
+    this->bot->SendTalentsInfoData(false);
+}
+
+void MaintenanceAction::performRandomBotMaintenance()
+{
+    const PlayerbotAIConfig& configuration = PlayerbotAIConfig::instance();
+    PlayerbotFactory factory{this->bot, this->bot->GetLevel()};
+
+    factory.InitAttunementQuests();
+    factory.InitBags(false);
+    factory.InitAmmo();
+    factory.InitFood();
+    factory.InitReagents();
+    factory.InitConsumables();
+    factory.InitPotions();
+    factory.InitTalentsTree(true);
+    factory.InitPet();
+    factory.InitPetTalents();
+    factory.InitSkills();
+    factory.InitClassSpells();
+    factory.InitAvailableSpells();
+    factory.InitReputation();
+    factory.InitSpecialSpells();
+    factory.InitMounts();
+    factory.InitGlyphs(false);
+    factory.InitKeyring();
+
+    if (bot->GetLevel() >= configuration.minEnchantingBotLevel)
+    {
+        factory.ApplyEnchantAndGemsNew();
+    }
+
+    this->bot->DurabilityRepairAll(false, 1.0f, false);
+    this->bot->SendTalentsInfoData(false);
 }
 
 bool MaintenanceAction::Execute(Event)
 {
-    if (!sPlayerbotAIConfig.maintenanceCommand)
+    const PlayerbotAIConfig& configuration = PlayerbotAIConfig::instance();
+
+    if (!configuration.maintenanceCommand)
     {
-        botAI->TellError("maintenance command is not allowed, please check the configuration.");
+        this->botAI->TellError("maintenance command is not allowed, please check the configuration.");
+
         return false;
     }
 
-    botAI->TellMaster("I'm maintaining");
-    PlayerbotFactory factory(bot, bot->GetLevel());
+    this->botAI->TellMaster("I'm maintaining");
 
-    if (!botAI->IsAlt())
+    PlayerbotFactory factory{this->bot, this->bot->GetLevel()};
+
+    if (this->botAI->IsAlt())
     {
-        factory.InitAttunementQuests();
-        factory.InitBags(false);
-        factory.InitAmmo();
-        factory.InitFood();
-        factory.InitReagents();
-        factory.InitConsumables();
-        factory.InitPotions();
-        factory.InitTalentsTree(true);
-        factory.InitPet();
-        factory.InitPetTalents();
-        factory.InitSkills();
-        factory.InitClassSpells();
-        factory.InitAvailableSpells();
-        factory.InitReputation();
-        factory.InitSpecialSpells();
-        factory.InitMounts();
-        factory.InitGlyphs(false);
-        factory.InitKeyring();
-        if (bot->GetLevel() >= sPlayerbotAIConfig.minEnchantingBotLevel)
-            factory.ApplyEnchantAndGemsNew();
-    }
-    else
-    {
-        if (sPlayerbotAIConfig.altMaintenanceAttunementQs)
-            factory.InitAttunementQuests();
+        this->performAltMaintenance();
 
-        if (sPlayerbotAIConfig.altMaintenanceBags)
-            factory.InitBags(false);
-
-        if (sPlayerbotAIConfig.altMaintenanceAmmo)
-            factory.InitAmmo();
-
-        if (sPlayerbotAIConfig.altMaintenanceFood)
-            factory.InitFood();
-
-        if (sPlayerbotAIConfig.altMaintenanceReagents)
-            factory.InitReagents();
-
-        if (sPlayerbotAIConfig.altMaintenanceConsumables)
-            factory.InitConsumables();
-
-        if (sPlayerbotAIConfig.altMaintenancePotions)
-            factory.InitPotions();
-
-        if (sPlayerbotAIConfig.altMaintenanceTalentTree)
-            factory.InitTalentsTree(true);
-
-        if (sPlayerbotAIConfig.altMaintenancePet)
-            factory.InitPet();
-
-        if (sPlayerbotAIConfig.altMaintenancePetTalents)
-            factory.InitPetTalents();
-
-        if (sPlayerbotAIConfig.altMaintenanceSkills)
-            factory.InitSkills();
-
-        if (sPlayerbotAIConfig.altMaintenanceClassSpells)
-            factory.InitClassSpells();
-
-        if (sPlayerbotAIConfig.altMaintenanceAvailableSpells)
-            factory.InitAvailableSpells();
-
-        if (sPlayerbotAIConfig.altMaintenanceReputation)
-            factory.InitReputation();
-
-        if (sPlayerbotAIConfig.altMaintenanceSpecialSpells)
-            factory.InitSpecialSpells();
-
-        if (sPlayerbotAIConfig.altMaintenanceMounts)
-            factory.InitMounts();
-
-        if (sPlayerbotAIConfig.altMaintenanceGlyphs)
-            factory.InitGlyphs(false);
-
-        if (sPlayerbotAIConfig.altMaintenanceKeyring)
-            factory.InitKeyring();
-
-        if (sPlayerbotAIConfig.altMaintenanceGemsEnchants &&
-            bot->GetLevel() >= sPlayerbotAIConfig.minEnchantingBotLevel)
-            factory.ApplyEnchantAndGemsNew();
+        return true;
     }
 
-    bot->DurabilityRepairAll(false, 1.0f, false);
-    bot->SendTalentsInfoData(false);
+    this->performRandomBotMaintenance();
 
     return true;
 }
 
 bool RemoveGlyphAction::Execute(Event)
 {
-    for (uint32 slotIndex = 0; slotIndex < MAX_GLYPH_SLOT_INDEX; ++slotIndex)
+    for (uint32_t slotIndex = 0; slotIndex < MAX_GLYPH_SLOT_INDEX; ++slotIndex)
     {
-        bot->SetGlyph(slotIndex, 0, true);
+        this->bot->SetGlyph(slotIndex, 0, true);
     }
-    bot->SendTalentsInfoData(false);
+
+    this->bot->SendTalentsInfoData(false);
+
     return true;
 }
 
 bool AutoGearAction::Execute(Event)
 {
-    if (!sPlayerbotAIConfig.autoGearCommand)
+    PlayerbotAIConfig& configuration = PlayerbotAIConfig::instance();
+
+    if (!configuration.autoGearCommand)
     {
-        botAI->TellError("autogear command is not allowed, please check the configuration.");
+        this->botAI->TellError("autogear command is not allowed, please check the configuration.");
+
         return false;
     }
 
-    if (!sPlayerbotAIConfig.autoGearCommandAltBots &&
-        !sPlayerbotAIConfig.IsInRandomAccountList(bot->GetSession()->GetAccountId()))
+    if (!configuration.autoGearCommandAltBots &&
+        !configuration.IsInRandomAccountList(this->bot->GetSession()->GetAccountId()))
     {
-        botAI->TellError("You cannot use autogear on alt bots.");
+        this->botAI->TellError("You cannot use autogear on alt bots.");
         return false;
     }
 
-    botAI->TellMaster("I'm auto gearing");
-    uint32 gs = sPlayerbotAIConfig.autoGearScoreLimit == 0
-                    ? 0
-                    : PlayerbotFactory::CalcMixedGearScore(sPlayerbotAIConfig.autoGearScoreLimit,
-                                                           sPlayerbotAIConfig.autoGearQualityLimit);
-    PlayerbotFactory factory(bot, bot->GetLevel(), sPlayerbotAIConfig.autoGearQualityLimit, gs);
+    this->botAI->TellMaster("I'm auto gearing");
+
+    uint32_t gearscore = 0;
+
+    if (configuration.autoGearScoreLimit > 0)
+    {
+        gearscore = PlayerbotFactory::CalcMixedGearScore(configuration.autoGearScoreLimit, configuration.autoGearQualityLimit);
+    }
+
+    PlayerbotFactory factory{this->bot, this->bot->GetLevel(), configuration.autoGearQualityLimit, gearscore};
+
     factory.InitEquipment(true);
     factory.InitAmmo();
-    if (bot->GetLevel() >= sPlayerbotAIConfig.minEnchantingBotLevel)
+
+    if (this->bot->GetLevel() >= configuration.minEnchantingBotLevel)
     {
         factory.ApplyEnchantAndGemsNew();
     }
-    bot->DurabilityRepairAll(false, 1.0f, false);
+
+    this->bot->DurabilityRepairAll(false, 1.0f, false);
+
     return true;
 }

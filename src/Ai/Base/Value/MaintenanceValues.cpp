@@ -46,7 +46,14 @@ bool CanSellValue::Calculate()
 
 bool CanTrainValue::Calculate()
 {
-    return AI_VALUE2(uint32, "free money for", (uint32)NeedMoneyFor::spells) > 0;
+    Value<uint32_t>* const freeMoneyForSpells = this->context->GetValue<uint32_t>("free money for", (uint32)NeedMoneyFor::spells);
+
+    if (freeMoneyForSpells == nullptr)
+    {
+        return false;
+    }
+
+    return freeMoneyForSpells->Get() > 0;
 }
 
 bool CanFightEqualValue::Calculate() { return AI_VALUE(uint8, "durability") > 20; }

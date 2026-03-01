@@ -154,31 +154,65 @@ bool RpgSellTrigger::IsActive()
 
 bool RpgRepairTrigger::IsActive()
 {
-    GuidPosition guidP(getGuidP());
+    GuidPosition guidP{this->getGuidP()};
 
     if (!guidP.HasNpcFlag(UNIT_NPC_FLAG_REPAIR))
+    {
         return false;
+    }
 
-    if (AI_VALUE2_LAZY(bool, "group or", "should sell,can sell,following party,near leader"))
-        return true;
+    Value<bool>* sellValue = this->context->GetValue<bool>("group or", "should sell,can sell,following party,near leader");
 
-    if (AI_VALUE2_LAZY(bool, "group or", "should repair,can repair,following party,near leader"))
+    if (sellValue == nullptr)
+    {
+        return false;
+    }
+
+    if (sellValue->Get())
+    {
         return true;
+    }
+
+    Value<bool>* repairValue = this->context->GetValue<bool>("group or", "should repair,can repair,following party,near leader");
+
+    if (repairValue == nullptr)
+    {
+        return false;
+    }
+
+    if (repairValue->Get())
+    {
+        return true;
+    }
 
     return false;
 }
 
 bool RpgTrainTrigger::IsActive()
 {
-    GuidPosition gp = getGuidP();
-    if (!gp)
-        return false;
+    GuidPosition guidP{this->getGuidP()};
 
-    if (!gp.HasNpcFlag(UNIT_NPC_FLAG_TRAINER))
+    if (guidP.IsEmpty())
+    {
         return false;
+    }
 
-    if (!AI_VALUE(bool, "can train"))
+    if (!guidP.HasNpcFlag(UNIT_NPC_FLAG_TRAINER))
+    {
         return false;
+    }
+
+    Value<bool>* trainValue = this->context->GetValue<bool>("can train");
+
+    if (trainValue == nullptr)
+    {
+        return false;
+    }
+
+    if (!trainValue->Get())
+    {
+        return false;
+    }
 
     return true;
 }

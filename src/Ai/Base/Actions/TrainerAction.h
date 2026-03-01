@@ -25,11 +25,11 @@ public:
     Unit* GetTarget() override;
 
 private:
-    Creature* GetCreatureTarget();
-    void Iterate(Creature* creature, bool learnSpells, uint32 spellId);
-    void Learn(SpellInfo const* spellInfo, uint32 cost, std::ostringstream& out);
-    void TellHeader(Creature* creature);
-    void TellFooter(uint32 totalCost);
+    [[nodiscard]] Creature* getCreatureTarget() noexcept;
+    void iterate(const Creature* const creature, const bool learnSpells, const uint32_t spellId);
+    [[nodiscard]] const std::string learn(const SpellInfo& spellInfo, const uint32_t cost);
+    void tellHeader(const Creature* const creature) const;
+    void tellFooter(const uint32_t totalCost);
 };
 
 class MaintenanceAction : public Action
@@ -37,6 +37,10 @@ class MaintenanceAction : public Action
 public:
     MaintenanceAction(PlayerbotAI* botAI) : Action(botAI, "maintenance") {}
     bool Execute(Event event) override;
+
+private:
+    void performAltMaintenance();
+    void performRandomBotMaintenance();
 };
 
 class RemoveGlyphAction : public Action

@@ -256,81 +256,112 @@ bool NewRpgBaseAction::InteractWithNpcOrGameObjectForQuest(ObjectGuid guid)
     return true;
 }
 
-bool NewRpgBaseAction::CanInteractWithQuestGiver(Object* questGiver)
+bool NewRpgBaseAction::canInteractWithQuestGiver(const Object* const questGiver)
 {
+    if (this->bot == nullptr)
+    {
+        return false;
+    }
+
+    // @TODO: Don't do the logic inside the switch, move it to methods.
     // This is a variant of Player::CanInteractWithQuestGiver
     // that removes the distance check and keeps all other checks
     switch (questGiver->GetTypeId())
     {
         case TYPEID_UNIT: // Player::GetNPCIfCanInteractWith
         {
-            ObjectGuid guid = questGiver->GetGUID();
+            const ObjectGuid guid = questGiver->GetGUID();
 
             // unit checks
-            if (!guid)
+            if (guid.IsEmpty())
+            {
                 return false;
+            }
 
-            if (!bot->IsInWorld() || bot->IsDuringRemoveFromWorld())
+            if (!this->bot->IsInWorld() || this->bot->IsDuringRemoveFromWorld())
+            {
                 return false;
+            }
 
-            if (bot->IsInFlight())
+            if (this->bot->IsInFlight())
+            {
                 return false;
+            }
 
             // exist (we need look pets also for some interaction (quest/etc)
-            Creature* creature = ObjectAccessor::GetCreatureOrPetOrVehicle(*bot, guid);
-            if (!creature)
+            const Creature* const creature = ObjectAccessor::GetCreatureOrPetOrVehicle(*this->bot, guid);
+
+            if (creature == nullptr)
+            {
                 return false;
+            }
 
             // Deathstate checks
-            if (!bot->IsAlive() &&
-                !(creature->GetCreatureTemplate()->type_flags & CREATURE_TYPE_FLAG_VISIBLE_TO_GHOSTS))
+            if (
+                !this->bot->IsAlive()
+                && !(creature->GetCreatureTemplate()->type_flags & CREATURE_TYPE_FLAG_VISIBLE_TO_GHOSTS)
+            )
+            {
                 return false;
+            }
 
             // alive or spirit healer
-            if (!creature->IsAlive() &&
-                !(creature->GetCreatureTemplate()->type_flags & CREATURE_TYPE_FLAG_INTERACT_WHILE_DEAD))
+            if (
+                !creature->IsAlive()
+                && !(creature->GetCreatureTemplate()->type_flags & CREATURE_TYPE_FLAG_INTERACT_WHILE_DEAD)
+            )
+            {
                 return false;
+            }
 
             // appropriate npc type
             if (!creature->HasNpcFlag(UNIT_NPC_FLAG_QUESTGIVER))
+            {
                 return false;
+            }
 
             // not allow interaction under control, but allow with own pets
-            if (creature->GetCharmerGUID())
+            if (!creature->GetCharmerGUID().IsEmpty())
+            {
                 return false;
+            }
 
             // xinef: perform better check
             if (creature->GetReactionTo(bot) <= REP_UNFRIENDLY)
+            {
                 return false;
+            }
 
             return true;
         }
         case TYPEID_GAMEOBJECT: // Player::GetGameObjectIfCanInteractWith
         {
-            ObjectGuid guid = questGiver->GetGUID();
+            const ObjectGuid guid = questGiver->GetGUID();
+            const GameObject* const gameObject = this->bot->GetMap()->GetGameObject(guid);
 
-            if (GameObject* go = bot->GetMap()->GetGameObject(guid))
+            if (gameObject == nullptr)
             {
-                if (go->GetGoType() == GAMEOBJECT_TYPE_QUESTGIVER)
-                {
-                    // Players cannot interact with gameobjects that use the "Point" icon
-                    if (go->GetGOInfo()->IconName == "Point")
-                        return false;
-
-                    return true;
-                }
+                return false;
             }
 
-            return false;
+            if (gameObject->GetGoType() != GAMEOBJECT_TYPE_QUESTGIVER)
+            {
+                return false;
+            }
+
+            // Players cannot interact with gameobjects that use the "Point" icon
+            if (gameObject->GetGOInfo()->IconName == "Point")
+            {
+                return false;
+            }
+
+            return true;
         }
-        // unused for now
-        // case TYPEID_PLAYER:
-        //     return bot->IsAlive() && questGiver->ToPlayer()->IsAlive();
-        // case TYPEID_ITEM:
-        //     return bot->IsAlive();
+
         default:
             break;
     }
+
     return false;
 }
 
@@ -619,7 +650,7 @@ ObjectGuid NewRpgBaseAction::ChooseNpcOrGameObjectToInteract(bool questgiverOnly
         if (distanceLimit && bot->GetDistance(object) > distanceLimit)
             continue;
 
-        if (CanInteractWithQuestGiver(object) && HasQuestToAcceptOrReward(object))
+        if (canInteractWithQuestGiver(object) && HasQuestToAcceptOrReward(object))
         {
             if (!nearestObject || bot->GetExactDist(nearestObject) > bot->GetExactDist(object))
                 nearestObject = object;
@@ -637,7 +668,7 @@ ObjectGuid NewRpgBaseAction::ChooseNpcOrGameObjectToInteract(bool questgiverOnly
         if (distanceLimit && bot->GetDistance(object) > distanceLimit)
             continue;
 
-        if (CanInteractWithQuestGiver(object) && HasQuestToAcceptOrReward(object))
+        if (canInteractWithQuestGiver(object) && HasQuestToAcceptOrReward(object))
         {
             if (!nearestObject || bot->GetExactDist(nearestObject) > bot->GetExactDist(object))
                 nearestObject = object;
