@@ -10,6 +10,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "ConsumableFoodInspector.h"
 #include "CreateNextAction.h"
 #include "EquipAction.h"
 #include "ItemActionEnum.h"
@@ -117,6 +118,15 @@ static const ClassMap inspectorFactories = {
 						LOG_DEBUG("playerbots.action.manage_inventory", "executing POTION inspector");
 
 						return ConsumablePotionInspector(botGUID, itemGUID).determineItemAction();
+					}
+				},
+				{
+					ITEM_SUBCLASS_FOOD,
+					[](const uint32_t botGUID, const uint64_t itemGUID)
+					{
+						LOG_DEBUG("playerbots.action.manage_inventory", "executing FOOD inspector");
+
+						return ConsumableFoodInspector(botGUID, itemGUID).determineItemAction();
 					}
 				},
 				{
