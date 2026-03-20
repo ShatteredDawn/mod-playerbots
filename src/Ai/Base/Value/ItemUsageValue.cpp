@@ -266,11 +266,10 @@ ItemUsage ItemUsageValue::Calculate()
     // Need to add something like free bagspace or item value.
     if (itemTemplate->SellPrice > 0)
     {
-        if (itemTemplate->Quality >= ITEM_QUALITY_NORMAL && !isSoulbound)
+        if (itemTemplate->Quality >= ITEM_QUALITY_NORMAL && !isSoulbound && itemTemplate->Bonding != BIND_WHEN_PICKED_UP)
         {
             return ITEM_USAGE_AH;
         }
-
         return ITEM_USAGE_VENDOR;
     }
 
