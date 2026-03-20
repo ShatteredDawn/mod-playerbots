@@ -41,23 +41,19 @@ bool CastCasterFormAction::isUseful()
                                "flight form", "swift flight form", "moonkin form", nullptr) &&
            AI_VALUE2(uint8, "mana", "self target") > sPlayerbotAIConfig.mediumHealth;
 }
-
 bool CastCasterFormAction::Execute(Event)
 {
     botAI->RemoveShapeshift();
     return true;
 }
 
-bool CastCancelTreeFormAction::isUseful()
+bool CastCancelDruidAction::Execute(Event /*event*/)
 {
-    return botAI->HasAura(33891, bot);
-}
-
-bool CastCancelTreeFormAction::Execute(Event)
-{
-    botAI->RemoveAura("tree of life");
+    botAI->RemoveAura(auraName);
     return true;
 }
+
+bool CastCancelDruidAction::isUseful() { return botAI->HasAura(auraId, bot); }
 
 bool CastTreeFormAction::isUseful()
 {
