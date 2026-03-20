@@ -224,7 +224,7 @@ void CatDpsDruidStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
     );
     triggers.push_back(
         new TriggerNode(
-            "combo points available",
+            "combo points 5 available",
             {
                 CreateNextAction<CastRipAction>(ACTION_HIGH + 6.0f)
             }

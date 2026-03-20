@@ -32,7 +32,7 @@ private:
     {
         return new ActionNode(
             /*P*/ {},
-            /*A*/ { CreateNextAction<CastRuptureAction>(1.0f) },
+            /*A*/ { CreateNextAction<CastEviscerateAction>(1.0f) },
             /*C*/ {}
         );
     }
@@ -109,10 +109,10 @@ void AssassinationRogueStrategy::InitTriggers(std::vector<TriggerNode*>& trigger
 
     triggers.push_back(
         new TriggerNode(
-            "combo points 3 available",
+            "combo points 4 available",
             {
-                CreateNextAction<CastEnvenomAction>(ACTION_HIGH + 5.0f),
-                CreateNextAction<CastEviscerateAction>(ACTION_HIGH + 3.0f)
+                CreateNextAction<CastColdBloodAction>(ACTION_HIGH + 6.0f),
+                CreateNextAction<CastEnvenomAction>(ACTION_HIGH + 5.0f)
             }
         )
     );
@@ -122,7 +122,6 @@ void AssassinationRogueStrategy::InitTriggers(std::vector<TriggerNode*>& trigger
             "target with combo points almost dead",
             {
                 CreateNextAction<CastEnvenomAction>(ACTION_HIGH + 4.0f),
-                CreateNextAction<CastEviscerateAction>(ACTION_HIGH + 2)
             }
         )
     );

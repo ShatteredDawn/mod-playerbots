@@ -169,7 +169,7 @@ void OffhealDruidCatStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
     );
     triggers.push_back(
         new TriggerNode(
-            "combo points available",
+            "combo points 5 available",
             {
                 CreateNextAction<CastRipAction>(ACTION_HIGH + 6.0f)
             }
@@ -250,7 +250,7 @@ void OffhealDruidCatStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
     );
     triggers.push_back(
         new TriggerNode(
-            "low energy",
+            "tiger's fury",
             {
                 CreateNextAction<CastTigersFuryAction>(ACTION_NORMAL + 1.0f)
             }
