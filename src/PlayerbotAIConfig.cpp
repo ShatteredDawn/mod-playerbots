@@ -16,6 +16,7 @@
 #include "RandomPlayerbotFactory.h"
 #include "RandomPlayerbotMgr.h"
 #include "Talentspec.h"
+#include "TravelMgr.h"
 
 template <class T>
 void LoadList(std::string const value, T& list)
@@ -715,6 +716,7 @@ bool PlayerbotAIConfig::Initialize()
     {
         PlayerbotDungeonRepository::instance().LoadDungeonSuggestions();
     }
+    sTravelMgr.Init();
 
     excludedHunterPetFamilies.clear();
     LoadList<std::vector<uint32>>(sConfigMgr->GetOption<std::string>("AiPlayerbot.ExcludedHunterPetFamilies", ""),
