@@ -1142,6 +1142,9 @@ void PlayerbotAI::HandleBotOutgoingPacket(WorldPacket const& packet)
                 if (guid1.IsEmpty() || p.size() > p.DEFAULT_SIZE)
                     return;
 
+                if (lang == LANG_ADDON)
+                        return;
+
                 if (p.GetOpcode() == SMSG_GM_MESSAGECHAT)
                 {
                     p >> textLen;
@@ -1190,8 +1193,6 @@ void PlayerbotAI::HandleBotOutgoingPacket(WorldPacket const& packet)
                         return;
 
                     if (HasRealPlayerMaster() && guid1 != GetMaster()->GetGUID())
-                        return;
-                    if (lang == LANG_ADDON)
                         return;
 
                     if (message.starts_with(sPlayerbotAIConfig.toxicLinksPrefix) &&
