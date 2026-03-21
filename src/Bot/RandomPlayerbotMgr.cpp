@@ -2000,7 +2000,7 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
         }
 
         // add all initial position
-        for (uint32 i = 1; i < sRaceMgr->GetMaxRaces(); i++)
+        for (uint32 i = 1; i < RaceMgr::instance()->GetMaxRaces(); i++)
         {
             for (uint32 j = 1; j < MAX_CLASSES; j++)
             {
@@ -2013,7 +2013,7 @@ void RandomPlayerbotMgr::PrepareTeleportCache()
 
                 for (int32 l = 1; l <= 5; l++)
                 {
-                    if ((1 << (i - 1)) & sRaceMgr->GetAllianceRaceMask())
+                    if ((1 << (i - 1)) & RaceMgr::instance()->GetAllianceRaceMask())
                         allianceStarterPerLevelCache[(uint8)l].push_back(pos);
                     else
                         hordeStarterPerLevelCache[(uint8)l].push_back(pos);
@@ -3131,7 +3131,7 @@ void RandomPlayerbotMgr::PrintStats()
 
     std::map<uint8, uint32> lvlPerRace;
     std::map<uint8, uint32> lvlPerClass;
-    for (uint8 race = RACE_HUMAN; race < sRaceMgr->GetMaxRaces(); ++race)
+    for (uint8 race = RACE_HUMAN; race < RaceMgr::instance()->GetMaxRaces(); ++race)
     {
         perRace[race] = 0;
         lvlPerRace[race] = 0;
@@ -3263,7 +3263,7 @@ void RandomPlayerbotMgr::PrintStats()
     }
 
     LOG_INFO("playerbots", "Bots race:");
-    for (uint8 race = RACE_HUMAN; race < sRaceMgr->GetMaxRaces(); ++race)
+    for (uint8 race = RACE_HUMAN; race < RaceMgr::instance()->GetMaxRaces(); ++race)
     {
         if (perRace[race])
         {

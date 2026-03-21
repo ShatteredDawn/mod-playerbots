@@ -3412,7 +3412,7 @@ void TravelMgr::LoadQuestTravelTable()
 
             std::ostringstream out;
 
-            for (uint8 race = RACE_HUMAN; race < sRaceMgr->GetMaxRaces(); race++)
+            for (uint8 race = RACE_HUMAN; race < RaceMgr::instance()->GetMaxRaces(); race++)
             {
                 for (uint8 cls = CLASS_WARRIOR; cls < MAX_CLASSES; ++cls)
                 {
