@@ -1,59 +1,124 @@
 #include "RaidNaxxActions.h"
 
-#include "Playerbots.h"
-
-bool HorsemanAttractAlternativelyAction::Execute(Event /*event*/)
+bool HorsemanAttractAlternativelyAction::Execute(Event)
 {
-    if (!helper.UpdateBossAI())
+    if (!this->helper.UpdateBossAI())
+    {
         return false;
+    }
 
-    helper.CalculatePosToGo(bot);
-    auto [posX, posY] = helper.CurrentAttractPos();
-    if (MoveTo(bot->GetMapId(), posX, posY, helper.posZ, false, false, false, false, MovementPriority::MOVEMENT_COMBAT))
+    this->helper.CalculatePosToGo(bot);
+
+    const std::pair<float, float> position = helper.CurrentAttractPos();
+    const bool ableToMove = this->MoveTo(
+        this->bot->GetMapId(),
+        position.first,
+        position.second,
+        helper.posZ,
+        false,
+        false,
+        false,
+        false,
+        MovementPriority::MOVEMENT_COMBAT
+    );
+
+    if (ableToMove)
+    {
         return true;
+    }
 
-    Unit* attackTarget = helper.CurrentAttackTarget();
-    if (context->GetValue<Unit*>("current target")->Get() != attackTarget)
-        return Attack(attackTarget);
+    Unit* const attackTarget = this->helper.CurrentAttackTarget();
+
+    Value<Unit*>* currentTargetValue = this->context->GetValue<Unit*>("current target");
+
+    if (currentTargetValue == nullptr)
+    {
+        return false;
+    }
+
+    if (currentTargetValue->Get() == attackTarget)
+    {
+        return false;
+    }
 
     return false;
 }
 
-bool HorsemanAttactInOrderAction::Execute(Event /*event*/)
+bool HorsemanAttactInOrderAction::Execute(Event)
 {
-    if (!helper.UpdateBossAI())
+    if (!this->helper.UpdateBossAI())
+    {
         return false;
+    }
 
     Unit* target = nullptr;
-    Unit* thane = AI_VALUE2(Unit*, "find target", "thane korth'azz");
-    Unit* lady = AI_VALUE2(Unit*, "find target", "lady blaumeux");
-    Unit* sir = AI_VALUE2(Unit*, "find target", "sir zeliek");
-    Unit* fourth = AI_VALUE2(Unit*, "find target", "baron rivendare");
-    if (!fourth)
-        fourth = AI_VALUE2(Unit*, "find target", "highlord mograine");
 
-    std::vector<Unit*> attack_order;
-    if (botAI->IsAssistTank(bot))
-        attack_order = {fourth, thane, lady, sir};
-    else
-        attack_order = {thane, fourth, lady, sir};
-    for (Unit* t : attack_order)
+    Value<Unit*>* const korthazzValue = this->context->GetValue<Unit*>("find target", "thane korth'azz");
+    Value<Unit*>* const blaumeuxValue = this->context->GetValue<Unit*>("find target", "lady blaumeux");
+    Value<Unit*>* const zeliekValue = this->context->GetValue<Unit*>("find target", "sir zeliek");
+    Value<Unit*>* const rivendareValue = this->context->GetValue<Unit*>("find target", "baron rivendare");
+
+    if (korthazzValue == nullptr || blaumeuxValue == nullptr || zeliekValue == nullptr || rivendareValue == nullptr)
     {
-        if (t && t->IsAlive())
+        return false;
+    }
+
+    Unit* const korthazz = korthazzValue->Get();
+    Unit* const blaumeux = blaumeuxValue->Get();
+    Unit* const zeliek = zeliekValue->Get();
+    Unit* const rivendare = rivendareValue->Get();
+    Unit* fourthHorseman = rivendare;
+
+    if (fourthHorseman == nullptr)
+    {
+        Value<Unit*>* const mograineValue = this->context->GetValue<Unit*>("find target", "highlord mograine");
+
+        if (mograineValue == nullptr)
         {
-            target = t;
-            break;
-        }
-    }
-    if (target)
-    {
-        if (context->GetValue<Unit*>("current target")->Get() == target && botAI->GetState() == BOT_STATE_COMBAT)
             return false;
+        }
 
-        if (!bot->IsWithinLOSInMap(target))
-            return MoveNear(target, 22.0f, MovementPriority::MOVEMENT_COMBAT);
-
-        return Attack(target);
+        fourthHorseman = mograineValue->Get();
     }
-    return false;
+
+    std::array<Unit*, 4> attack_order{ korthazz, fourthHorseman, blaumeux, zeliek };
+
+    if (botAI->IsAssistTank(bot))
+    {
+        attack_order = { fourthHorseman, korthazz, blaumeux, zeliek };
+    }
+
+    for (Unit* horseman : attack_order)
+    {
+        if (horseman == nullptr || !horseman->IsAlive())
+        {
+            continue;
+        }
+
+        target = horseman;
+    }
+
+    if (target == nullptr)
+    {
+        return false;
+    }
+
+    Value<Unit*>* const currentTargetValue = this->context->GetValue<Unit*>("current target");
+
+    if (currentTargetValue == nullptr)
+    {
+        return false;
+    }
+
+    if (currentTargetValue->Get() == target && this->botAI->GetState() == BOT_STATE_COMBAT)
+    {
+        return false;
+    }
+
+    if (!this->bot->IsWithinLOSInMap(target))
+    {
+        return this->MoveNear(target, 22.0f, MovementPriority::MOVEMENT_COMBAT);
+    }
+
+    return this->Attack(target);
 }

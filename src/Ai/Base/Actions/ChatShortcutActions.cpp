@@ -244,14 +244,17 @@ bool MaxDpsChatShortcutAction::Execute(Event)
 
 bool NaxxChatShortcutAction::Execute(Event)
 {
-    Player* master = GetMaster();
-    if (!master)
-        return false;
+    const Player* const master = this->GetMaster();
 
-    botAI->Reset();
-    botAI->ChangeStrategy("+naxx", BOT_STATE_NON_COMBAT);
-    botAI->ChangeStrategy("+naxx", BOT_STATE_COMBAT);
-    botAI->TellMasterNoFacing("Add Naxx Strategies!");
+    if (master == nullptr)
+    {
+        return false;
+    }
+
+    this->botAI->Reset();
+    this->botAI->ChangeStrategy("+naxx", BOT_STATE_NON_COMBAT);
+    this->botAI->ChangeStrategy("+naxx", BOT_STATE_COMBAT);
+    this->botAI->TellMasterNoFacing("Add Naxx Strategies!");
 
     return true;
 }

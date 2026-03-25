@@ -6,7 +6,6 @@
 #include "GenericActions.h"
 #include "MovementActions.h"
 #include "PlayerbotAI.h"
-#include "Playerbots.h"
 #include "RaidNaxxBossHelper.h"
 
 class GrobbulusGoBehindAction : public MovementAction
@@ -31,8 +30,16 @@ public:
         : RotateAroundTheCenterPointAction(botAI, "rotate grobbulus", 3281.23f, -3310.38f, 35.0f, 8, true, M_PI) {}
     virtual bool isUseful() override
     {
-        return RotateAroundTheCenterPointAction::isUseful() && botAI->IsMainTank(bot) &&
-               AI_VALUE2(bool, "has aggro", "boss target");
+        const Value<bool>* hasAggro = this->context->GetValue<bool>("has aggro", "boss target");
+
+        if (hasAggro == nullptr)
+        {
+            return false;
+        }
+
+        return RotateAroundTheCenterPointAction::isUseful()
+                && this->botAI->IsMainTank(this->bot)
+                && hasAggro;
     }
     uint32 GetCurrWaypoint() override;
 };
@@ -56,57 +63,6 @@ private:
     float distance;
 };
 
-//class HeiganDanceAction : public MovementAction
-//{
-//public:
-//    HeiganDanceAction(PlayerbotAI* ai) : MovementAction(ai, "heigan dance")
-//    {
-//        this->last_eruption_ms = 0;
-//        this->platform_phase = false;
-//        ResetSafe();
-//        waypoints.push_back(std::make_pair(2794.88f, -3668.12f));
-//        waypoints.push_back(std::make_pair(2775.49f, -3674.43f));
-//        waypoints.push_back(std::make_pair(2762.30f, -3684.59f));
-//        waypoints.push_back(std::make_pair(2755.99f, -3703.96f));
-//        platform = std::make_pair(2794.26f, -3706.67f);
-//    }
-//
-//protected:
-//    bool CalculateSafe();
-//    void ResetSafe()
-//    {
-//        curr_safe = 0;
-//        curr_dir = 1;
-//    }
-//    void NextSafe()
-//    {
-//        curr_safe += curr_dir;
-//        if (curr_safe == 3 || curr_safe == 0)
-//        {
-//            curr_dir = -curr_dir;
-//        }
-//    }
-//    uint32 last_eruption_ms;
-//    bool platform_phase;
-//    uint32 curr_safe, curr_dir;
-//    std::vector<std::pair<float, float>> waypoints;
-//    std::pair<float, float> platform;
-//};
-//
-//class HeiganDanceMeleeAction : public HeiganDanceAction
-//{
-//public:
-//    HeiganDanceMeleeAction(PlayerbotAI* ai) : HeiganDanceAction(ai) {}
-//    virtual bool Execute(Event event);
-//};
-//
-//class HeiganDanceRangedAction : public HeiganDanceAction
-//{
-//public:
-//    HeiganDanceRangedAction(PlayerbotAI* ai) : HeiganDanceAction(ai) {}
-//    virtual bool Execute(Event event);
-//};
-
 class ThaddiusAttackNearestPetAction : public AttackAction
 {
 public:
@@ -117,22 +73,6 @@ public:
 private:
     ThaddiusBossHelper helper;
 };
-
-// class ThaddiusMeleeToPlaceAction : public MovementAction
-// {
-// public:
-//     ThaddiusMeleeToPlaceAction(PlayerbotAI* ai) : MovementAction(ai, "thaddius melee to place") {}
-//     virtual bool Execute(Event event);
-//     virtual bool isUseful();
-// };
-
-// class ThaddiusRangedToPlaceAction : public MovementAction
-// {
-// public:
-//     ThaddiusRangedToPlaceAction(PlayerbotAI* ai) : MovementAction(ai, "thaddius ranged to place") {}
-//     virtual bool Execute(Event event);
-//     virtual bool isUseful();
-// };
 
 class ThaddiusMoveToPlatformAction : public MovementAction
 {
@@ -195,13 +135,6 @@ protected:
     FourhorsemanBossHelper helper;
 };
 
-// class SapphironGroundMainTankPositionAction : public MovementAction
-// {
-// public:
-//     SapphironGroundMainTankPositionAction(PlayerbotAI* ai) : MovementAction(ai, "sapphiron ground main tank
-//     position") {} virtual bool Execute(Event event);
-// };
-
 class SapphironGroundPositionAction : public MovementAction
 {
 public:
@@ -222,13 +155,6 @@ protected:
     SapphironBossHelper helper;
     bool MoveToNearestIcebolt();
 };
-
-// class SapphironAvoidChillAction : public MovementAction
-// {
-// public:
-//     SapphironAvoidChillAction(PlayerbotAI* ai) : MovementAction(ai, "sapphiron avoid chill") {}
-//     virtual bool Execute(Event event);
-// };
 
 class KelthuzadChooseTargetAction : public AttackAction
 {
@@ -315,12 +241,5 @@ public:
 private:
     LoathebBossHelper helper;
 };
-
-//class PatchwerkRangedPositionAction : public MovementAction
-//{
-//public:
-//    PatchwerkRangedPositionAction(PlayerbotAI* ai) : MovementAction(ai, "patchwerk ranged position") {}
-//    bool Execute(Event event) override;
-//};
 
 #endif

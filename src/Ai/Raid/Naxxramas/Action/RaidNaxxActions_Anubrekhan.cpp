@@ -1,81 +1,174 @@
 #include "RaidNaxxActions.h"
 
 #include "ObjectGuid.h"
-#include "Playerbots.h"
 
-bool AnubrekhanChooseTargetAction::Execute(Event /*event*/)
+bool AnubrekhanChooseTargetAction::Execute(Event)
 {
-    GuidVector attackers = context->GetValue<GuidVector>("attackers")->Get();
+    Value<GuidVector>* attackersValue = this->context->GetValue<GuidVector>("attackers");
+
+    if (attackersValue == nullptr)
+    {
+        return false;
+    }
+
+    const GuidVector attackers = attackersValue->Get();
+    Value<Unit*>* currentTargetValue = this->context->GetValue<Unit*>("current target");
+
+    if (currentTargetValue == nullptr)
+    {
+        return false;
+    }
+
+    const Unit* currentTarget = currentTargetValue->Get();
+
     Unit* target = nullptr;
     Unit* target_boss = nullptr;
     std::vector<Unit*> target_guards;
-    for (ObjectGuid const guid : attackers)
-    {
-        Unit* unit = botAI->GetUnit(guid);
-        if (!unit)
-            continue;
-        if (botAI->EqualLowercaseName(unit->GetName(), "crypt guard"))
-            target_guards.push_back(unit);
 
-        if (botAI->EqualLowercaseName(unit->GetName(), "anub'rekhan"))
-            target_boss = unit;
-    }
-    if (botAI->IsMainTank(bot))
-        target = target_boss;
-    else
+    for (const ObjectGuid guid : attackers)
     {
-        if (target_guards.size() == 0)
-            target = target_boss;
-        else
+        Unit* const unit = this->botAI->GetUnit(guid);
+
+        if (unit == nullptr)
         {
-            if (botAI->IsAssistTank(bot))
-            {
-                for (Unit* t : target_guards)
-                {
-                    if (target == nullptr || (target->GetVictim() && target->GetVictim()->ToPlayer() &&
-                                              botAI->IsTank(target->GetVictim()->ToPlayer())))
-                        target = t;
-                }
-            }
-            else
-            {
-                for (Unit* t : target_guards)
-                {
-                    if (target == nullptr || target->GetHealthPct() > t->GetHealthPct())
-                        target = t;
-                }
-            }
+            continue;
+        }
+
+        const std::string& unitName = unit->GetName();
+
+        if (this->botAI->EqualLowercaseName(unitName, "crypt guard"))
+        {
+            target_guards.push_back(unit);
+        }
+
+        if (this->botAI->EqualLowercaseName(unitName, "anub'rekhan"))
+        {
+            target_boss = unit;
         }
     }
-    if (context->GetValue<Unit*>("current target")->Get() == target)
-        return false;
 
-    return Attack(target);
+    if (this->botAI->IsMainTank(this->bot))
+    {
+        target = target_boss;
+
+        if (currentTarget == target)
+        {
+            return false;
+        }
+
+        return this->Attack(target);
+    }
+
+    if (target_guards.size() == 0)
+    {
+        target = target_boss;
+
+        if (currentTarget == target)
+        {
+            return false;
+        }
+
+        return this->Attack(target);
+    }
+
+    if (this->botAI->IsAssistTank(this->bot))
+    {
+        for (Unit* t : target_guards)
+        {
+            if (target == nullptr)
+            {
+                target = t;
+
+                continue;
+            }
+
+            Unit* targetVictim = target->GetVictim();
+
+            if (targetVictim == nullptr)
+            {
+                target = t;
+            }
+
+            const Player* playerTargetVictim = dynamic_cast<Player*>(targetVictim);
+
+            if (playerTargetVictim == nullptr)
+            {
+                target = t;
+            }
+        }
+
+        if (currentTarget == target)
+        {
+            return false;
+        }
+
+        return this->Attack(target);
+    }
+
+    for (Unit* t : target_guards)
+    {
+        if (target == nullptr || target->GetHealthPct() > t->GetHealthPct())
+        {
+            target = t;
+        }
+    }
+
+    if (currentTarget == target)
+    {
+        return false;
+    }
+
+    return this->Attack(target);
 }
 
 bool AnubrekhanPositionAction::Execute(Event /*event*/)
 {
-    Unit* boss = AI_VALUE2(Unit*, "find target", "anub'rekhan");
-    if (!boss)
-        return false;
+    Value<Unit*>* findTargetValue = this->context->GetValue<Unit*>("find target", "anub'rekhan");
 
-    bool inPhase = botAI->HasAura("locust swarm", boss) || boss->GetCurrentSpell(CURRENT_GENERIC_SPELL);
-    if (inPhase)
+    if (findTargetValue == nullptr)
     {
-        if (botAI->IsMainTank(bot))
-        {
-            uint32 nearest = FindNearestWaypoint();
-            uint32 next_point;
-            if (inPhase)
-                next_point = (nearest + 1) % intervals;
-            else
-                next_point = nearest;
-
-            return MoveTo(bot->GetMapId(), waypoints[next_point].first, waypoints[next_point].second, bot->GetPositionZ(), false, false,
-                          false, false, MovementPriority::MOVEMENT_COMBAT);
-        }
-        else
-            return MoveInside(533, 3272.49f, -3476.27f, bot->GetPositionZ(), 3.0f, MovementPriority::MOVEMENT_COMBAT);
+        return false;
     }
-    return false;
+
+    Unit* boss = findTargetValue->Get();
+
+    if (boss == nullptr)
+    {
+        return false;
+    }
+
+    const bool inPhase = this->botAI->HasAura("locust swarm", boss)
+                        || boss->GetCurrentSpell(CURRENT_GENERIC_SPELL);
+
+    if (!inPhase)
+    {
+        return false;
+    }
+
+    if (this->botAI->IsMainTank(bot))
+    {
+        const uint32 nearest = this->FindNearestWaypoint();
+        const uint32 next_point = (nearest + 1) % intervals;
+
+        return this->MoveTo(
+            this->bot->GetMapId(),
+            waypoints[next_point].first,
+            waypoints[next_point].second,
+            this->bot->GetPositionZ(),
+            false,
+            false,
+            false,
+            false,
+            MovementPriority::MOVEMENT_COMBAT
+        );
+    }
+
+    return this->MoveInside(
+        533,
+        3272.49f,
+        -3476.27f,
+        this->bot->GetPositionZ(),
+        3.0f,
+        MovementPriority::MOVEMENT_COMBAT
+    );
 }
