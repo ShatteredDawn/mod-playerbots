@@ -264,7 +264,7 @@ bool ThaddiusMovePolarityAction::Execute(Event)
         { NaxxSpellIds::PositiveCharge10, NaxxSpellIds::PositiveCharge25, NaxxSpellIds::PositiveChargeStack }
     );
     const bool hasPositiveChargeByName = this->botAI->HasAura("positive charge", bot, false, false, -1, true);
-    const bool hasPositiveCharge = hasPositiveChargeById || hasNegativeChargeByName;
+    const bool hasPositiveCharge = hasPositiveChargeById || hasPositiveChargeByName;
 
     if (hasPositiveCharge)
     {

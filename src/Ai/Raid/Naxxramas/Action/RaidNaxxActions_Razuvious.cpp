@@ -46,7 +46,7 @@ bool RazuviousUseObedienceCrystalAction::Execute(Event /*event*/)
         }
 
         const Aura* forceObedience = this->botAI->GetAura("force obedience", charmedUnit);
-        uint32_t duration_time = 90000;
+        int32_t duration_time = 90000;
 
         if (forceObedience == nullptr)
         {
