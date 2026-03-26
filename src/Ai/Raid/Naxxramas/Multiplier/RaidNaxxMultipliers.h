@@ -1,6 +1,4 @@
-
-#ifndef _PLAYERRBOT_RAIDNAXXMULTIPLIERS_H
-#define _PLAYERRBOT_RAIDNAXXMULTIPLIERS_H
+#pragma once
 
 #include "Multiplier.h"
 #include "RaidNaxxBossHelper.h"
@@ -13,15 +11,6 @@ public:
 public:
     virtual float GetValue(Action& action);
 };
-
-//class HeiganDanceMultiplier : public Multiplier
-//{
-//public:
-//    HeiganDanceMultiplier(PlayerbotAI* ai) : Multiplier(ai, "helgan dance") {}
-//
-//public:
-//    virtual float GetValue(Action& action);
-//};
 
 class LoathebGenericMultiplier : public Multiplier
 {
@@ -84,23 +73,14 @@ public:
     virtual float GetValue(Action& action);
 };
 
-class FourhorsemanGenericMultiplier : public Multiplier
+class FourHorsemenGenericMultiplier : public Multiplier
 {
 public:
-    FourhorsemanGenericMultiplier(PlayerbotAI* ai) : Multiplier(ai, "fourhorseman generic") {}
+    FourHorsemenGenericMultiplier(PlayerbotAI* ai) : Multiplier(ai, "fourhorseman generic") {}
 
 public:
     virtual float GetValue(Action& action);
 };
-
-// class GothikGenericMultiplier : public Multiplier
-// {
-// public:
-//     GothikGenericMultiplier(PlayerbotAI* ai) : Multiplier(ai, "gothik generic") {}
-
-// public:
-//     virtual float GetValue(Action& action);
-// };
 
 class GluthGenericMultiplier : public Multiplier
 {
@@ -111,5 +91,3 @@ public:
 private:
     GluthBossHelper helper;
 };
-
-#endif

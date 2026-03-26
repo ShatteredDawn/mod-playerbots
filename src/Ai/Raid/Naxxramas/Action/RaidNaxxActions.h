@@ -43,10 +43,10 @@ public:
     uint32 GetCurrWaypoint() override;
 };
 
-class GrobblulusMoveCenterAction : public MoveInsideAction
+class GrobbulusMoveCenterAction : public MoveInsideAction
 {
 public:
-    GrobblulusMoveCenterAction(PlayerbotAI* ai) : MoveInsideAction(ai, 3281.23f, -3310.38f, 5.0f) {}
+    GrobbulusMoveCenterAction(PlayerbotAI* ai) : MoveInsideAction(ai, 3281.23f, -3310.38f, 5.0f) {}
 };
 
 class GrobbulusMoveAwayAction : public MovementAction
@@ -112,10 +112,10 @@ private:
     RazuviousBossHelper helper;
 };
 
-class HorsemanAttractAlternativelyAction : public AttackAction
+class FourHorsemenAttractAlternativelyAction : public AttackAction
 {
 public:
-    HorsemanAttractAlternativelyAction(PlayerbotAI* ai) : AttackAction(ai, "horseman attract alternatively"), helper(ai)
+    FourHorsemenAttractAlternativelyAction(PlayerbotAI* ai) : AttackAction(ai, "horseman attract alternatively"), helper(ai)
     {
     }
     bool Execute(Event event) override;
@@ -124,10 +124,10 @@ protected:
     FourhorsemanBossHelper helper;
 };
 
-class HorsemanAttactInOrderAction : public AttackAction
+class FourHorsemenAttactInOrderAction : public AttackAction
 {
 public:
-    HorsemanAttactInOrderAction(PlayerbotAI* ai) : AttackAction(ai, "horseman attact in order"), helper(ai) {}
+    FourHorsemenAttactInOrderAction(PlayerbotAI* ai) : AttackAction(ai, "horseman attact in order"), helper(ai) {}
     bool Execute(Event event) override;
 
 protected:

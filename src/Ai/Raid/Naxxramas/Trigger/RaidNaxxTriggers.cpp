@@ -1,257 +1,346 @@
 #include "RaidNaxxTriggers.h"
 
-#include "Playerbots.h"
 #include "RaidNaxxSpellIds.h"
 #include "Timer.h"
 #include "Trigger.h"
 
 bool MutatingInjectionMeleeTrigger::IsActive()
 {
-    Unit* boss = AI_VALUE2(Unit*, "find target", "grobbulus");
-    if (!boss)
-        return false;
+    Value<Unit*>* const bossValue = this->context->GetValue<Unit*>("find target", "grobbulus");
 
-    return MutatingInjectionTrigger::IsActive() && !botAI->IsRanged(bot);
+    if (bossValue == nullptr)
+    {
+        return false;
+    }
+
+    const Unit* const boss = bossValue->Get();
+
+    if (boss == nullptr)
+    {
+        return false;
+    }
+
+    return MutatingInjectionTrigger::IsActive() && !this->botAI->IsRanged(this->bot);
 }
 
 bool MutatingInjectionRangedTrigger::IsActive()
 {
-    Unit* boss = AI_VALUE2(Unit*, "find target", "grobbulus");
-    if (!boss)
-        return false;
+    Value<Unit*>* const bossValue = this->context->GetValue<Unit*>("find target", "grobbulus");
 
-    return MutatingInjectionTrigger::IsActive() && botAI->IsRanged(bot);
+    if (bossValue == nullptr)
+    {
+        return false;
+    }
+
+    const Unit* const boss = bossValue->Get();
+
+    if (boss == nullptr)
+    {
+        return false;
+    }
+
+    return MutatingInjectionTrigger::IsActive() && this->botAI->IsRanged(this->bot);
 }
 
 bool AuraRemovedTrigger::IsActive()
 {
-    bool check = botAI->HasAura(name, bot, false, false, -1, true);
+    const bool check = this->botAI->HasAura(name, this->bot, false, false, -1, true);
     bool ret = false;
-    if (prev_check && !check)
-        ret = true;
 
-    prev_check = check;
+    if (this->prev_check && !check)
+    {
+        ret = true;
+    }
+
+    this->prev_check = check;
+
     return ret;
 }
 
 bool MutatingInjectionRemovedTrigger::IsActive()
 {
-    Unit* boss = AI_VALUE2(Unit*, "find target", "grobbulus");
-    if (!boss)
-        return false;
+    Value<Unit*>* const bossValue = this->context->GetValue<Unit*>("find target", "grobbulus");
 
-    return HasNoAuraTrigger::IsActive() && botAI->GetState() == BOT_STATE_COMBAT && botAI->IsRanged(bot);
+    if (bossValue == nullptr)
+    {
+        return false;
+    }
+
+    const Unit* const boss = bossValue->Get();
+
+    if (boss == nullptr)
+    {
+        return false;
+    }
+
+    return HasNoAuraTrigger::IsActive() && this->botAI->GetState() == BOT_STATE_COMBAT && this->botAI->IsRanged(this->bot);
 }
 
 bool GrobbulusCloudTrigger::IsActive()
 {
-    Unit* boss = AI_VALUE2(Unit*, "find target", "grobbulus");
-    if (!boss)
-        return false;
+    Value<Unit*>* const bossValue = this->context->GetValue<Unit*>("find target", "grobbulus");
 
-    if (!botAI->IsMainTank(bot))
+    if (bossValue == nullptr)
+    {
         return false;
+    }
 
-    // bot->Yell("has aggro on " + boss->GetName() + " : " + to_string(AI_VALUE2(bool, "has aggro", "boss target")),
-    // LANG_UNIVERSAL);
-    if (!AI_VALUE2(bool, "has aggro", "boss target"))
+    const Unit* const boss = bossValue->Get();
+
+    if (boss == nullptr)
+    {
         return false;
+    }
 
-    uint32 now = getMSTime();
+    if (!this->botAI->IsMainTank(this->bot))
+    {
+        return false;
+    }
+
+    Value<bool>* const hasAggroValue = this->context->GetValue<bool>("has aggro", "boss target");
+
+    if (hasAggroValue == nullptr)
+    {
+        return false;
+    }
+
+    if (!hasAggroValue->Get())
+    {
+        return false;
+    }
+
+    const uint32_t now = getMSTime();
     bool poison_cloud_casting = false;
+
     if (boss->HasUnitState(UNIT_STATE_CASTING))
     {
-        Spell* spell = boss->GetCurrentSpell(CURRENT_GENERIC_SPELL);
+        const Spell* spell = boss->GetCurrentSpell(CURRENT_GENERIC_SPELL);
+
         if (!spell)
+        {
             spell = boss->GetCurrentSpell(CURRENT_CHANNELED_SPELL);
+        }
 
         if (spell)
+        {
             poison_cloud_casting = NaxxSpellIds::MatchesAnySpellId(spell->GetSpellInfo(), {NaxxSpellIds::PoisonCloud});
-
+        }
     }
+
     if (!poison_cloud_casting && last_cloud_ms != 0 && now - last_cloud_ms < CloudRotationDelayMs)
+    {
         return false;
+    }
 
     last_cloud_ms = now;
+
     return true;
 }
 
-//bool HeiganMeleeTrigger::IsActive()
-//{
-//    Unit* heigan = AI_VALUE2(Unit*, "find target", "heigan the unclean");
-//    if (!heigan)
-//    {
-//        return false;
-//    }
-//    return !botAI->IsRanged(bot);
-//}
-//
-//bool HeiganRangedTrigger::IsActive()
-//{
-//    Unit* heigan = AI_VALUE2(Unit*, "find target", "heigan the unclean");
-//    if (!heigan)
-//    {
-//        return false;
-//    }
-//    return botAI->IsRanged(bot);
-//}
-
 bool RazuviousTankTrigger::IsActive()
 {
-    Difficulty diff = bot->GetRaidDifficulty();
-    if (diff == RAID_DIFFICULTY_10MAN_NORMAL)
-        return helper.UpdateBossAI() && botAI->IsTank(bot);
+    const Difficulty diff = this->bot->GetRaidDifficulty();
 
-    return helper.UpdateBossAI() && bot->getClass() == CLASS_PRIEST;
+    if (diff == RAID_DIFFICULTY_10MAN_NORMAL)
+    {
+        return this->helper.UpdateBossAI() && this->botAI->IsTank(bot);
+    }
+
+    return this->helper.UpdateBossAI() && bot->getClass() == CLASS_PRIEST;
 }
 
 bool RazuviousNontankTrigger::IsActive()
 {
     Difficulty diff = bot->GetRaidDifficulty();
+
     if (diff == RAID_DIFFICULTY_10MAN_NORMAL)
-        return helper.UpdateBossAI() && !(botAI->IsTank(bot));
+    {
+        return this->helper.UpdateBossAI() && !(this->botAI->IsTank(this->bot));
+    }
 
-    return helper.UpdateBossAI() && !(bot->getClass() == CLASS_PRIEST);
+    return this->helper.UpdateBossAI() && !(this->bot->getClass() == CLASS_PRIEST);
 }
 
-bool HorsemanAttractorsTrigger::IsActive()
+bool FourHorsemenAttractorsTrigger::IsActive()
 {
-    if (!helper.UpdateBossAI())
+    if (!this->helper.UpdateBossAI())
+    {
         return false;
+    }
 
-    return helper.IsAttracter(bot);
+    return this->helper.IsAttracter(this->bot);
 }
 
-bool HorsemanExceptAttractorsTrigger::IsActive()
+bool FourHorsemenExceptAttractorsTrigger::IsActive()
 {
-    if (!helper.UpdateBossAI())
+    if (!this->helper.UpdateBossAI())
+    {
         return false;
+    }
 
-    return !helper.IsAttracter(bot);
+    return !this->helper.IsAttracter(this->bot);
 }
 
 bool SapphironGroundTrigger::IsActive()
 {
-    if (!helper.UpdateBossAI())
+    if (!this->helper.UpdateBossAI())
+    {
         return false;
+    }
 
-    return helper.IsPhaseGround();
+    return this->helper.IsPhaseGround();
 }
 
 bool SapphironFlightTrigger::IsActive()
 {
-    if (!helper.UpdateBossAI())
+    if (!this->helper.UpdateBossAI())
+    {
         return false;
+    }
 
-    return helper.IsPhaseFlight();
+    return this->helper.IsPhaseFlight();
 }
 
-bool GluthTrigger::IsActive() { return helper.UpdateBossAI(); }
+bool GluthTrigger::IsActive()
+{
+    return this->helper.UpdateBossAI();
+}
 
 bool GluthMainTankMortalWoundTrigger::IsActive()
 {
-    if (!helper.UpdateBossAI())
+    if (!this->helper.UpdateBossAI())
+    {
         return false;
+    }
 
-    if (!botAI->IsAssistTankOfIndex(bot, 0))
+    if (!this->botAI->IsAssistTankOfIndex(bot, 0))
+    {
         return false;
+    }
 
-    Unit* mt = AI_VALUE(Unit*, "main tank");
-    if (!mt)
+    Value<Unit*>* const mainTankValue = this->context->GetValue<Unit*>("main tank");
+
+    if (mainTankValue == nullptr)
+    {
         return false;
+    }
 
-    Aura* aura = NaxxSpellIds::GetAnyAura(mt, {NaxxSpellIds::MortalWound10, NaxxSpellIds::MortalWound25});
-    if (!aura)
+    Unit* const mt = mainTankValue->Get();
+
+    if (mt == nullptr)
+    {
+        return false;
+    }
+
+    const Aura* aura = NaxxSpellIds::GetAnyAura(mt, {NaxxSpellIds::MortalWound10, NaxxSpellIds::MortalWound25});
+
+    if (aura == nullptr)
     {
         // Fallback to name for custom spell data.
-        aura = botAI->GetAura("mortal wound", mt, false, true);
+        aura = this->botAI->GetAura("mortal wound", mt, false, true);
     }
-    if (!aura || aura->GetStackAmount() < 5)
+
+    if (aura == nullptr || aura->GetStackAmount() < 5)
+    {
         return false;
+    }
 
     return true;
 }
 
-bool KelthuzadTrigger::IsActive() { return helper.UpdateBossAI(); }
+bool KelthuzadTrigger::IsActive()
+{
+    return this->helper.UpdateBossAI();
+}
 
-bool AnubrekhanTrigger::IsActive() {
-    Unit* boss = AI_VALUE2(Unit*, "find target", "anub'rekhan");
-    if (!boss)
+bool AnubrekhanTrigger::IsActive()
+{
+    Value<Unit*>* const bossValue = this->context->GetValue<Unit*>("find target", "anub'rekhan");
+
+    if (bossValue == nullptr)
+    {
         return false;
+    }
+
+    const Unit* const boss = bossValue->Get();
+
+    if (boss == nullptr)
+    {
+        return false;
+    }
 
     return true;
 }
 
 bool FaerlinaTrigger::IsActive()
 {
-    Unit* boss = AI_VALUE2(Unit*, "find target", "grand widow faerlina");
-    if (!boss)
+    Value<Unit*>* const bossValue = this->context->GetValue<Unit*>("find target", "grand widow faerlina");
+
+    if (bossValue == nullptr)
+    {
         return false;
+    }
+
+    const Unit* const boss = bossValue->Get();
+
+    if (boss == nullptr)
+    {
+        return false;
+    }
 
     return true;
 }
 
 bool MaexxnaTrigger::IsActive()
 {
-    Unit* boss = AI_VALUE2(Unit*, "find target", "maexxna");
-    if (!boss)
-        return false;
+    Value<Unit*>* const bossValue = this->context->GetValue<Unit*>("find target", "maexxna");
 
-    return !botAI->IsTank(bot);
+    if (bossValue == nullptr)
+    {
+        return false;
+    }
+
+    const Unit* const boss = bossValue->Get();
+
+    if (boss == nullptr)
+    {
+        return false;
+    }
+
+    return true;
 }
 
-//bool PatchwerkTankTrigger::IsActive()
-//{
-//    Unit* boss = AI_VALUE2(Unit*, "find target", "patchwerk");
-//    if (!boss)
-//    {
-//        return false;
-//    }
-//    return !botAI->IsTank(bot) && !botAI->IsRanged(bot);
-//}
-//
-//bool PatchwerkRangedTrigger::IsActive()
-//{
-//    Unit* boss = AI_VALUE2(Unit*, "find target", "patchwerk");
-//    if (!boss)
-//    {
-//        return false;
-//    }
-//    return !botAI->IsTank(bot) && botAI->IsRanged(bot);
-//}
-//
-//bool PatchwerkNonTankTrigger::IsActive()
-//{
-//    Unit* boss = AI_VALUE2(Unit*, "find target", "patchwerk");
-//    if (!boss)
-//    {
-//        return false;
-//    }
-//    return !botAI->IsTank(bot);
-//}
-
-bool LoathebTrigger::IsActive() { return helper.UpdateBossAI(); }
+bool LoathebTrigger::IsActive()
+{
+    return this->helper.UpdateBossAI();
+}
 
 bool ThaddiusPhasePetTrigger::IsActive()
 {
-    if (!helper.UpdateBossAI())
+    if (!this->helper.UpdateBossAI())
+    {
         return false;
+    }
 
-    return helper.IsPhasePet();
+    return this->helper.IsPhasePet();
 }
 
 bool ThaddiusPhaseTransitionTrigger::IsActive()
 {
-    if (!helper.UpdateBossAI())
+    if (!this->helper.UpdateBossAI())
+    {
         return false;
+    }
 
-    return helper.IsPhaseTransition();
+    return this->helper.IsPhaseTransition();
 }
 
 bool ThaddiusPhaseThaddiusTrigger::IsActive()
 {
-    if (!helper.UpdateBossAI())
+    if (!this->helper.UpdateBossAI())
+    {
         return false;
+    }
 
-    return helper.IsPhaseThaddius();
+    return this->helper.IsPhaseThaddius();
 }

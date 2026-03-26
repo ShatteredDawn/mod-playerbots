@@ -251,7 +251,7 @@ float AnubrekhanGenericMultiplier::GetValue(Action& action)
     return 1.0f;
 }
 
-float FourhorsemanGenericMultiplier::GetValue(Action& action)
+float FourHorsemenGenericMultiplier::GetValue(Action& action)
 {
     Value<Unit*>* const bossValue = this->context->GetValue<Unit*>("find target", "sir zeliek");
 

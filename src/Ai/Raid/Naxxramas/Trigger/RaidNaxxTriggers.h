@@ -1,10 +1,6 @@
+#pragma  once
 
-#ifndef _PLAYERBOT_RAIDNAXXTRIGGERS_H
-#define _PLAYERBOT_RAIDNAXXTRIGGERS_H
-
-#include "EventMap.h"
 #include "GenericTriggers.h"
-#include "PlayerbotAIConfig.h"
 #include "RaidNaxxBossHelper.h"
 #include "Trigger.h"
 
@@ -59,20 +55,6 @@ private:
     static constexpr uint32 CloudRotationDelayMs = 15000;
 };
 
-//class HeiganMeleeTrigger : public Trigger
-//{
-//public:
-//    HeiganMeleeTrigger(PlayerbotAI* ai) : Trigger(ai, "heigan melee") {}
-//    virtual bool IsActive();
-//};
-//
-//class HeiganRangedTrigger : public Trigger
-//{
-//public:
-//    HeiganRangedTrigger(PlayerbotAI* ai) : Trigger(ai, "heigan ranged") {}
-//    bool IsActive() override;
-//};
-
 class RazuviousTankTrigger : public Trigger
 {
 public:
@@ -124,27 +106,6 @@ public:
     bool IsActive() override;
 };
 
-//class PatchwerkTankTrigger : public Trigger
-//{
-//public:
-//    PatchwerkTankTrigger(PlayerbotAI* ai) : Trigger(ai, "patchwerk tank") {}
-//    bool IsActive() override;
-//};
-//
-//class PatchwerkNonTankTrigger : public Trigger
-//{
-//public:
-//    PatchwerkNonTankTrigger(PlayerbotAI* ai) : Trigger(ai, "patchwerk non-tank") {}
-//    bool IsActive() override;
-//};
-//
-//class PatchwerkRangedTrigger : public Trigger
-//{
-//public:
-//    PatchwerkRangedTrigger(PlayerbotAI* ai) : Trigger(ai, "patchwerk ranged") {}
-//    bool IsActive() override;
-//};
-
 class ThaddiusPhasePetTrigger : public Trigger
 {
 public:
@@ -186,20 +147,20 @@ private:
     ThaddiusBossHelper helper;
 };
 
-class HorsemanAttractorsTrigger : public Trigger
+class FourHorsemenAttractorsTrigger : public Trigger
 {
 public:
-    HorsemanAttractorsTrigger(PlayerbotAI* ai) : Trigger(ai, "fourhorsemen attractors"), helper(ai) {}
+    FourHorsemenAttractorsTrigger(PlayerbotAI* ai) : Trigger(ai, "fourhorsemen attractors"), helper(ai) {}
     bool IsActive() override;
 
 private:
     FourhorsemanBossHelper helper;
 };
 
-class HorsemanExceptAttractorsTrigger : public Trigger
+class FourHorsemenExceptAttractorsTrigger : public Trigger
 {
 public:
-    HorsemanExceptAttractorsTrigger(PlayerbotAI* ai) : Trigger(ai, "fourhorsemen except attractors"), helper(ai) {}
+    FourHorsemenExceptAttractorsTrigger(PlayerbotAI* ai) : Trigger(ai, "fourhorsemen except attractors"), helper(ai) {}
     bool IsActive() override;
 
 private:
@@ -255,5 +216,3 @@ public:
 private:
     LoathebBossHelper helper;
 };
-
-#endif

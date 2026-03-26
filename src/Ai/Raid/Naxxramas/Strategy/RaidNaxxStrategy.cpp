@@ -31,7 +31,7 @@ void RaidNaxxStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
         new TriggerNode(
             "mutating injection removed",
             {
-                CreateNextAction<GrobblulusMoveCenterAction>(ACTION_RAID + 1.0f)
+                CreateNextAction<GrobbulusMoveCenterAction>(ACTION_RAID + 1.0f)
             }
         )
     );
@@ -143,21 +143,21 @@ void RaidNaxxStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
         )
     );
 
-    // four horseman
+    // four horsemen
     triggers.push_back(
         new TriggerNode(
-            "horseman attractors",
+            "horsemen attractors",
             {
-                CreateNextAction<HorsemanAttractAlternativelyAction>(ACTION_RAID + 1.0f)
+                CreateNextAction<FourHorsemenAttractAlternativelyAction>(ACTION_RAID + 1.0f)
             }
         )
     );
 
     triggers.push_back(
         new TriggerNode(
-            "horseman except attractors",
+            "horsemen except attractors",
             {
-                CreateNextAction<HorsemanAttactInOrderAction>(ACTION_RAID + 1.0f)
+                CreateNextAction<FourHorsemenAttactInOrderAction>(ACTION_RAID + 1.0f)
             }
         )
     );
@@ -236,7 +236,7 @@ void RaidNaxxStrategy::InitMultipliers(std::vector<Multiplier*>& multipliers)
         new AnubrekhanGenericMultiplier(this->botAI)
     );
     multipliers.push_back(
-        new FourhorsemanGenericMultiplier(this->botAI)
+        new FourHorsemenGenericMultiplier(this->botAI)
     );
     multipliers.push_back(
         new GluthGenericMultiplier(this->botAI)

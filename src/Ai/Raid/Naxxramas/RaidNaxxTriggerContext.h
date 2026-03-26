@@ -66,8 +66,8 @@ private:
     static Trigger* razuvious_tank(PlayerbotAI* ai) { return new RazuviousTankTrigger(ai); }
     static Trigger* razuvious_nontank(PlayerbotAI* ai) { return new RazuviousNontankTrigger(ai); }
 
-    static Trigger* horseman_attractors(PlayerbotAI* ai) { return new HorsemanAttractorsTrigger(ai); }
-    static Trigger* horseman_except_attractors(PlayerbotAI* ai) { return new HorsemanExceptAttractorsTrigger(ai); }
+    static Trigger* horseman_attractors(PlayerbotAI* ai) { return new FourHorsemenAttractorsTrigger(ai); }
+    static Trigger* horseman_except_attractors(PlayerbotAI* ai) { return new FourHorsemenExceptAttractorsTrigger(ai); }
 
     static Trigger* sapphiron_ground(PlayerbotAI* ai) { return new SapphironGroundTrigger(ai); }
     static Trigger* sapphiron_flight(PlayerbotAI* ai) { return new SapphironFlightTrigger(ai); }

@@ -17,6 +17,11 @@ bool ThaddiusAttackNearestPetAction::isUseful()
 
     const Unit* const target = helper.GetNearestPet();
 
+    if (target == nullptr)
+    {
+        return false;
+    }
+
     if (!this->bot->IsWithinDistInMap(target, 50.0f))
     {
         return false;
@@ -37,6 +42,11 @@ bool ThaddiusAttackNearestPetAction::Execute(Event)
     Value<Unit*>* const currentTargetValue = this->context->GetValue<Unit*>("current target");
 
     if (currentTargetValue == nullptr)
+    {
+        return false;
+    }
+
+    if (currentTargetValue->Get() == nullptr)
     {
         return false;
     }

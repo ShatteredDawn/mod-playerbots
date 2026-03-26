@@ -1,6 +1,6 @@
 #include "RaidNaxxActions.h"
 
-bool HorsemanAttractAlternativelyAction::Execute(Event)
+bool FourHorsemenAttractAlternativelyAction::Execute(Event)
 {
     if (!this->helper.UpdateBossAI())
     {
@@ -44,7 +44,7 @@ bool HorsemanAttractAlternativelyAction::Execute(Event)
     return false;
 }
 
-bool HorsemanAttactInOrderAction::Execute(Event)
+bool FourHorsemenAttactInOrderAction::Execute(Event)
 {
     if (!this->helper.UpdateBossAI())
     {

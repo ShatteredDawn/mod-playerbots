@@ -146,7 +146,6 @@ bool SapphironFlightPositionAction::MoveToNearestIcebolt()
         return false;
     }
 
-    const Group::MemberSlotList& slots = group->GetMemberSlots();
     Player* playerWithIcebolt = nullptr;
     float minDistance = 0.0f;
 
