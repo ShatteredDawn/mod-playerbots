@@ -83,7 +83,7 @@ bool HorsemanAttactInOrderAction::Execute(Event)
 
     std::array<Unit*, 4> attack_order{ korthazz, fourthHorseman, blaumeux, zeliek };
 
-    if (botAI->IsAssistTank(bot))
+    if (this->botAI->IsAssistTank(bot))
     {
         attack_order = { fourthHorseman, korthazz, blaumeux, zeliek };
     }

@@ -1,71 +1,105 @@
+#include "ObjectGuid.h"
 #include "RaidNaxxActions.h"
 
 #include "PlayerbotAIConfig.h"
 #include "Playerbots.h"
 #include "SharedDefines.h"
 
+// @TODO: This needs to be completely rewritten
 bool GluthChooseTargetAction::Execute(Event /*event*/)
 {
-    if (!helper.UpdateBossAI())
+    if (!this->helper.UpdateBossAI())
+    {
         return false;
+    }
 
-    GuidVector attackers = context->GetValue<GuidVector>("possible targets")->Get();
+    Value<GuidVector>* const attackersValue = this->context->GetValue<GuidVector>("possible targets");
+
+    if (attackersValue == nullptr)
+    {
+        return false;
+    }
+
+    const GuidVector attackers = attackersValue->Get();
     Unit* target = nullptr;
     Unit* target_boss = nullptr;
-    std::vector<Unit*> target_zombies;
-    for (GuidVector::iterator i = attackers.begin(); i != attackers.end(); ++i)
+    std::vector<Unit*> target_zombies{};
+
+    for (GuidVector::const_iterator i = attackers.begin(); i != attackers.end(); ++i)
     {
-        Unit* unit = botAI->GetUnit(*i);
-        if (!unit)
+        Unit* const unit = this->botAI->GetUnit(*i);
+
+        if (unit == nullptr)
+        {
             continue;
+        }
 
         if (!unit->IsAlive())
-            continue;
-
-        if (botAI->EqualLowercaseName(unit->GetName(), "zombie chow"))
-            target_zombies.push_back(unit);
-
-        if (botAI->EqualLowercaseName(unit->GetName(), "gluth"))
-            target_boss = unit;
-    }
-    if (botAI->IsMainTank(bot) || botAI->IsAssistTankOfIndex(bot, 0))
-        target = target_boss;
-    else if (botAI->IsAssistTankOfIndex(bot, 1))
-    {
-        for (Unit* t : target_zombies)
         {
-            if (t->GetHealthPct() > helper.decimatedZombiePct && t->GetVictim() != bot && t->GetDistance2d(bot) <= 10.0f)
+            continue;
+        }
+
+        const std::string& unitName = unit->GetName();
+
+        if (this->botAI->EqualLowercaseName(unitName, "zombie chow"))
+        {
+            target_zombies.push_back(unit);
+        }
+
+        if (this->botAI->EqualLowercaseName(unitName, "gluth"))
+        {
+            target_boss = unit;
+        }
+    }
+
+    if (this->botAI->IsMainTank(this->bot) || this->botAI->IsAssistTankOfIndex(this->bot, 0))
+    {
+        target = target_boss;
+    }
+    else if (this->botAI->IsAssistTankOfIndex(this->bot, 1))
+    {
+        for (Unit* const zombie : target_zombies)
+        {
+            if (zombie->GetHealthPct() > this->helper.decimatedZombiePct && zombie->GetVictim() != this->bot && zombie->GetDistance2d(this->bot) <= 10.0f)
             {
-                if (!target || t->GetDistance2d(bot) < target->GetDistance2d(bot))
-                    target = t;
+                if (!target || zombie->GetDistance2d(this->bot) < target->GetDistance2d(this->bot))
+                    target = zombie;
             }
         }
     }
-    else if (botAI->GetClassIndex(bot, CLASS_HUNTER) == 0 || botAI->GetClassIndex(bot, CLASS_HUNTER) == 1)
+    else if (this->botAI->GetClassIndex(this->bot, CLASS_HUNTER) == 0 || this->botAI->GetClassIndex(bot, CLASS_HUNTER) == 1)
     {
         // prevent zombie go straight to gluth
-        for (Unit* t : target_zombies)
+        for (Unit* const zombie : target_zombies)
         {
-            if (t->GetHealthPct() > helper.decimatedZombiePct && t->GetVictim() == target_boss &&
-                t->GetDistance2d(bot) <= sPlayerbotAIConfig.spellDistance)
+            if (zombie->GetHealthPct() > this->helper.decimatedZombiePct && zombie->GetVictim() == target_boss &&
+                zombie->GetDistance2d(this->bot) <= PlayerbotAIConfig::instance().spellDistance)
             {
-                if (!target || t->GetDistance2d(bot) < target->GetDistance2d(bot))
-                    target = t;
+                if (!target || zombie->GetDistance2d(this->bot) < target->GetDistance2d(bot))
+                {
+                    target = zombie;
+                }
             }
         }
+
         if (!target)
+        {
             target = target_boss;
+        }
     }
     else
     {
-        for (Unit* t : target_zombies)
+        for (Unit* const zombie : target_zombies)
         {
-            if (t->GetHealthPct() <= helper.decimatedZombiePct)
+            if (zombie->GetHealthPct() <= this->helper.decimatedZombiePct)
             {
                 if (target == nullptr ||
-                    target->GetDistance2d(helper.mainTankPos25.first, helper.mainTankPos25.second) >
-                        t->GetDistance2d(helper.mainTankPos25.first, helper.mainTankPos25.second))
-                    target = t;
+                    target->GetDistance2d(this->helper.mainTankPos25.first, this->helper.mainTankPos25.second) >
+                        zombie->GetDistance2d(this->helper.mainTankPos25.first, this->helper.mainTankPos25.second))
+                {
+
+                    target = zombie;
+                }
             }
         }
         if (target == nullptr)
@@ -81,6 +115,7 @@ bool GluthChooseTargetAction::Execute(Event /*event*/)
     // return Attack(target);
 }
 
+// @TODO: This needs to be completely rewritten
 bool GluthPositionAction::Execute(Event /*event*/)
 {
     if (!helper.UpdateBossAI())
@@ -154,25 +189,31 @@ bool GluthPositionAction::Execute(Event /*event*/)
     return false;
 }
 
-bool GluthSlowdownAction::Execute(Event /*event*/)
+bool GluthSlowdownAction::Execute(Event)
 {
-    if (!helper.UpdateBossAI())
-        return false;
-
-    bool raid25 = bot->GetRaidDifficulty() == RAID_DIFFICULTY_25MAN_NORMAL;
-    if (!raid25)
-        return false;
-
-    if (helper.JustStartCombat())
-        return false;
-
-    switch (bot->getClass())
+    if (!this->helper.UpdateBossAI())
     {
-        case CLASS_HUNTER:
-            return botAI->CastSpell("frost trap", bot);
-            break;
-        default:
-            break;
+        return false;
     }
+
+    const bool raid25 = this->bot->GetRaidDifficulty() == RAID_DIFFICULTY_25MAN_NORMAL;
+
+    if (!raid25)
+    {
+        return false;
+    }
+
+    if (this->helper.JustStartCombat())
+    {
+        return false;
+    }
+
+    const uint8_t botClass = this->bot->getClass();
+
+    if (botClass == CLASS_HUNTER)
+    {
+        return this->botAI->CastSpell("frost trap", bot);
+    }
+
     return false;
 }

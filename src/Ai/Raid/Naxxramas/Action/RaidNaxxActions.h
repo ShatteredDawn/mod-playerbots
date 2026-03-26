@@ -1,5 +1,4 @@
-#ifndef _PLAYERBOT_RAIDNAXXACTIONS_H
-#define _PLAYERBOT_RAIDNAXXACTIONS_H
+#pragma once
 
 #include "Action.h"
 #include "AttackAction.h"
@@ -30,7 +29,7 @@ public:
         : RotateAroundTheCenterPointAction(botAI, "rotate grobbulus", 3281.23f, -3310.38f, 35.0f, 8, true, M_PI) {}
     virtual bool isUseful() override
     {
-        const Value<bool>* hasAggro = this->context->GetValue<bool>("has aggro", "boss target");
+        const Value<bool>* const hasAggro = this->context->GetValue<bool>("has aggro", "boss target");
 
         if (hasAggro == nullptr)
         {
@@ -241,5 +240,3 @@ public:
 private:
     LoathebBossHelper helper;
 };
-
-#endif

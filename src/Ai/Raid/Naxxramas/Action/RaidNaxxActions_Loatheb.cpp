@@ -1,55 +1,110 @@
+#include "ObjectGuid.h"
 #include "RaidNaxxActions.h"
-
-#include "Playerbots.h"
 
 bool LoathebPositionAction::Execute(Event /*event*/)
 {
-    if (!helper.UpdateBossAI())
-        return false;
-
-    if (botAI->IsTank(bot))
+    if (!this->helper.UpdateBossAI())
     {
-        if (AI_VALUE2(bool, "has aggro", "boss target"))
-            return MoveTo(533, helper.mainTankPos.first, helper.mainTankPos.second, bot->GetPositionZ(), false, false, false, false,
-                          MovementPriority::MOVEMENT_COMBAT);
+        return false;
     }
-    else if (botAI->IsRanged(bot))
-        return MoveInside(533, helper.rangePos.first, helper.rangePos.second, bot->GetPositionZ(), 1.0f,
-                          MovementPriority::MOVEMENT_COMBAT);
+
+    if (this->botAI->IsTank(bot))
+    {
+        Value<bool>* const hasAggroValue = this->context->GetValue<bool>("has aggro", "boss target");
+
+        if (hasAggroValue == nullptr)
+        {
+            return false;
+        }
+
+        if (!hasAggroValue->Get())
+        {
+            return false;
+        }
+
+        return this->MoveTo(
+            533,
+            this->helper.mainTankPos.first,
+            this->helper.mainTankPos.second,
+            this->bot->GetPositionZ(),
+            false,
+            false,
+            false,
+            false,
+            MovementPriority::MOVEMENT_COMBAT
+        );
+    }
+
+    if (this->botAI->IsRanged(bot))
+    {
+        return this->MoveInside(
+            533,
+            this->helper.rangePos.first,
+            this->helper.rangePos.second,
+            this->bot->GetPositionZ(),
+            1.0f,
+            MovementPriority::MOVEMENT_COMBAT
+        );
+    }
     return false;
 }
 
 bool LoathebChooseTargetAction::Execute(Event /*event*/)
 {
-    if (!helper.UpdateBossAI())
+    if (!this->helper.UpdateBossAI())
+    {
         return false;
+    }
 
-    GuidVector attackers = context->GetValue<GuidVector>("attackers")->Get();
+    Value<GuidVector>* const attackersValue = this->context->GetValue<GuidVector>("attackers");
+
+    if (attackersValue == nullptr)
+    {
+        return false;
+    }
+
+    const GuidVector attackers = attackersValue->Get();
+
     Unit* target = nullptr;
     Unit* target_boss = nullptr;
     Unit* target_spore = nullptr;
-    for (auto i = attackers.begin(); i != attackers.end(); ++i)
+
+    for (GuidVector::const_iterator i = attackers.begin(); i != attackers.end(); ++i)
     {
-        Unit* unit = botAI->GetUnit(*i);
-        if (!unit)
+        Unit* unit = this->botAI->GetUnit(*i);
+
+        if (unit == nullptr)
+        {
             continue;
+        }
 
         if (!unit->IsAlive())
+        {
             continue;
+        }
 
-        if (botAI->EqualLowercaseName(unit->GetName(), "spore"))
+        if (this->botAI->EqualLowercaseName(unit->GetName(), "spore"))
+        {
             target_spore = unit;
+        }
 
-        if (botAI->EqualLowercaseName(unit->GetName(), "loatheb"))
+        if (this->botAI->EqualLowercaseName(unit->GetName(), "loatheb"))
+        {
             target_boss = unit;
+        }
     }
-    if (target_spore && bot->GetDistance2d(target_spore) <= 1.0f)
+
+    target = target_boss;
+
+    if (target_spore != nullptr && this->bot->GetDistance2d(target_spore) <= 1.0f)
+    {
         target = target_spore;
-    else
-        target = target_boss;
+    }
 
-    if (!target || context->GetValue<Unit*>("current target")->Get() == target)
+    if (target == nullptr || this->context->GetValue<Unit*>("current target")->Get() == target)
+    {
         return false;
+    }
 
-    return Attack(target);
+    return this->Attack(target);
 }

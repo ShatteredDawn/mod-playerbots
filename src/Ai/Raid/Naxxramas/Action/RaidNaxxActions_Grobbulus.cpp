@@ -1,46 +1,91 @@
 #include "RaidNaxxActions.h"
 
-#include "Playerbots.h"
-
-bool GrobbulusGoBehindAction::Execute(Event /*event*/)
+bool GrobbulusGoBehindAction::Execute(Event)
 {
-    Unit* boss = AI_VALUE(Unit*, "boss target");
-    if (!boss)
+    Value<Unit*>* const bossValue = this->context->GetValue<Unit*>("boss target");
+
+    if (bossValue == nullptr)
+    {
         return false;
+    }
+
+    Unit* const boss = bossValue->Get();
+
+    if (boss == nullptr)
+    {
+        return false;
+    }
 
     // Position* pos = boss->GetPosition();
-    float orientation = boss->GetOrientation() + M_PI + delta_angle;
-    float x = boss->GetPositionX();
-    float y = boss->GetPositionY();
-    float z = boss->GetPositionZ();
-    float rx = x + cos(orientation) * distance;
-    float ry = y + sin(orientation) * distance;
-    return MoveTo(bot->GetMapId(), rx, ry, z, false, false, false, false, MovementPriority::MOVEMENT_COMBAT);
+    const float orientation = boss->GetOrientation() + M_PI + delta_angle;
+    const float x = boss->GetPositionX();
+    const float y = boss->GetPositionY();
+    const float z = boss->GetPositionZ();
+    const float rx = x + cos(orientation) * distance;
+    const float ry = y + sin(orientation) * distance;
+
+    return this->MoveTo(
+        this->bot->GetMapId(),
+        rx,
+        ry,
+        z,
+        false,
+        false,
+        false,
+        false,
+        MovementPriority::MOVEMENT_COMBAT
+    );
 }
 
-bool GrobbulusMoveAwayAction::Execute(Event /*event*/)
+bool GrobbulusMoveAwayAction::Execute(Event)
 {
-    Unit* boss = AI_VALUE(Unit*, "boss target");
-    if (!boss)
-        return false;
+    Value<Unit*>* const bossValue = this->context->GetValue<Unit*>("boss target");
 
-    const float currentDistance = bot->GetExactDist2d(boss);
+    if (bossValue == nullptr)
+    {
+        return false;
+    }
+
+    Unit* const boss = bossValue->Get();
+
+    if (boss == nullptr)
+    {
+        return false;
+    }
+
+    const float currentDistance = this->bot->GetExactDist2d(boss);
+
     if (currentDistance >= distance)
+    {
         return false;
+    }
 
-    const float angle = boss->GetAngle(bot);
+    const float angle = boss->GetAngle(this->bot);
     const float x = boss->GetPositionX() + cos(angle) * distance;
     const float y = boss->GetPositionY() + sin(angle) * distance;
-    const float z = bot->GetPositionZ();
+    const float z = this->bot->GetPositionZ();
 
-    return MoveTo(bot->GetMapId(), x, y, z, false, false, false, false, MovementPriority::MOVEMENT_COMBAT);
+    return this->MoveTo(
+        this->bot->GetMapId(),
+        x,
+        y,
+        z,
+        false,
+        false,
+        false,
+        false,
+        MovementPriority::MOVEMENT_COMBAT
+    );
 }
 
-uint32 GrobbulusRotateAction::GetCurrWaypoint()
+uint32_t GrobbulusRotateAction::GetCurrWaypoint()
 {
-    uint32 current = FindNearestWaypoint();
-    if (clockwise)
-        return (current + 1) % intervals;
+    const uint32_t current = this->FindNearestWaypoint();
 
-    return (current + intervals - 1) % intervals;
+    if (this->clockwise)
+    {
+        return (current + 1) % this->intervals;
+    }
+
+    return (current + this->intervals - 1) % this->intervals;
 }

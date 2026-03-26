@@ -1,147 +1,240 @@
+#include "MotionMaster.h"
 #include "RaidNaxxActions.h"
 
 #include "ObjectGuid.h"
 #include "PlayerbotAIConfig.h"
-#include "Playerbots.h"
 #include "UnitAI.h"
 
+// @TODO: This needs a complete rewrite.
 bool RazuviousUseObedienceCrystalAction::Execute(Event /*event*/)
 {
-    if (!helper.UpdateBossAI())
-        return false;
-
-    // bot->GetCharm
-    if (Unit* charm = bot->GetCharm())
+    if (!this->helper.UpdateBossAI())
     {
-        Unit* target = AI_VALUE2(Unit*, "find target", "instructor razuvious");
-        if (!target)
-            return false;
+        return false;
+    }
 
-        if (charm->GetMotionMaster()->GetMotionSlotType(MOTION_SLOT_ACTIVE) == NULL_MOTION_TYPE)
+    Unit* const charmedUnit = this->bot->GetCharm();
+
+    if (charmedUnit != nullptr)
+    {
+        Value<Unit*>* targetValue = this->context->GetValue<Unit*>("find target", "instructor razuvious");
+
+        if (targetValue == nullptr)
         {
-            charm->GetMotionMaster()->Clear();
-            charm->GetMotionMaster()->MoveChase(target);
-            charm->GetAI()->AttackStart(target);
+            return false;
         }
-        Aura* forceObedience = botAI->GetAura("force obedience", charm);
-        uint32 duration_time;
-        if (!forceObedience)
+
+        Unit* const target = targetValue->Get();
+
+        if (target == nullptr)
         {
-            forceObedience = botAI->GetAura("mind control", charm);
+            return false;
+        }
+
+        MotionMaster* const charmedUnitMotionMaster = charmedUnit->GetMotionMaster();
+
+        if (charmedUnitMotionMaster == nullptr)
+        {
+            return false;
+        }
+
+        if (charmedUnitMotionMaster->GetMotionSlotType(MOTION_SLOT_ACTIVE) == NULL_MOTION_TYPE)
+        {
+            charmedUnitMotionMaster->Clear();
+            charmedUnitMotionMaster->MoveChase(target);
+            charmedUnit->GetAI()->AttackStart(target);
+        }
+
+        const Aura* forceObedience = this->botAI->GetAura("force obedience", charmedUnit);
+        uint32_t duration_time = 90000;
+
+        if (forceObedience == nullptr)
+        {
+            forceObedience = this->botAI->GetAura("mind control", charmedUnit);
             duration_time = 60000;
         }
-        else
-            duration_time = 90000;
 
-        if (!forceObedience)
+        if (forceObedience == nullptr)
+        {
             return false;
+        }
 
-        if (charm->GetDistance(target) <= 0.51f)
+        if (charmedUnit->GetDistance(target) <= 0.51f)
         {
             // taunt
             bool tauntUseful = true;
+
             if (forceObedience->GetDuration() <= (duration_time - 5000))
             {
                 if (target->GetVictim() && botAI->HasAura(29061, target->GetVictim()))
+                {
                     tauntUseful = false;
+                }
 
                 if (forceObedience->GetDuration() <= 3000)
+                {
                     tauntUseful = false;
-
+                }
             }
-            if (forceObedience->GetDuration() >= (duration_time - 500))
-                tauntUseful = false;
 
-            if (tauntUseful && !charm->HasSpellCooldown(29060))
+            if (forceObedience->GetDuration() >= (duration_time - 500))
+            {
+                tauntUseful = false;
+            }
+
+            if (tauntUseful && !charmedUnit->HasSpellCooldown(29060))
             {
                 // shield
-                if (!charm->HasSpellCooldown(29061))
+                if (!charmedUnit->HasSpellCooldown(29061))
                 {
-                    charm->CastSpell(charm, 29061, true);
-                    charm->AddSpellCooldown(29061, 0, 30 * 1000);
+                    charmedUnit->CastSpell(charmedUnit, 29061, true);
+                    charmedUnit->AddSpellCooldown(29061, 0, 30 * 1000);
                 }
-                charm->CastSpell(target, 29060, true);
-                charm->AddSpellCooldown(29060, 0, 20 * 1000);
+
+                charmedUnit->CastSpell(target, 29060, true);
+                charmedUnit->AddSpellCooldown(29060, 0, 20 * 1000);
             }
+
             // strike
-            if (!charm->HasSpellCooldown(61696))
+            if (!charmedUnit->HasSpellCooldown(61696))
             {
-                charm->CastSpell(target, 61696, true);
-                charm->AddSpellCooldown(61696, 0, 4 * 1000);
+                charmedUnit->CastSpell(target, 61696, true);
+                charmedUnit->AddSpellCooldown(61696, 0, 4 * 1000);
             }
         }
+
+        return false;
     }
-    else
+
+    const Difficulty diff = this->bot->GetRaidDifficulty();
+
+    if (diff == RAID_DIFFICULTY_10MAN_NORMAL)
     {
-        Difficulty diff = bot->GetRaidDifficulty();
-        if (diff == RAID_DIFFICULTY_10MAN_NORMAL)
+        Value<GuidVector>* const npcsValue = this->context->GetValue<GuidVector>("nearest npcs");
+
+        if (npcsValue == nullptr)
         {
-            GuidVector npcs = AI_VALUE(GuidVector, "nearest npcs");
-            for (auto i = npcs.begin(); i != npcs.end(); i++)
+            return false;
+        }
+
+        const GuidVector npcs = npcsValue->Get();
+
+        for (GuidVector::const_iterator i = npcs.begin(); i != npcs.end(); i++)
+        {
+            Creature* const unit = this->botAI->GetCreature(*i);
+
+            if (unit == nullptr)
             {
-                Creature* unit = botAI->GetCreature(*i);
-                if (!unit)
-                    continue;
+                continue;
+            }
 
-                if (botAI->IsMainTank(bot) && unit->GetSpawnId() != 128352)
-                    continue;
+            if (this->botAI->IsMainTank(bot) && unit->GetSpawnId() != 128352)
+            {
+                continue;
+            }
 
-                if (!botAI->IsMainTank(bot) && unit->GetSpawnId() != 128353)
-                    continue;
+            if (!this->botAI->IsMainTank(bot) && unit->GetSpawnId() != 128353)
+            {
+                continue;
+            }
 
-                if (MoveTo(unit, 0.0f, MovementPriority::MOVEMENT_COMBAT))
-                    return true;
-
-                Creature* creature = bot->GetNPCIfCanInteractWith(*i, UNIT_NPC_FLAG_SPELLCLICK);
-                if (!creature)
-                    continue;
-
-                creature->HandleSpellClick(bot);
+            if (this->MoveTo(unit, 0.0f, MovementPriority::MOVEMENT_COMBAT))
+            {
                 return true;
             }
-        }
-        else
-        {
-            GuidVector attackers = context->GetValue<GuidVector>("attackers")->Get();
-            Unit* target = nullptr;
-            for (auto i = attackers.begin(); i != attackers.end(); ++i)
+
+            Creature* const creature = this->bot->GetNPCIfCanInteractWith(*i, UNIT_NPC_FLAG_SPELLCLICK);
+
+            if (!creature)
             {
-                Unit* unit = botAI->GetUnit(*i);
-                if (!unit)
-                    continue;
-                if (botAI->EqualLowercaseName(unit->GetName(), "death knight understudy"))
-                {
-                    target = unit;
-                    break;
-                }
+                continue;
             }
-            if (target)
-            {
-                if (bot->GetDistance2d(target) > sPlayerbotAIConfig.spellDistance)
-                    return MoveNear(target, sPlayerbotAIConfig.spellDistance, MovementPriority::MOVEMENT_COMBAT);
-                else
-                    return botAI->CastSpell("mind control", target);
-            }
+
+            creature->HandleSpellClick(bot);
+
+            return true;
         }
+
+        return false;
     }
-    return false;
+
+    Value<GuidVector>* const attackersValue = this->context->GetValue<GuidVector>("attackers");
+
+    if (attackersValue == nullptr)
+    {
+        return false;
+    }
+
+    const GuidVector attackers = attackersValue->Get();
+    Unit* target = nullptr;
+
+    for (GuidVector::const_iterator i = attackers.begin(); i != attackers.end(); ++i)
+    {
+        Unit* const unit = this->botAI->GetUnit(*i);
+
+        if (unit == nullptr)
+        {
+            continue;
+        }
+
+        if (!this->botAI->EqualLowercaseName(unit->GetName(), "death knight understudy"))
+        {
+            continue;
+        }
+
+        target = unit;
+    }
+
+    if (target == nullptr)
+    {
+        return false;
+    }
+
+    const float spellDistance = PlayerbotAIConfig::instance().spellDistance;
+
+    if (this->bot->GetDistance2d(target) > spellDistance)
+    {
+        return this->MoveNear(target, spellDistance, MovementPriority::MOVEMENT_COMBAT);
+    }
+
+    return this->botAI->CastSpell("mind control", target);
 }
 
 bool RazuviousTargetAction::Execute(Event /*event*/)
 {
-    if (!helper.UpdateBossAI())
+    if (!this->helper.UpdateBossAI())
+    {
         return false;
+    }
 
-    Unit* razuvious = AI_VALUE2(Unit*, "find target", "instructor razuvious");
-    Unit* understudy = AI_VALUE2(Unit*, "find target", "death knight understudy");
-    Unit* target = nullptr;
-    if (botAI->IsTank(bot))
+    Value<Unit*>* const razuviousValue = this->context->GetValue<Unit*>("find target", "inspector razuvious");
+    Value<Unit*>* const understudyValue = this->context->GetValue<Unit*>("find target", "death knight understudy");
+
+    if (razuviousValue == nullptr || understudyValue == nullptr)
+    {
+        return false;
+    }
+
+    Unit* const razuvious = razuviousValue->Get();
+    Unit* const understudy = understudyValue->Get();
+    Unit* target = razuvious;
+
+    if (this->botAI->IsTank(bot))
+    {
         target = understudy;
-    else
-        target = razuvious;
+    }
 
-    if (AI_VALUE(Unit*, "current target") == target)
+    Value<Unit*>* const currentTargetValue = this->context->GetValue<Unit*>("current target");
+
+    if (currentTargetValue == nullptr)
+    {
         return false;
+    }
 
-    return Attack(target);
+    if (currentTargetValue->Get() == target)
+    {
+        return false;
+    }
+
+    return this->Attack(target);
 }

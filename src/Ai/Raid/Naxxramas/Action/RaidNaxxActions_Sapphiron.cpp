@@ -1,104 +1,214 @@
 #include "RaidNaxxActions.h"
 
-#include "PlayerbotAIConfig.h"
-#include "Playerbots.h"
 #include "RaidNaxxBossHelper.h"
 #include "RaidNaxxSpellIds.h"
 
-bool SapphironGroundPositionAction::Execute(Event /*event*/)
+bool SapphironGroundPositionAction::Execute(Event)
 {
-    if (!helper.UpdateBossAI())
-        return false;
-
-    if (botAI->IsMainTank(bot))
+    if (!this->helper.UpdateBossAI())
     {
-        if (AI_VALUE2(bool, "has aggro", "current target"))
-            return MoveTo(NAXX_MAP_ID, helper.mainTankPos.first, helper.mainTankPos.second, helper.GENERIC_HEIGHT, false, false, false,
-                          false, MovementPriority::MOVEMENT_COMBAT);
+        return false;
+    }
+
+    if (this->botAI->IsMainTank(bot))
+    {
+        Value<bool>* const hasAggroValue = this->context->GetValue<bool>("has aggro", "current target");
+
+        if (hasAggroValue == nullptr)
+        {
+            return false;
+        }
+
+        if (hasAggroValue->Get())
+        {
+            return this->MoveTo(
+                NAXX_MAP_ID,
+                this->helper.mainTankPos.first,
+                this->helper.mainTankPos.second,
+                this->helper.GENERIC_HEIGHT,
+                false,
+                false,
+                false,
+                false,
+                MovementPriority::MOVEMENT_COMBAT
+            );
+        }
 
         return false;
     }
-    if (helper.JustLanded())
+
+    if (this->helper.JustLanded())
     {
-        uint32 index = botAI->GetGroupSlotIndex(bot);
-        float start_angle = 0.85 * M_PI;
-        float offset_angle = M_PI * 0.02 * index;
-        float angle = start_angle + offset_angle;
-        float distance;
-        if (botAI->IsRanged(bot))
+        const uint32_t index = this->botAI->GetGroupSlotIndex(bot);
+        const float start_angle = 0.85f * M_PI;
+        const float offset_angle = M_PI * 0.02f * index;
+        const float angle = start_angle + offset_angle;
+        float distance = 5.0f;
+
+        if (this->botAI->IsRanged(bot))
+        {
             distance = 35.0f;
-        else if (botAI->IsHeal(bot))
+        }
+
+        if (botAI->IsHeal(bot))
+        {
             distance = 30.0f;
-        else
-            distance = 5.0f;
+        }
 
-        float posX = helper.center.first + cos(angle) * distance;
-        float posY = helper.center.second + sin(angle) * distance;
-        if (MoveTo(NAXX_MAP_ID, posX, posY, helper.GENERIC_HEIGHT, false, false, false, false, MovementPriority::MOVEMENT_COMBAT))
+        const float posX = this->helper.center.first + cos(angle) * distance;
+        const float posY = this->helper.center.second + sin(angle) * distance;
+
+        const bool movedTo = this->MoveTo(
+            NAXX_MAP_ID,
+            posX,
+            posY,
+            this->helper.GENERIC_HEIGHT,
+            false,
+            false,
+            false,
+            false,
+            MovementPriority::MOVEMENT_COMBAT
+        );
+
+        if (movedTo)
+        {
             return true;
+        }
 
-        return MoveInside(NAXX_MAP_ID, posX, posY, helper.GENERIC_HEIGHT, 2.0f, MovementPriority::MOVEMENT_COMBAT);
+        return this->MoveInside(
+            NAXX_MAP_ID,
+            posX,
+            posY,
+            this->helper.GENERIC_HEIGHT,
+            2.0f,
+            MovementPriority::MOVEMENT_COMBAT
+        );
     }
-    else
+
+    std::vector<float> dest{};
+
+    if (this->helper.FindPosToAvoidChill(dest))
     {
-        std::vector<float> dest;
-        if (helper.FindPosToAvoidChill(dest))
-            return MoveTo(NAXX_MAP_ID, dest[0], dest[1], dest[2], false, false, false, false, MovementPriority::MOVEMENT_COMBAT);
+        return this->MoveTo(
+            NAXX_MAP_ID,
+            dest[0],
+            dest[1],
+            dest[2],
+            false,
+            false,
+            false,
+            false,
+            MovementPriority::MOVEMENT_COMBAT
+        );
     }
+
     return false;
 }
 
-bool SapphironFlightPositionAction::Execute(Event /*event*/)
+bool SapphironFlightPositionAction::Execute(Event)
 {
-    if (!helper.UpdateBossAI())
-        return false;
-
-    if (helper.WaitForExplosion())
-        return MoveToNearestIcebolt();
-    else
+    if (!this->helper.UpdateBossAI())
     {
-        std::vector<float> dest;
-        if (helper.FindPosToAvoidChill(dest))
-            return MoveTo(NAXX_MAP_ID, dest[0], dest[1], dest[2], false, false, false, false, MovementPriority::MOVEMENT_COMBAT);
+        return false;
     }
+
+    if (this->helper.WaitForExplosion())
+    {
+        return MoveToNearestIcebolt();
+    }
+
+    std::vector<float> dest{};
+
+    if (this->helper.FindPosToAvoidChill(dest))
+    {
+        return this->MoveTo(
+            NAXX_MAP_ID,
+            dest[0],
+            dest[1],
+            dest[2],
+            false,
+            false,
+            false,
+            false,
+            MovementPriority::MOVEMENT_COMBAT
+        );
+    }
+
     return false;
 }
 
 bool SapphironFlightPositionAction::MoveToNearestIcebolt()
 {
-    Group* group = bot->GetGroup();
-    if (!group)
+    Group* const group = this->bot->GetGroup();
+
+    if (group == nullptr)
+    {
         return false;
+    }
 
-    Group::MemberSlotList const& slots = group->GetMemberSlots();
+    const Group::MemberSlotList& slots = group->GetMemberSlots();
     Player* playerWithIcebolt = nullptr;
-    float minDistance;
-    for (GroupReference* ref = group->GetFirstMember(); ref; ref = ref->next())
-    {
-        Player* member = ref->GetSource();
-        if (NaxxSpellIds::HasAnyAura(botAI, member, {NaxxSpellIds::Icebolt10, NaxxSpellIds::Icebolt25}) ||
-            botAI->HasAura("icebolt", member, false, false, -1, true))
-        {
-            if (!playerWithIcebolt || minDistance > bot->GetDistance(member))
-            {
-                playerWithIcebolt = member;
-                minDistance = bot->GetDistance(member);
-            }
-        }
-    }
-    if (playerWithIcebolt)
-    {
-        Unit* boss = AI_VALUE2(Unit*, "find target", "sapphiron");
-        if (boss)
-        {
-            float angle = boss->GetAngle(playerWithIcebolt);
-            float posX = playerWithIcebolt->GetPositionX() + cos(angle) * 3.0f;
-            float posY = playerWithIcebolt->GetPositionY() + sin(angle) * 3.0f;
-            if (MoveTo(NAXX_MAP_ID, posX, posY, helper.GENERIC_HEIGHT, false, false, false, false, MovementPriority::MOVEMENT_COMBAT))
-                return true;
+    float minDistance = 0.0f;
 
-            return MoveNear(playerWithIcebolt, 3.0f, MovementPriority::MOVEMENT_COMBAT);
+    for (const GroupReference* ref = group->GetFirstMember(); ref; ref = ref->next())
+    {
+        Player* const member = ref->GetSource();
+
+        const bool hasIceboltAuraById = NaxxSpellIds::HasAnyAura(this->botAI, member, {NaxxSpellIds::Icebolt10, NaxxSpellIds::Icebolt25});
+        const bool hasIceboltAuraByName = this->botAI->HasAura("icebolt", member, false, false, -1, true);
+
+        if (!hasIceboltAuraById && !hasIceboltAuraByName)
+        {
+            continue;;
+        }
+
+
+        if (playerWithIcebolt == nullptr || minDistance > this->bot->GetDistance(member))
+        {
+            playerWithIcebolt = member;
+            minDistance = this->bot->GetDistance(member);
         }
     }
-    return false;
+
+    if (playerWithIcebolt == nullptr)
+    {
+        return false;
+    }
+
+    Value<Unit*>* const sapphironValue = this->context->GetValue<Unit*>("find target", "sapphiron");
+
+    const Unit* const boss = sapphironValue->Get();
+
+    if (boss == nullptr)
+    {
+        return false;
+    }
+
+    const float angle = boss->GetAngle(playerWithIcebolt);
+    const float posX = playerWithIcebolt->GetPositionX() + cos(angle) * 3.0f;
+    const float posY = playerWithIcebolt->GetPositionY() + sin(angle) * 3.0f;
+
+    const bool canMoveTo = this->MoveTo(
+        NAXX_MAP_ID,
+        posX,
+        posY,
+        this->helper.GENERIC_HEIGHT,
+        false,
+        false,
+        false,
+        false,
+        MovementPriority::MOVEMENT_COMBAT
+    );
+
+    if (canMoveTo)
+    {
+        return true;
+    }
+
+    return this->MoveNear(
+        playerWithIcebolt,
+        3.0f,
+        MovementPriority::MOVEMENT_COMBAT
+    );
+
 }

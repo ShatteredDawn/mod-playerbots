@@ -4,7 +4,6 @@
 #include "MovementActions.h"
 #include "RaidNaxxActions.h"
 #include "RaidNaxxMultipliers.h"
-#include "RaidNaxxTriggers.h"
 #include "UniversalTauntAction.h"
 
 void RaidNaxxStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)

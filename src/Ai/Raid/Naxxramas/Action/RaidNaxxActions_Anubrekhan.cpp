@@ -4,7 +4,7 @@
 
 bool AnubrekhanChooseTargetAction::Execute(Event)
 {
-    Value<GuidVector>* attackersValue = this->context->GetValue<GuidVector>("attackers");
+    Value<GuidVector>* const attackersValue = this->context->GetValue<GuidVector>("attackers");
 
     if (attackersValue == nullptr)
     {
@@ -12,7 +12,7 @@ bool AnubrekhanChooseTargetAction::Execute(Event)
     }
 
     const GuidVector attackers = attackersValue->Get();
-    Value<Unit*>* currentTargetValue = this->context->GetValue<Unit*>("current target");
+    Value<Unit*>* const currentTargetValue = this->context->GetValue<Unit*>("current target");
 
     if (currentTargetValue == nullptr)
     {
@@ -123,7 +123,7 @@ bool AnubrekhanChooseTargetAction::Execute(Event)
 
 bool AnubrekhanPositionAction::Execute(Event /*event*/)
 {
-    Value<Unit*>* findTargetValue = this->context->GetValue<Unit*>("find target", "anub'rekhan");
+    Value<Unit*>* const findTargetValue = this->context->GetValue<Unit*>("find target", "anub'rekhan");
 
     if (findTargetValue == nullptr)
     {
