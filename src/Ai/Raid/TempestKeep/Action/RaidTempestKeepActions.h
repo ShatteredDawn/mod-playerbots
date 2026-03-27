@@ -1,11 +1,11 @@
 #ifndef _PLAYERBOT_RAIDTEMPESTKEEPACTIONS_H
 #define _PLAYERBOT_RAIDTEMPESTKEEPACTIONS_H
 
-#include "RaidTempestKeepHelpers.h"
 #include "RaidTempestKeepKaelthasBossAI.h"
 #include "Action.h"
 #include "AttackAction.h"
 #include "MovementActions.h"
+#include "RaidTempestKeepHelpers.h"
 
 using namespace TempestKeepHelpers;
 
