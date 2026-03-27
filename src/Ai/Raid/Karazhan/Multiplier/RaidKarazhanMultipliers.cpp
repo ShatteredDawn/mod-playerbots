@@ -86,8 +86,8 @@ float MaidenOfVirtueDisableCombatFormationMoveMultiplier::GetValue(Action& actio
     if (!AI_VALUE2(Unit*, "find target", "maiden of virtue"))
         return 1.0f;
 
-    if (dynamic_cast<CombatFormationMoveAction*>(action) &&
-        !dynamic_cast<SetBehindTargetAction*>(action))
+    if (dynamic_cast<CombatFormationMoveAction*>(&action) &&
+        !dynamic_cast<SetBehindTargetAction*>(&action))
         return 0.0f;
 
     return 1.0f;
@@ -112,8 +112,8 @@ float TheCuratorDisableCombatFormationMoveMultiplier::GetValue(Action& action)
     if (!AI_VALUE2(Unit*, "find target", "the curator"))
         return 1.0f;
 
-    if (dynamic_cast<CombatFormationMoveAction*>(action) &&
-        !dynamic_cast<SetBehindTargetAction*>(action))
+    if (dynamic_cast<CombatFormationMoveAction*>(&action) &&
+        !dynamic_cast<SetBehindTargetAction*>(&action))
         return 0.0f;
 
     return 1.0f;
