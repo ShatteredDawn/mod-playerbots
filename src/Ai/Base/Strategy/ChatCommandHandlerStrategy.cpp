@@ -37,6 +37,7 @@
 #include "QueryItemUsageAction.h"
 #include "UnlockItemAction.h"
 #include "UnlockTradedItemAction.h"
+#include "WaitForAttackAction.h"
 #include "WipeAction.h"
 #include "TameAction.h"
 #include "TellGlyphsAction.h"
@@ -521,13 +522,13 @@ ChatCommandHandlerStrategy::ChatCommandHandlerStrategy(PlayerbotAI* botAI) : Pas
     this->supported.push_back({ "save mana", CreateNextAction<SaveManaAction>(relevance).factory });
     this->supported.push_back({ "formation", CreateNextAction<SetFormationAction>(relevance).factory });
     this->supported.push_back({ "stance", CreateNextAction<SetStanceAction>(relevance).factory });
-    supported.push_back({ "cancel tree form", CreateNextAction<CastCancelTreeFormAction>(relevance).factory});
-    supported.push_back({ "cancel travel form", CreateNextAction<CastCancelTravelFormAction>(relevance).factory});
-    supported.push_back({ "cancel bear form", CreateNextAction<CastCancelBearFormAction>(relevance).factory});
-    supported.push_back({ "cancel dire bear form", CreateNextAction<CastCancelDireBearFormAction>(relevance).factory});
-    supported.push_back({ "cancel cat form", CreateNextAction<CastCancelCatFormAction>(relevance).factory});
-    supported.push_back({ "cancel moonkin form", CreateNextAction<CastCancelMoonkinFormAction>(relevance).factory});
-    supported.push_back({ "cancel aquatic form", CreateNextAction<CastCancelAquaticFormAction>(relevance).factory});
+    this->supported.push_back({ "cancel tree form", CreateNextAction<CastCancelTreeFormAction>(relevance).factory});
+    this->supported.push_back({ "cancel travel form", CreateNextAction<CastCancelTravelFormAction>(relevance).factory});
+    this->supported.push_back({ "cancel bear form", CreateNextAction<CastCancelBearFormAction>(relevance).factory});
+    this->supported.push_back({ "cancel dire bear form", CreateNextAction<CastCancelDireBearFormAction>(relevance).factory});
+    this->supported.push_back({ "cancel cat form", CreateNextAction<CastCancelCatFormAction>(relevance).factory});
+    this->supported.push_back({ "cancel moonkin form", CreateNextAction<CastCancelMoonkinFormAction>(relevance).factory});
+    this->supported.push_back({ "cancel aquatic form", CreateNextAction<CastCancelAquaticFormAction>(relevance).factory});
     this->supported.push_back({ "sendmail", CreateNextAction<SendMailAction>(relevance).factory });
     this->supported.push_back({ "mail", CreateNextAction<MailAction>(relevance).factory });
     // It seems "outfit" command is not implemente);
@@ -563,4 +564,5 @@ ChatCommandHandlerStrategy::ChatCommandHandlerStrategy(PlayerbotAI* botAI) : Pas
     this->supported.push_back({ "glyph equip", CreateNextAction<EquipGlyphsAction>(relevance).factory }); // Added for custom Glyph
     this->supported.push_back({ "pet", CreateNextAction<PetsAction>(relevance).factory });
     this->supported.push_back({ "pet attack", CreateNextAction<ChatPetAttackAction>(relevance).factory });
+    this->supported.push_back({ "wait for attack time", CreateNextAction<SetWaitForAttackTimeAction>(relevance).factory });
 }
