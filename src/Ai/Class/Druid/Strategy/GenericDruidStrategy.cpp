@@ -218,10 +218,10 @@ void DruidHealerDpsStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
         new TriggerNode(
             "healer should attack",
             {
-                CreateNextAction<CastCancelTreeFormAction>(ACTION_DEFAULT + 0.3f),
-                CreateNextAction<CastMoonfireAction>(ACTION_DEFAULT + 0.2f),
-                CreateNextAction<CastWrathAction>(ACTION_DEFAULT + 0.1f),
-                CreateNextAction<CastStarfireAction>(ACTION_DEFAULT),
+                CreateNextAction<CastCancelTreeFormAction>(ACTION_DEFAULT + 0.4f),
+                CreateNextAction<CastMoonfireAction>(ACTION_DEFAULT + 0.3f),
+                CreateNextAction<CastWrathAction>(ACTION_DEFAULT + 0.2f),
+                CreateNextAction<CastStarfireAction>(ACTION_DEFAULT + 0.1f),
             }
         )
     );

@@ -111,6 +111,7 @@ public:
         creators["mangle (cat)"] = &DruidTriggerFactoryInternal::mangle_cat;
         creators["ferocious bite time"] = &DruidTriggerFactoryInternal::ferocious_bite_time;
         creators["hurricane channel check"] = &DruidTriggerFactoryInternal::hurricane_channel_check;
+        creators["no healer dps strategy"] = &DruidTriggerFactoryInternal::no_healer_dps_strategy;
     }
 
 private:
@@ -148,6 +149,7 @@ private:
     static Trigger* mangle_cat(PlayerbotAI* ai) { return new MangleCatTrigger(ai); }
     static Trigger* ferocious_bite_time(PlayerbotAI* ai) { return new FerociousBiteTimeTrigger(ai); }
     static Trigger* hurricane_channel_check(PlayerbotAI* ai) { return new HurricaneChannelCheckTrigger(ai); }
+    static Trigger* no_healer_dps_strategy(PlayerbotAI* ai) { return new NoHealerDpsStrategyTrigger(ai); }
 };
 
 SharedNamedObjectContextList<Strategy> DruidAiObjectContext::sharedStrategyContexts;

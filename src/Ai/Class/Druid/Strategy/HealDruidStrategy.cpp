@@ -36,6 +36,16 @@ void HealDruidStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
 {
     GenericDruidStrategy::InitTriggers(triggers);
 
+    // no healer dps strategy
+    triggers.push_back(
+        new TriggerNode(
+            "no healer dps strategy",
+            {
+                CreateNextAction<CastTreeFormAction>(ACTION_DEFAULT)
+            }
+        )
+    );
+
     triggers.push_back(
         new TriggerNode(
             "party member to heal out of spell range",
