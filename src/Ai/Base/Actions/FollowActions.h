@@ -1,14 +1,25 @@
-/*
- * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license, you may redistribute it
- * and/or modify it under version 3 of the License, or (at your option), any later version.
- */
+#pragma once
 
-#ifndef _PLAYERBOT_FOLLOWACTIONS_H
-#define _PLAYERBOT_FOLLOWACTIONS_H
-
+#include "Formations.h"
 #include "MovementActions.h"
+#include "Transport.h"
 
 class PlayerbotAI;
+
+struct BoardPointTransportResultStruct
+{
+    float x;
+    float y;
+    float z;
+    bool found;
+};
+
+enum class HandleMovingTransportsResultEnum : uint8_t
+{
+    FALSE = 0,
+    TRUE = 1,
+    NONE = 2
+};
 
 class FollowAction : public MovementAction
 {
@@ -17,7 +28,18 @@ public:
 
     bool Execute(Event event) override;
     bool isUseful() override;
-    bool CanDeadFollow(Unit* target);
+
+protected:
+
+    [[nodiscard]] bool CanDeadFollow(const Unit* const target) const noexcept;
+    [[nodiscard]] Transport* getTransportForPosTolerant(Map& map, WorldObject& ref, uint32_t phaseMask, float x, float y, float z);
+    [[nodiscard]] BoardPointTransportResultStruct findBoardingPointOnTransport(
+        Map& map, Transport& expectedTransport, WorldObject& ref,
+        float masterX, float masterY, float masterZ,
+        float botX, float botY, float botZ
+    );
+    [[nodiscard]] HandleMovingTransportsResultEnum handleMovingTransports(Player& master);
+    [[nodiscard]] float getDistanceToTarget(Formation& formation, const std::string& target);
 };
 
 class FleeToGroupLeaderAction : public FollowAction
@@ -28,5 +50,3 @@ public:
     bool Execute(Event event) override;
     bool isUseful() override;
 };
-
-#endif
