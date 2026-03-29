@@ -6,7 +6,6 @@
 #include "LootValues.h"
 
 #include "Playerbots.h"
-#include "SharedValueContext.h"
 
 LootTemplateAccess const* DropMapValue::GetLootTemplate(ObjectGuid guid, LootType type)
 {
@@ -54,6 +53,7 @@ LootTemplateAccess const* DropMapValue::GetLootTemplate(ObjectGuid guid, LootTyp
         }
     }
 
+    //@TODO: VERY dangerous, especially since LootTemplateAccess is NOT polymorphic.
     LootTemplateAccess const* lTemplateA = reinterpret_cast<LootTemplateAccess const*>(lTemplate);
 
     return lTemplateA;
