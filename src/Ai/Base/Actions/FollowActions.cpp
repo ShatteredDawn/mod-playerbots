@@ -206,7 +206,7 @@ HandleMovingTransportsResultEnum FollowAction::handleMovingTransports(Player& ma
     float destY = masterPositionY;
     float destZ = masterPositionZ;
 
-    const BoardPointTransportResultStruct boardingPointResult = findBoardingPointOnTransport(
+    const BoardPointTransportResultStruct boardingPointResult = this->findBoardingPointOnTransport(
         *map,
         *transport,
         master,
@@ -225,21 +225,21 @@ HandleMovingTransportsResultEnum FollowAction::handleMovingTransports(Player& ma
         ? MovementPriority::MOVEMENT_COMBAT
         : MovementPriority::MOVEMENT_NORMAL;
 
-    const bool movingAllowed = IsMovingAllowed(mapId, destX, destY, destZ);
+    const bool movingAllowed = this->IsMovingAllowed(mapId, destX, destY, destZ);
 
     if (!movingAllowed)
     {
         return HandleMovingTransportsResultEnum::NONE;
     }
 
-    const bool dupMove = IsDuplicateMove(mapId, destX, destY, destZ);
+    const bool dupMove = this->IsDuplicateMove(mapId, destX, destY, destZ);
 
     if (dupMove)
     {
         return HandleMovingTransportsResultEnum::NONE;
     }
 
-    const bool waiting = IsWaitingForLastMove(priority);
+    const bool waiting = this->IsWaitingForLastMove(priority);
 
     if (waiting)
     {
@@ -297,7 +297,7 @@ bool FollowAction::Execute(Event)
     // Transport handling for moving transports only (boats/zeppelins).
     Player* master = this->botAI->GetMaster();
 
-    if (master && master->IsInWorld() && bot->IsInWorld() && bot->GetMapId() == master->GetMapId())
+    if (master != nullptr && master->IsInWorld() && bot->IsInWorld() && bot->GetMapId() == master->GetMapId())
     {
         const HandleMovingTransportsResultEnum result = this->handleMovingTransports(*master);
 
@@ -328,7 +328,7 @@ bool FollowAction::Execute(Event)
             return false;
         }
 
-        const MovementPriority priority = botAI->GetState() == BOT_STATE_COMBAT ? MovementPriority::MOVEMENT_COMBAT : MovementPriority::MOVEMENT_NORMAL;
+        const MovementPriority priority = this->botAI->GetState() == BOT_STATE_COMBAT ? MovementPriority::MOVEMENT_COMBAT : MovementPriority::MOVEMENT_NORMAL;
 
         return this->MoveTo(
             loc.GetMapId(),
@@ -372,6 +372,30 @@ bool FollowAction::Execute(Event)
 
 }
 
+Unit* FollowAction::getResolvedFollowTarget(const std::string& target)
+{
+    if (target.empty())
+    {
+        Value<Unit*>* const groupLeaderValue = this->context->GetValue<Unit*>("group leader");
+
+        if (groupLeaderValue == nullptr)
+        {
+            return nullptr;
+        }
+
+        return groupLeaderValue->Get();
+    }
+
+    Value<Unit*>* const targetValue = this->context->GetValue<Unit*>(target);
+
+    if (targetValue == nullptr)
+    {
+        return nullptr;
+    }
+
+    return targetValue->Get();
+}
+
 bool FollowAction::isUseful()
 {
     // move from group takes priority over follow as it's added and removed automatically
@@ -404,21 +428,7 @@ bool FollowAction::isUseful()
     }
 
     const std::string target = formation->GetTargetName();
-
-    Value<Unit*>* const groupLeaderValue = this->context->GetValue<Unit*>("group leader");
-    Value<Unit*>* const targetValue = this->context->GetValue<Unit*>(target);
-
-    if (groupLeaderValue == nullptr || targetValue == nullptr)
-    {
-        return false;
-    }
-
-    Unit* followTarget = targetValue->Get();
-
-    if (target.empty())
-    {
-        followTarget = groupLeaderValue->Get();
-    }
+    const Unit* followTarget = this->getResolvedFollowTarget(target);
 
     if (followTarget != nullptr)
     {
@@ -438,7 +448,7 @@ bool FollowAction::isUseful()
         }
     }
 
-    float distance = this->getDistanceToTarget(*formation, target);
+    const float distance = this->getDistanceToTarget(*formation, target);
 
     if (this->botAI->HasStrategy("master fishing", BOT_STATE_NON_COMBAT))
     {
@@ -456,7 +466,7 @@ float FollowAction::getDistanceToTarget(Formation& formation, const std::string&
 
         if (Formation::IsNullLocation(loc) || this->bot->GetMapId() != loc.GetMapId())
         {
-            return false;
+            return 0.0f;
         }
 
         return this->bot->GetDistance(loc.GetPositionX(), loc.GetPositionY(), loc.GetPositionZ());
@@ -508,19 +518,19 @@ bool FleeToGroupLeaderAction::Execute(Event)
     }
 
     const WorldPosition targetPos{fTarget};
-    WorldPosition bosPos{bot};
+    WorldPosition botPos{bot};
 
-    const float distance = bosPos.fDist(targetPos);
+    const float distance = botPos.fDist(targetPos);
 
     if (distance < PlayerbotAIConfig::instance().reactDistance * 3)
     {
         if (!urand(0, 3))
         {
             this->botAI->TellMaster("I am close, wait for me!");
-            this->botAI->SetNextCheckDelay(3000);
-
-            return true;
         }
+        this->botAI->SetNextCheckDelay(3000);
+
+        return true;
     }
 
     if (distance < 1000.0f)
@@ -528,10 +538,10 @@ bool FleeToGroupLeaderAction::Execute(Event)
         if (!urand(0, 10))
         {
             this->botAI->TellMaster("I heading to your position.");
-            this->botAI->SetNextCheckDelay(3000);
-
-            return true;
         }
+        this->botAI->SetNextCheckDelay(3000);
+
+        return true;
     }
 
     if (!urand(0, 20))

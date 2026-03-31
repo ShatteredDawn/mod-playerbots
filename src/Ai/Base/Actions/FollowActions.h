@@ -40,6 +40,7 @@ protected:
     );
     [[nodiscard]] HandleMovingTransportsResultEnum handleMovingTransports(Player& master);
     [[nodiscard]] float getDistanceToTarget(Formation& formation, const std::string& target);
+    [[nodiscard]] Unit* getResolvedFollowTarget(const std::string& target);
 };
 
 class FleeToGroupLeaderAction : public FollowAction
