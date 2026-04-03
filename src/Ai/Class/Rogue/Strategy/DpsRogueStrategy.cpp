@@ -17,32 +17,14 @@ class DpsRogueStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
 public:
     DpsRogueStrategyActionNodeFactory()
     {
-        creators["mutilate"] = &mutilate;
         creators["sinister strike"] = &sinister_strike;
         creators["kick"] = &kick;
         creators["kidney shot"] = &kidney_shot;
         creators["backstab"] = &backstab;
-        creators["melee"] = &melee;
         creators["rupture"] = &rupture;
     }
 
 private:
-    static ActionNode* melee([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ { CreateNextAction<CastMutilateAction>(1.0f) },
-            /*C*/ {}
-        );
-    }
-    static ActionNode* mutilate([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ { CreateNextAction<CastSinisterStrikeAction>(1.0f) },
-            /*C*/ {}
-        );
-    }
     static ActionNode* sinister_strike([[maybe_unused]] PlayerbotAI* botAI)
     {
         return new ActionNode(
@@ -71,7 +53,7 @@ private:
     {
         return new ActionNode(
             /*P*/ {},
-            /*A*/ { CreateNextAction<CastMutilateAction>(1.0f) },
+            /*A*/ { CreateNextAction<CastSinisterStrikeAction>(1.0f) },
             /*C*/ {}
         );
     }
@@ -132,7 +114,7 @@ void DpsRogueStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
 
     triggers.push_back(
         new TriggerNode(
-            "combo points available",
+            "combo points 5 available",
             {
                 CreateNextAction<CastRuptureAction>(ACTION_HIGH + 1.0f),
                 CreateNextAction<CastEviscerateAction>(ACTION_HIGH)
@@ -322,7 +304,7 @@ void StealthedRogueStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
 {
     triggers.push_back(
         new TriggerNode(
-            "combo points available",
+            "combo points 5 available",
             {
                 CreateNextAction<CastEviscerateAction>(ACTION_HIGH)
             }
