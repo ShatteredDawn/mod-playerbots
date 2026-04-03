@@ -13,132 +13,38 @@ class SurvivalHunterStrategyActionNodeFactory : public NamedObjectFactory<Action
 public:
     SurvivalHunterStrategyActionNodeFactory()
     {
-        creators["auto shot"] = &auto_shot;
-        creators["kill command"] = &kill_command;
-        creators["kill shot"] = &kill_shot;
-        creators["explosive shot"] = &explosive_shot;
-        creators["black arrow"] = &black_arrow;
-        creators["viper sting"] = &viper_sting;
-        creators["serpent sting"] = serpent_sting;
-        creators["aimed shot"] = &aimed_shot;
-        creators["arcane shot"] = &arcane_shot;
-        creators["steady shot"] = &steady_shot;
-        creators["multi-shot"] = &multi_shot;
-        creators["volley"] = &volley;
+        creators["explosive shot rank 4"] = &explosive_shot_rank_4;
+        creators["explosive shot rank 3"] = &explosive_shot_rank_3;
+        creators["explosive shot rank 2"] = &explosive_shot_rank_2;
     }
 
 private:
-    static ActionNode* auto_shot(PlayerbotAI*)
+    static ActionNode* explosive_shot_rank_4(PlayerbotAI*)
     {
         return new ActionNode(
             {},
-            {},
+            { CreateNextAction<CastExplosiveShotRank3Action>(1.0f) },
             {}
         );
     }
-
-    static ActionNode* kill_command(PlayerbotAI*)
+    static ActionNode* explosive_shot_rank_3(PlayerbotAI*)
     {
         return new ActionNode(
             {},
-            {},
+            { CreateNextAction<CastExplosiveShotRank2Action>(1.0f) },
             {}
         );
     }
-
-    static ActionNode* kill_shot(PlayerbotAI*)
+    static ActionNode* explosive_shot_rank_2(PlayerbotAI*)
     {
         return new ActionNode(
             {},
-            {},
+            { CreateNextAction<CastExplosiveShotRank1Action>(1.0f) },
             {}
         );
     }
-
-    static ActionNode* explosive_shot(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-    }
-
-    static ActionNode* black_arrow(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-    }
-
-    static ActionNode* viper_sting(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-    }
-
-    static ActionNode* serpent_sting(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-    }
-
-    static ActionNode* aimed_shot(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-    }
-
-    static ActionNode* arcane_shot(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-    }
-
-    static ActionNode* steady_shot(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-    }
-
-    static ActionNode* multi_shot(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-    }
-
-    static ActionNode* volley(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-    }
-
 };
 
-// ===== Single Target Strategy =====
 SurvivalHunterStrategy::SurvivalHunterStrategy(PlayerbotAI* botAI) : GenericHunterStrategy(botAI)
 {
     actionNodeFactories.Add(new SurvivalHunterStrategyActionNodeFactory());
@@ -150,8 +56,9 @@ std::vector<NextAction> SurvivalHunterStrategy::getDefaultActions()
     return {
         CreateNextAction<CastKillCommandAction>(5.9f),
         CreateNextAction<CastKillShotAction>(5.8f),
-        CreateNextAction<CastExplosiveShotAction>(5.7f),
-        CreateNextAction<CastBlackArrow>(5.6f),
+        // @TODO: Needs to be made universal
+        // CreateNextAction<CastExplosiveShotAction>(5.7f),
+        CreateNextAction<CastBlackArrowAction>(5.6f),
         CreateNextAction<CastSerpentStingAction>(5.5f),
         CreateNextAction<CastAimedShotAction>(5.4f),
         CreateNextAction<CastArcaneShotAction>(5.3f),
@@ -175,30 +82,6 @@ void SurvivalHunterStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
     );
     triggers.push_back(
         new TriggerNode(
-            "lock and load",
-            {
-                CreateNextAction<CastExplosiveShotRank3Action>(27.5f)
-            }
-        )
-    );
-    triggers.push_back(
-        new TriggerNode(
-            "lock and load",
-            {
-                CreateNextAction<CastExplosiveShotRank2Action>(27.0f)
-            }
-        )
-    );
-    triggers.push_back(
-        new TriggerNode(
-            "lock and load",
-            {
-                CreateNextAction<CastExplosiveShotRank1Action>(26.5f)
-            }
-        )
-    );
-    triggers.push_back(
-        new TriggerNode(
             "kill command",
             {
                 CreateNextAction<CastKillCommandAction>(18.5f)
@@ -213,19 +96,19 @@ void SurvivalHunterStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
             }
         )
     );
-    triggers.push_back(
-        new TriggerNode(
-            "explosive shot",
-            {
-                CreateNextAction<CastExplosiveShotAction>(17.5f)
-            }
-        )
-    );
+    // triggers.push_back(
+    //     new TriggerNode(
+    //         "explosive shot",
+    //         {
+    //             CreateNextAction<CastExplosiveShotAction>(17.5f)
+    //         }
+    //     )
+    // );
     triggers.push_back(
         new TriggerNode(
             "black arrow",
             {
-                CreateNextAction<CastBlackArrow>(16.5f)
+                CreateNextAction<CastBlackArrowAction>(16.5f)
             }
         )
     );

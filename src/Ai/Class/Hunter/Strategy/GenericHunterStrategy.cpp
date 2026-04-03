@@ -16,11 +16,6 @@ public:
     GenericHunterStrategyActionNodeFactory()
     {
         creators["rapid fire"] = &rapid_fire;
-        creators["boost"] = &rapid_fire;
-        creators["aspect of the pack"] = &aspect_of_the_pack;
-        creators["aspect of the dragonhawk"] = &aspect_of_the_dragonhawk;
-        creators["feign death"] = &feign_death;
-        creators["wing clip"] = &wing_clip;
         creators["mongoose bite"] = &mongoose_bite;
         creators["raptor strike"] = &raptor_strike;
         creators["explosive trap"] = &explosive_trap;
@@ -35,43 +30,6 @@ private:
             /*C*/ {}
         );
     }
-
-    static ActionNode* aspect_of_the_pack([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ { CreateNextAction<CastAspectOfTheCheetahAction>(1.0f) },
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* aspect_of_the_dragonhawk([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ { CreateNextAction<CastAspectOfTheHawkAction>(1.0f) },
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* feign_death([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* wing_clip([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            {},
-            /*C*/ {}
-        );
-    }
-
     static ActionNode* mongoose_bite([[maybe_unused]] PlayerbotAI* botAI)
     {
         return new ActionNode(
@@ -80,7 +38,6 @@ private:
             /*C*/ {}
         );
     }
-
     static ActionNode* raptor_strike([[maybe_unused]] PlayerbotAI* botAI)
     {
         return new ActionNode(
@@ -89,7 +46,6 @@ private:
             /*C*/ {}
         );
     }
-
     static ActionNode* explosive_trap([[maybe_unused]] PlayerbotAI* botAI)
     {
         return new ActionNode(
@@ -279,10 +235,6 @@ void AoEHunterStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
             }
         )
     );
-}
-
-void HunterBoostStrategy::InitTriggers(std::vector<TriggerNode*>&)
-{
 }
 
 void HunterCcStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
