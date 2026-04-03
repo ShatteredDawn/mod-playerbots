@@ -50,7 +50,9 @@ private:
             {
                 CreateNextAction<CastFrostPresenceAction>(1.0f)
             },
-            /*A*/ {},
+            /*A*/ {
+                CreateNextAction<CastBloodStrikeAction>(1.0f)
+            },
             /*C*/ {}
         );
     }
@@ -87,13 +89,11 @@ BloodDKStrategy::BloodDKStrategy(PlayerbotAI* botAI) : GenericDKStrategy(botAI)
 std::vector<NextAction> BloodDKStrategy::getDefaultActions()
 {
     return {
-        CreateNextAction<CastRuneStrikeAction>(ACTION_DEFAULT + 0.8f),
-        CreateNextAction<CastIcyTouchAction>(ACTION_DEFAULT + 0.7f),
-        CreateNextAction<CastHeartStrikeAction>(ACTION_DEFAULT + 0.6f),
-        CreateNextAction<CastBloodStrikeAction>(ACTION_DEFAULT + 0.5f),
-        CreateNextAction<CastDancingRuneWeaponAction>(ACTION_DEFAULT + 0.4f),
-        CreateNextAction<CastDeathCoilAction>(ACTION_DEFAULT + 0.3f),
-        CreateNextAction<CastPlagueStrikeAction>(ACTION_DEFAULT + 0.2f),
+        CreateNextAction<CastRuneStrikeAction>(ACTION_DEFAULT + 0.7f),
+        CreateNextAction<CastIcyTouchAction>(ACTION_DEFAULT + 0.6f),
+        CreateNextAction<CastHeartStrikeAction>(ACTION_DEFAULT + 0.5f),
+        CreateNextAction<CastDancingRuneWeaponAction>(ACTION_DEFAULT + 0.3f),
+        CreateNextAction<CastDeathCoilAction>(ACTION_DEFAULT + 0.2f),
         CreateNextAction<CastHornOfWinterAction>(ACTION_DEFAULT + 0.1f),
         CreateNextAction<MeleeAction>(ACTION_DEFAULT)
     };
@@ -103,6 +103,14 @@ void BloodDKStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
 {
     GenericDKStrategy::InitTriggers(triggers);
 
+    triggers.push_back(
+        new TriggerNode(
+            "hysteria no cd",
+            {
+                CreateNextAction<CastHysteriaAction>(ACTION_NORMAL + 4.0f)
+            }
+        )
+    );
     triggers.push_back(
         new TriggerNode(
             "rune strike",
@@ -157,6 +165,14 @@ void BloodDKStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
             "plague strike",
             {
                 CreateNextAction<CastPlagueStrikeAction>(ACTION_HIGH + 2.0f)
+            }
+        )
+    );
+    triggers.push_back(
+        new TriggerNode(
+            "high unholy rune",
+            {
+                CreateNextAction<CastDeathStrikeAction>(ACTION_HIGH + 1.0f)
             }
         )
     );

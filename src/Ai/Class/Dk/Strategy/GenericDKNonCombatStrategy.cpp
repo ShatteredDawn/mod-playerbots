@@ -18,7 +18,7 @@ public:
     }
 
 private:
-    static ActionNode* bone_shield([[maybe_unused]] PlayerbotAI* botAI)
+    static ActionNode* bone_shield(PlayerbotAI*)
     {
         return new ActionNode(
             /*P*/ {},
@@ -27,7 +27,7 @@ private:
         );
     }
 
-    static ActionNode* horn_of_winter([[maybe_unused]] PlayerbotAI* botAI)
+    static ActionNode* horn_of_winter(PlayerbotAI*)
     {
         return new ActionNode(
             /*P*/ {},
@@ -48,14 +48,6 @@ void GenericDKNonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& trigger
 
     triggers.push_back(
         new TriggerNode(
-            "no pet",
-            {
-                CreateNextAction<CastRaiseDeadAction>(ACTION_NORMAL + 1.0f)
-            }
-        )
-    );
-    triggers.push_back(
-        new TriggerNode(
             "horn of winter",
             {
                 CreateNextAction<CastHornOfWinterAction>(21.0f)
@@ -67,22 +59,6 @@ void GenericDKNonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& trigger
             "bone shield",
             {
                 CreateNextAction<CastBoneShieldAction>(21.0f)
-            }
-        )
-    );
-    triggers.push_back(
-        new TriggerNode(
-            "has pet",
-            {
-                CreateNextAction<TogglePetSpellAutoCastAction>(60.0f)
-            }
-        )
-    );
-    triggers.push_back(
-        new TriggerNode(
-            "new pet",
-            {
-                CreateNextAction<SetPetStanceAction>(60.0f)
             }
         )
     );

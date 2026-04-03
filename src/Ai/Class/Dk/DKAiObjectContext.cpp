@@ -99,6 +99,7 @@ public:
         creators["dd cd and no desolation"] = &DeathKnightTriggerFactoryInternal::dd_cd_and_no_desolation;
         creators["death and decay cooldown"] = &DeathKnightTriggerFactoryInternal::death_and_decay_cooldown;
         creators["army of the dead"] = &DeathKnightTriggerFactoryInternal::army_of_the_dead;
+        creators["hysteria no cd"] = &DeathKnightTriggerFactoryInternal::hysteria_no_cd;
     }
 
 private:
@@ -151,6 +152,7 @@ private:
     }
     static Trigger* death_and_decay_cooldown(PlayerbotAI* botAI) { return new DeathAndDecayCooldownTrigger(botAI); }
     static Trigger* army_of_the_dead(PlayerbotAI* botAI) { return new ArmyOfTheDeadTrigger(botAI); }
+    static Trigger* hysteria_no_cd(PlayerbotAI* botAI) { return new HysteriaNoCooldownTrigger(botAI); }
 };
 
 SharedNamedObjectContextList<Strategy> DKAiObjectContext::sharedStrategyContexts;
