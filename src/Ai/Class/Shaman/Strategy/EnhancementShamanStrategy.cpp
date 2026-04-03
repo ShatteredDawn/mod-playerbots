@@ -15,88 +15,16 @@ class EnhancementShamanStrategyActionNodeFactory : public NamedObjectFactory<Act
 public:
     EnhancementShamanStrategyActionNodeFactory()
     {
-        creators["stormstrike"] = &stormstrike;
         creators["lava lash"] = &lava_lash;
-        creators["feral spirit"] = &feral_spirit;
-        creators["lightning bolt"] = &lightning_bolt;
-        creators["earth shock"] = &earth_shock;
-        creators["flame shock"] = &flame_shock;
-        creators["shamanistic rage"] = &shamanistic_rage;
-        creators["call of the elements"] = &call_of_the_elements;
-        creators["lightning shield"] = &lightning_shield;
     }
 
 private:
-    static ActionNode* stormstrike(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-    }
     static ActionNode* lava_lash([[maybe_unused]] PlayerbotAI* botAI)
     {
         return new ActionNode(
             /*P*/ {},
             /*A*/ { CreateNextAction<MeleeAction>(1.0f) },
             /*C*/ {}
-        );
-    }
-    static ActionNode* feral_spirit(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-    }
-    static ActionNode* lightning_bolt(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-    }
-    static ActionNode* earth_shock(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-    }
-    static ActionNode* flame_shock(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-    }
-    static ActionNode* shamanistic_rage(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-    }
-    static ActionNode* call_of_the_elements(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-    }
-    static ActionNode* lightning_shield(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
         );
     }
 };
