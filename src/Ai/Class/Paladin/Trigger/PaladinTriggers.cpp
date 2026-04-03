@@ -33,5 +33,5 @@ bool BlessingTrigger::IsActive()
 
 bool NotSensingUndeadTrigger::IsActive()
 {
-    return !botAI->HasAura("sense undead", bot);
+    return !this->botAI->HasAura("sense undead", this->bot);
 }

@@ -470,9 +470,19 @@ Value<Unit*>* CastTurnUndeadAction::GetTargetValue() { return context->GetValue<
 
 Unit* CastRighteousDefenseAction::GetTarget()
 {
-    Unit* current_target = AI_VALUE(Unit*, "current target");
-    if (!current_target)
+    Value<Unit*>* const currentTargetValue = this->context->GetValue<Unit*>("current target");
+
+    if (currentTargetValue == nullptr)
+    {
         return nullptr;
+    }
+
+    const Unit* const current_target = currentTargetValue->Get();
+
+    if (current_target == nullptr)
+    {
+        return nullptr;
+    }
 
     return current_target->GetVictim();
 }
