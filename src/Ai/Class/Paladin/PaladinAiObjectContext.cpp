@@ -141,6 +141,7 @@ public:
         creators["repentance interrupt"] = &PaladinTriggerFactoryInternal::repentance_interrupt;
         creators["beacon of light on main tank"] = &PaladinTriggerFactoryInternal::beacon_of_light_on_main_tank;
         creators["sacred shield on main tank"] = &PaladinTriggerFactoryInternal::sacred_shield_on_main_tank;
+        creators["hand of freedom on party"] = &PaladinTriggerFactoryInternal::hand_of_freedom_on_party;
 
         creators["blessing of kings on party"] = &PaladinTriggerFactoryInternal::blessing_of_kings_on_party;
         creators["blessing of wisdom on party"] = &PaladinTriggerFactoryInternal::blessing_of_wisdom_on_party;
@@ -206,6 +207,7 @@ private:
     static Trigger* repentance_interrupt(PlayerbotAI* botAI) { return new RepentanceInterruptTrigger(botAI); }
     static Trigger* beacon_of_light_on_main_tank(PlayerbotAI* ai) { return new BeaconOfLightOnMainTankTrigger(ai); }
     static Trigger* sacred_shield_on_main_tank(PlayerbotAI* ai) { return new SacredShieldOnMainTankTrigger(ai); }
+    static Trigger* hand_of_freedom_on_party(PlayerbotAI* botAI) { return new HandOfFreedomOnPartyTrigger(botAI); }
 
     static Trigger* blessing_of_kings_on_party(PlayerbotAI* botAI) { return new BlessingOfKingsOnPartyTrigger(botAI); }
     static Trigger* blessing_of_wisdom_on_party(PlayerbotAI* botAI)
