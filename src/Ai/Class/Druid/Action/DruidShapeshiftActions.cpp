@@ -37,23 +37,28 @@ bool CastTravelFormAction::isUseful()
 
 bool CastCasterFormAction::isUseful()
 {
-    return botAI->HasAnyAuraOf(GetTarget(), "dire bear form", "bear form", "cat form", "travel form", "aquatic form",
+    return this->botAI->HasAnyAuraOf(GetTarget(), "dire bear form", "bear form", "cat form", "travel form", "aquatic form",
                                "flight form", "swift flight form", "moonkin form", nullptr) &&
            AI_VALUE2(uint8, "mana", "self target") > sPlayerbotAIConfig.mediumHealth;
 }
 bool CastCasterFormAction::Execute(Event)
 {
-    botAI->RemoveShapeshift();
+    this->botAI->RemoveShapeshift();
+
     return true;
 }
 
-bool CastCancelDruidAction::Execute(Event /*event*/)
+bool CastCancelDruidAction::Execute(Event)
 {
-    botAI->RemoveAura(auraName);
+    this->botAI->RemoveAura(this->auraName);
+
     return true;
 }
 
-bool CastCancelDruidAction::isUseful() { return botAI->HasAura(auraId, bot); }
+bool CastCancelDruidAction::isUseful()
+{
+    return this->botAI->HasAura(this->auraId, this->bot);
+}
 
 bool CastTreeFormAction::isUseful()
 {
