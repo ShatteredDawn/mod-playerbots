@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PlayerbotAI.h"
+#include "ThreatManager.h"
 #include "Unit.h"
 #include "Player.h"
 #include "Spell.h"
@@ -76,7 +77,7 @@ public:
             return false;
         }
 
-        ThreatMgr& threatMgr = hakkar->GetThreatMgr();
+        ThreatManager& threatMgr = hakkar->GetThreatMgr();
 
         const float botThreat = threatMgr.GetThreat(&bot);
         const float mainTankThreat = threatMgr.GetThreat(mainTank);
@@ -124,14 +125,14 @@ public:
             return nullptr;
         }
 
-        const ThreatMgr& threatMgr = hakkar->GetThreatMgr();
+        const ThreatManager& threatMgr = hakkar->GetThreatMgr();
 
         if (threatMgr.GetThreatListSize() < 2)
         {
             return nullptr;
         }
 
-        const Acore::IteratorPair<std::list<ThreatReference*>::const_iterator> threatList = hakkar->GetThreatMgr().GetSortedThreatList();
+        const Acore::IteratorPair<ThreatManager::ThreatListIterator> threatList = hakkar->GetThreatMgr().GetSortedThreatList();
 
         uint8_t index = 0;
 
