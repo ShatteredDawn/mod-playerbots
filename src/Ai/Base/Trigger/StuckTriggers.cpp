@@ -4,11 +4,10 @@
  */
 
 #include "StuckTriggers.h"
-
+#include "PlayerbotAI.h"
+#include "AiObjectContext.h"
+#include "Cell.h"
 #include "CellImpl.h"
-#include "PathGenerator.h"
-#include "Playerbots.h"
-#include "MMapFactory.h"
 
 bool MoveStuckTrigger::IsActive()
 {
@@ -89,8 +88,7 @@ bool MoveLongStuckTrigger::IsActive()
         return true;
     }
 
-    if (cell.GridX() > 0 && cell.GridY() > 0 &&
-        !MMAP::MMapFactory::createOrGetMMapMgr()->loadMap(botPos.getMapId(), cell.GridX(), cell.GridY()))
+    if (bot->GetMap()->IsGridCreated(GridCoord(cell.GridX(), cell.GridY())))
     {
         // LOG_INFO("playerbots", "Bot {} {}:{} <{}> was in unloaded grid {},{} on map {}",
         // bot->GetGUID().ToString().c_str(), bot->GetTeamId() == TEAM_ALLIANCE ? "A" : "H", bot->GetLevel(),
