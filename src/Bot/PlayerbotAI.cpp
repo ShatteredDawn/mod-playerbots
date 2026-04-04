@@ -1067,6 +1067,7 @@ void PlayerbotAI::HandleCommand(uint32 type, std::string const text, Player* fro
     }
 }
 
+// @TODO: Refactor into a separate service
 void PlayerbotAI::HandleBotOutgoingPacket(WorldPacket const& packet)
 {
     if (packet.empty())
