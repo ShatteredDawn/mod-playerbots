@@ -922,6 +922,7 @@ bool PlayerbotAI::IsAllowedCommand(std::string const text)
     return false;
 }
 
+// @TODO: Refactor this into a separate service
 void PlayerbotAI::HandleCommand(uint32 type, std::string const text, Player* fromPlayer)
 {
     if (!GetSecurity()->CheckLevelFor(PLAYERBOT_SECURITY_INVITE, type != CHAT_MSG_WHISPER, fromPlayer))
