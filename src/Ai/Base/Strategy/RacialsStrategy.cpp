@@ -74,8 +74,14 @@ void RacialsStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
         )
     );
 
-    triggers.push_back(new TriggerNode(
-        "fear charm sleep", { NextAction("will of the forsaken", ACTION_EMERGENCY + 1) }));
+    triggers.push_back(
+        new TriggerNode(
+            "fear charm sleep",
+            {
+                CreateNextAction<CastWillOfTheForsakenAction>(ACTION_EMERGENCY + 1.0f)
+            }
+        )
+    );
 
 }
 
