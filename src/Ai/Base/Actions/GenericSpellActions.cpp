@@ -5,8 +5,6 @@
 
 #include "GenericSpellActions.h"
 
-#include <ctime>
-
 #include "Event.h"
 #include "ItemTemplate.h"
 #include "ObjectDefines.h"
@@ -336,6 +334,44 @@ bool CastVehicleSpellAction::Execute(Event)
 {
     uint32 spellId = AI_VALUE2(uint32, "vehicle spell id", spell);
     return botAI->CastVehicleSpell(spellId, GetTarget());
+}
+
+bool CastEveryManForHimselfAction::isPossible()
+{
+    Value<uint32_t>* const spellIdValue = this->context->GetValue<uint32_t>("spell id", spell);
+
+    if (spellIdValue == nullptr)
+    {
+        return false;
+    }
+
+    const uint32_t spellId = spellIdValue->Get();
+
+    if (spellId == 0)
+    {
+        return false;
+    }
+
+    if (!this->bot->HasSpell(spellId))
+    {
+        return false;
+    }
+
+    if (this->bot->HasSpellCooldown(spellId))
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool CastEveryManForHimselfAction::isUseful()
+{
+    return this->bot->HasAuraType(SPELL_AURA_MOD_STUN)
+            || this->bot->HasAuraType(SPELL_AURA_MOD_FEAR)
+            || this->bot->HasAuraType(SPELL_AURA_MOD_ROOT)
+            || this->bot->HasAuraType(SPELL_AURA_MOD_CONFUSE)
+            || this->bot->HasAuraType(SPELL_AURA_MOD_CHARM);
 }
 
 bool UseTrinketAction::Execute(Event)
