@@ -353,14 +353,14 @@ void PlayerbotHolder::LogoutPlayerBot(ObjectGuid guid)
         bot->SaveToDB(false, false);
 
         WorldSession* botWorldSessionPtr = bot->GetSession();
-        WorldSession* masterWorldSessionPtr = nullptr;
+        // WorldSession* masterWorldSessionPtr = nullptr;
 
         if (botWorldSessionPtr->isLogingOut())
             return;
 
-        Player* master = botAI->GetMaster();
-        if (master)
-            masterWorldSessionPtr = master->GetSession();
+        // Player* master = botAI->GetMaster();
+        // if (master)
+        //     masterWorldSessionPtr = master->GetSession();
 
         // TODO: Review whether or not to implement timed logout.
         // Unused block. Useful only for timed logout.
