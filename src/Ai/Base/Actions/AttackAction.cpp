@@ -164,8 +164,10 @@ bool AttackAction::Attack(Unit* target, bool /*with_pet*/ /*true*/)
 
     botAI->ChangeEngine(BOT_STATE_COMBAT);
 
-    if (!WaitForAttackStrategy::ShouldWait(botAI))
-        bot->Attack(target, shouldMelee);
+    if (!WaitForAttackStrategy::ShouldWait(*this->botAI))
+    {
+        this->bot->Attack(target, shouldMelee);
+    }
     /* prevent pet dead immediately in group */
     // if (bot->GetMap()->IsDungeon() && bot->GetGroup() && !target->IsInCombat())
     // {

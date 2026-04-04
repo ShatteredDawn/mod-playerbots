@@ -8,34 +8,43 @@
 #include <algorithm>
 #include <cctype>
 
+#include "AiObjectContext.h"
 #include "ObjectAccessor.h"
+#include "ObjectGuid.h"
 #include "PlayerbotAI.h"
 #include "PlayerbotTextMgr.h"
-#include "Playerbots.h"
 #include "ServerFacade.h"
 #include "TravelMgr.h"
 #include "WaitForAttackStrategy.h"
 
-namespace
+WorldPosition WaitForAttackKeepSafeDistanceAction::GetBestPoint(
+    AiObjectContext& context,
+    Player& bot,
+    Unit& target,
+    float minDistance,
+    float maxDistance
+) const
 {
+    WorldPosition botPosition{bot};
+    WorldPosition targetPosition{target};
 
-WorldPosition GetBestPoint(AiObjectContext* context, Player* bot, Unit* target,
-                           float minDistance, float maxDistance)
-{
-    WorldPosition botPosition(bot);
-    WorldPosition targetPosition(target);
+    const int8_t startDir = urand(0, 1) * 2 - 1;
+    const float radiansIncrement = (5.0f / 180.0f) * float(M_PI);
+    const float startAngle = targetPosition.getAngleTo(botPosition) + frand(0.0f, radiansIncrement) * startDir;
+    const float distance = frand(minDistance, maxDistance);
 
-    int8 startDir = urand(0, 1) * 2 - 1;
-    float const radiansIncrement = (5.0f / 180.0f) * static_cast<float>(M_PI);
-    float startAngle = targetPosition.getAngleTo(botPosition) +
-                       frand(0.0f, radiansIncrement) * startDir;
-    float distance = frand(minDistance, maxDistance);
+    Value<GuidVector>* const enemiesValue = this->context->GetValue<GuidVector>("possible targets no los");
 
-    GuidVector enemies = AI_VALUE(GuidVector, "possible targets no los");
-
-    for (float tryAngle = 0.0f; tryAngle < static_cast<float>(M_PI); tryAngle += radiansIncrement)
+    if (enemiesValue == nullptr)
     {
-        for (int8 tryDir = -1; tryAngle && tryDir < 1; tryDir += 2)
+        return WorldPosition{};
+    }
+
+    const GuidVector enemies = enemiesValue->Get();
+
+    for (float tryAngle = 0.0f; tryAngle < float(M_PI); tryAngle += radiansIncrement)
+    {
+        for (int8_t tryDir = -1; tryAngle && tryDir < 1; tryDir += 2)
         {
             float pointAngle = startAngle + tryAngle * startDir * tryDir;
 
@@ -43,28 +52,44 @@ WorldPosition GetBestPoint(AiObjectContext* context, Player* bot, Unit* target,
             float y = targetPosition.GetPositionY() + distance * sin(pointAngle);
             float z = targetPosition.GetPositionZ() + 1.0f;
 
-            WorldPosition point(targetPosition.GetMapId(), x, y, z);
+            WorldPosition point{targetPosition.GetMapId(), x, y, z};
             point.setZ(point.getHeight());
 
             // Check line of sight to target
-            if (!target->IsWithinLOS(point.GetPositionX(), point.GetPositionY(),
-                                     point.GetPositionZ() + bot->GetCollisionHeight()))
+            if (!target.IsWithinLOS(
+                point.GetPositionX(),
+                point.GetPositionY(),
+                point.GetPositionZ() + bot.GetCollisionHeight())
+            )
+            {
                 continue;
+            }
 
             // Check if enemies are close to this point
             bool enemyClose = false;
-            for (ObjectGuid const& enemyGUID : enemies)
+
+            for (const ObjectGuid& enemyGUID : enemies)
             {
-                Unit* enemy = ObjectAccessor::GetUnit(*bot, enemyGUID);
-                if (enemy && enemy->IsWithinLOSInMap(bot) && enemy->IsHostileTo(bot))
+                const Unit* const enemy = ObjectAccessor::GetUnit(bot, enemyGUID);
+
+                if (enemy == nullptr)
                 {
-                    float enemyAttackRange = enemy->GetCombatReach() + ATTACK_DISTANCE;
-                    WorldPosition enemyPos(enemy);
-                    if (enemyPos.sqDistance(point) <= (enemyAttackRange * enemyAttackRange))
-                    {
-                        enemyClose = true;
-                        break;
-                    }
+                    continue;
+                }
+
+                if (!enemy->IsWithinLOSInMap(this->bot) && enemy->IsHostileTo(this->bot))
+                {
+                    continue;
+                }
+
+                const float enemyAttackRange = enemy->GetCombatReach() + ATTACK_DISTANCE;
+                WorldPosition enemyPos{enemy};
+
+                if (enemyPos.sqDistance(point) <= (enemyAttackRange * enemyAttackRange))
+                {
+                    enemyClose = true;
+
+                    break;
                 }
             }
 
@@ -72,8 +97,10 @@ WorldPosition GetBestPoint(AiObjectContext* context, Player* bot, Unit* target,
                 continue;
 
             // Check if bot can path to this point
-            if (!botPosition.canPathTo(point, bot))
+            if (!botPosition.canPathTo(point, this->bot))
+            {
                 continue;
+            }
 
             return point;
         }
@@ -82,37 +109,63 @@ WorldPosition GetBestPoint(AiObjectContext* context, Player* bot, Unit* target,
     return botPosition;
 }
 
-}  // namespace
 
-bool WaitForAttackKeepSafeDistanceAction::Execute(Event /*event*/)
+bool WaitForAttackKeepSafeDistanceAction::Execute(Event)
 {
-    Unit* target = AI_VALUE(Unit*, "current target");
+    if (this->bot == nullptr)
+    {
+        return false;
+    }
+
+    Value<Unit*>* const currentTargetValue = this->context->GetValue<Unit*>("current target");
+
+    if (currentTargetValue == nullptr)
+    {
+        return false;
+    }
+
+    Unit* target = currentTargetValue->Get();
+
+    if (target == nullptr)
+    {
+        return false;
+    }
 
     // If our target is moving towards a stationary unit, use that unit as anchor
-    if (target && !target->IsStopped())
+    if (!target->IsStopped())
     {
-        ObjectGuid targetGuid = target->GetTarget();
-        if (targetGuid)
+        const ObjectGuid targetGuid = target->GetTarget();
+
+        if (!targetGuid.IsEmpty())
         {
-            Unit* targetsTarget = ObjectAccessor::GetUnit(*target, targetGuid);
-            if (targetsTarget && targetsTarget->IsStopped())
+            Unit* const targetsTarget = ObjectAccessor::GetUnit(*target, targetGuid);
+
+            if (targetsTarget != nullptr && targetsTarget->IsStopped())
+            {
                 target = targetsTarget;
+            }
         }
     }
 
-    if (target && target->IsAlive())
+    if (target->IsAlive())
     {
-        float safeDistance = std::max(
+        const float safeDistance = std::max(
             target->GetCombatReach() + ATTACK_DISTANCE,
             WaitForAttackStrategy::GetSafeDistance());
-        float safeDistanceThreshold = WaitForAttackStrategy::GetSafeDistanceThreshold();
+        const float safeDistanceThreshold = WaitForAttackStrategy::GetSafeDistanceThreshold();
 
-        WorldPosition bestPoint = GetBestPoint(context, bot, target,
+        const WorldPosition bestPoint = this->GetBestPoint(*context, *this->bot, *target,
             safeDistance - safeDistanceThreshold, safeDistance);
 
         if (bestPoint)
-            return MoveTo(bestPoint.GetMapId(), bestPoint.GetPositionX(),
-                          bestPoint.GetPositionY(), bestPoint.GetPositionZ());
+        {
+            return this->MoveTo(
+                bestPoint.GetMapId(),
+                bestPoint.GetPositionX(),
+                bestPoint.GetPositionY(),
+                bestPoint.GetPositionZ()
+            );
+        }
     }
 
     return false;
