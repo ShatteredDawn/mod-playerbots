@@ -65,8 +65,14 @@ void RacialsStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
         )
     );
 
-    triggers.push_back(new TriggerNode(
-        "loss of control", { NextAction("every man for himself", ACTION_EMERGENCY + 1) }));
+    triggers.push_back(
+        new TriggerNode(
+            "loss of control",
+            {
+                CreateNextAction<CastEveryManForHimselfAction>(ACTION_EMERGENCY + 1.0f)
+            }
+        )
+    );
 
 }
 

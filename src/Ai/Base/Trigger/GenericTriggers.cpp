@@ -474,11 +474,11 @@ bool HasAuraTrigger::IsActive() { return botAI->HasAura(getName(), GetTarget(), 
 
 bool LossOfControlTrigger::IsActive()
 {
-    return bot->HasAuraType(SPELL_AURA_MOD_STUN) ||
-           bot->HasAuraType(SPELL_AURA_MOD_FEAR) ||
-           bot->HasAuraType(SPELL_AURA_MOD_ROOT) ||
-           bot->HasAuraType(SPELL_AURA_MOD_CONFUSE) ||
-           bot->HasAuraType(SPELL_AURA_MOD_CHARM);
+    return this->bot->HasAuraType(SPELL_AURA_MOD_STUN)
+            || this->bot->HasAuraType(SPELL_AURA_MOD_FEAR)
+            || this->bot->HasAuraType(SPELL_AURA_MOD_ROOT)
+            || this->bot->HasAuraType(SPELL_AURA_MOD_CONFUSE)
+            || this->bot->HasAuraType(SPELL_AURA_MOD_CHARM);
 }
 
 bool HasAuraStackTrigger::IsActive()

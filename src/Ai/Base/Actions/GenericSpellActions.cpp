@@ -5,8 +5,6 @@
 
 #include "GenericSpellActions.h"
 
-#include <ctime>
-
 #include "Event.h"
 #include "ItemTemplate.h"
 #include "ObjectDefines.h"
@@ -340,26 +338,40 @@ bool CastVehicleSpellAction::Execute(Event)
 
 bool CastEveryManForHimselfAction::isPossible()
 {
-    uint32 spellId = AI_VALUE2(uint32, "spell id", spell);
-    if (!spellId)
-        return false;
+    Value<uint32_t>* const spellIdValue = this->context->GetValue<uint32_t>("spell id", spell);
 
-    if (!bot->HasSpell(spellId))
+    if (spellIdValue == nullptr)
+    {
         return false;
+    }
 
-    if (bot->HasSpellCooldown(spellId))
+    const uint32_t spellId = spellIdValue->Get();
+
+    if (spellId == 0)
+    {
         return false;
+    }
+
+    if (!this->bot->HasSpell(spellId))
+    {
+        return false;
+    }
+
+    if (this->bot->HasSpellCooldown(spellId))
+    {
+        return false;
+    }
 
     return true;
 }
 
 bool CastEveryManForHimselfAction::isUseful()
 {
-    return bot->HasAuraType(SPELL_AURA_MOD_STUN) ||
-           bot->HasAuraType(SPELL_AURA_MOD_FEAR) ||
-           bot->HasAuraType(SPELL_AURA_MOD_ROOT) ||
-           bot->HasAuraType(SPELL_AURA_MOD_CONFUSE) ||
-           bot->HasAuraType(SPELL_AURA_MOD_CHARM);
+    return this->bot->HasAuraType(SPELL_AURA_MOD_STUN)
+            || this->bot->HasAuraType(SPELL_AURA_MOD_FEAR)
+            || this->bot->HasAuraType(SPELL_AURA_MOD_ROOT)
+            || this->bot->HasAuraType(SPELL_AURA_MOD_CONFUSE)
+            || this->bot->HasAuraType(SPELL_AURA_MOD_CHARM);
 }
 
 bool UseTrinketAction::Execute(Event)

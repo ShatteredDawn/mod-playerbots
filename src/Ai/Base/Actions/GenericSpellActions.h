@@ -306,7 +306,10 @@ class CastEveryManForHimselfAction : public CastSpellAction
 public:
     CastEveryManForHimselfAction(PlayerbotAI* botAI) : CastSpellAction(botAI, "every man for himself") {}
 
-    std::string const GetTargetName() override { return "self target"; }
+    std::string const GetTargetName() override
+    {
+        return "self target";
+    }
     bool isPossible() override;
     bool isUseful() override;
 };
