@@ -25,15 +25,15 @@ WorldPosition WaitForAttackKeepSafeDistanceAction::GetBestPoint(
     float maxDistance
 ) const
 {
-    WorldPosition botPosition{bot};
-    WorldPosition targetPosition{target};
+    WorldPosition botPosition{&bot};
+    WorldPosition targetPosition{&target};
 
     const int8_t startDir = urand(0, 1) * 2 - 1;
     const float radiansIncrement = (5.0f / 180.0f) * float(M_PI);
     const float startAngle = targetPosition.getAngleTo(botPosition) + frand(0.0f, radiansIncrement) * startDir;
     const float distance = frand(minDistance, maxDistance);
 
-    Value<GuidVector>* const enemiesValue = this->context->GetValue<GuidVector>("possible targets no los");
+    Value<GuidVector>* const enemiesValue = context.GetValue<GuidVector>("possible targets no los");
 
     if (enemiesValue == nullptr)
     {

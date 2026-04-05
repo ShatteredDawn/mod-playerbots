@@ -245,7 +245,7 @@ public:
     MapEntry const* getMapEntry();
     uint32 getInstanceId();
     Map* getMap();
-    float getHeight();  // remove const - whipowill
+    [[nodiscard]] float getHeight();
 
     std::set<Transport*> getTransports(uint32 entry = 0);
 
