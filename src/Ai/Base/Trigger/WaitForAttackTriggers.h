@@ -3,11 +3,10 @@
  * and/or modify it under version 3 of the License, or (at your option), any later version.
  */
 
-#ifndef _PLAYERBOT_WAITFORATTACKTRIGGERS_H
-#define _PLAYERBOT_WAITFORATTACKTRIGGERS_H
+#pragma once
 
-#include "PlayerbotAIConfig.h"
-#include "Playerbots.h"
+#include "AiObjectContext.h"
+#include "PlayerbotAI.h"
 #include "ServerFacade.h"
 #include "Trigger.h"
 #include "WaitForAttackStrategy.h"
@@ -22,28 +21,47 @@ public:
 
     bool IsActive() override
     {
-        if (!WaitForAttackStrategy::ShouldWait(botAI))
+        if (this->botAI == nullptr)
+        {
             return false;
+        }
+
+        if (!WaitForAttackStrategy::ShouldWait(*this->botAI))
+        {
+            return false;
+        }
 
         // Do not move if stay strategy is set
-        if (botAI->HasStrategy("stay", botAI->GetState()))
+        if (this->botAI->HasStrategy("stay", this->botAI->GetState()))
+        {
             return false;
+        }
 
         // Do not move if currently being targeted
-        if (!bot->getAttackers().empty())
+        if (!this->bot->getAttackers().empty())
+        {
             return false;
+        }
 
-        Unit* target = AI_VALUE(Unit*, "current target");
-        if (!target)
+        Value<Unit*>* const currentTargetValue = this->context->GetValue<Unit*>("current target");
+
+        if (currentTargetValue == nullptr)
+        {
             return false;
+        }
 
-        float safeDistance = WaitForAttackStrategy::GetSafeDistance();
-        float safeDistanceThreshold = WaitForAttackStrategy::GetSafeDistanceThreshold();
-        float distanceToTarget = ServerFacade::instance().GetDistance2d(bot, target);
+        Unit* const target = currentTargetValue->Get();
+
+        if (target == nullptr)
+        {
+            return false;
+        }
+
+        const float safeDistance = WaitForAttackStrategy::GetSafeDistance();
+        const float safeDistanceThreshold = WaitForAttackStrategy::GetSafeDistanceThreshold();
+        const float distanceToTarget = ServerFacade::instance().GetDistance2d(this->bot, target);
 
         return (distanceToTarget > (safeDistance + safeDistanceThreshold)) ||
                (distanceToTarget < (safeDistance - safeDistanceThreshold));
     }
 };
-
-#endif

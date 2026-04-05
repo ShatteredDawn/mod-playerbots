@@ -362,9 +362,16 @@ Map* WorldPosition::getMap()
     return sMapMgr->FindMap(GetMapId(), getMapEntry()->Instanceable() ? getInstanceId() : 0);
 }
 
-float WorldPosition::getHeight()  // remove const - whipowill
+float WorldPosition::getHeight()
 {
-    return getMap()->GetHeight(getX(), getY(), getZ());
+    const Map* const map = this->getMap();
+
+    if (map == nullptr)
+    {
+        return 0.0f;
+    }
+
+    return map->GetHeight(this->getX(), this->getY(), this->getZ());
 }
 
 G3D::Vector3 WorldPosition::getVector3() { return G3D::Vector3(GetPositionX(), GetPositionY(), GetPositionZ()); }

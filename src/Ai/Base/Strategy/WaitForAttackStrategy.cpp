@@ -28,56 +28,110 @@ void WaitForAttackStrategy::InitMultipliers(std::vector<Multiplier*>& multiplier
     multipliers.push_back(new WaitForAttackMultiplier(botAI));
 }
 
-bool WaitForAttackStrategy::ShouldWait(PlayerbotAI* botAI)
+bool WaitForAttackStrategy::ShouldWait(PlayerbotAI& botAI)
 {
-    if (botAI->HasStrategy("wait for attack", BOT_STATE_COMBAT))
+    if (!botAI.HasStrategy("wait for attack", BOT_STATE_COMBAT))
     {
-        Player* bot = botAI->GetBot();
-        if (bot->GetGroup() && botAI->HasRealPlayerMaster())
+        return false;
+    }
+
+    const Player* const bot = botAI.GetBot();
+
+    if (bot == nullptr)
+    {
+        return false;
+    }
+
+    if (!bot->GetGroup() || !botAI.HasActivePlayerMaster())
+    {
+        return false;
+    }
+
+    AiObjectContext* const context = botAI.GetAiObjectContext();
+
+    if (context == nullptr)
+    {
+        return false;
+    }
+
+    Value<Unit*>* const currentTargetValue = context->GetValue<Unit*>("current target");
+
+    if (currentTargetValue == nullptr)
+    {
+        return false;
+    }
+
+    // Don't wait if the current target is an enemy player
+    const Unit* const  target = currentTargetValue->Get();
+
+    if (target && target->IsPlayer())
+    {
+        return false;
+    }
+
+    Value<time_t>* const combatStartTimeValue = context->GetValue<time_t>("combat start time");
+
+    if (combatStartTimeValue == nullptr)
+    {
+        return false;
+    }
+
+    time_t combatStartTime = combatStartTimeValue->Get();
+
+    if (bot->IsInCombat())
+    {
+        if (combatStartTime == 0)
         {
-            // Don't wait if the current target is an enemy player
-            Unit* target = botAI->GetAiObjectContext()->GetValue<Unit*>("current target")->Get();
-            if (target && target->IsPlayer())
-                return false;
-
-            AiObjectContext* context = botAI->GetAiObjectContext();
-            time_t combatStartTime = context->GetValue<time_t>("combat start time")->Get();
-
-            if (bot->IsInCombat())
-            {
-                if (combatStartTime == 0)
-                {
-                    combatStartTime = time(nullptr);
-                    context->GetValue<time_t>("combat start time")->Set(combatStartTime);
-                }
-
-                time_t elapsedTime = time(nullptr) - combatStartTime;
-                return elapsedTime < GetWaitTime(botAI);
-            }
-            else
-            {
-                if (combatStartTime != 0)
-                    context->GetValue<time_t>("combat start time")->Set(0);
-            }
+            combatStartTime = time(nullptr);
+            combatStartTimeValue->Set(combatStartTime);
         }
+
+        const time_t elapsedTime = time(nullptr) - combatStartTime;
+
+        return elapsedTime < WaitForAttackStrategy::GetWaitTime(botAI);
+    }
+
+
+    if (combatStartTime != 0)
+    {
+        combatStartTimeValue->Set(0);
     }
 
     return false;
 }
 
-uint8 WaitForAttackStrategy::GetWaitTime(PlayerbotAI* botAI)
+uint8_t WaitForAttackStrategy::GetWaitTime(PlayerbotAI& botAI)
 {
-    return botAI->GetAiObjectContext()->GetValue<uint8>("wait for attack time")->Get();
+    AiObjectContext* const context = botAI.GetAiObjectContext();
+
+    if (context == nullptr)
+    {
+        return 0;
+    }
+
+    Value<uint8_t>* const waitForAttackTimeValue = context->GetValue<uint8_t>("wait for attack time");
+
+    if (waitForAttackTimeValue == nullptr)
+    {
+        return 0;
+    }
+
+    return waitForAttackTimeValue->Get();
 }
 
 float WaitForAttackStrategy::GetSafeDistance()
 {
-    return sPlayerbotAIConfig.spellDistance;
+    return PlayerbotAIConfig::instance().spellDistance;
 }
 
 float WaitForAttackMultiplier::GetValue(Action& action)
 {
-    std::string const& actionName = action.getName();
+    if (this->botAI == nullptr)
+    {
+        return 0.0f;
+    }
+
+    const std::string& actionName = action.getName();
 
     if (actionName != "wait for attack keep safe distance" &&
         actionName != "dps assist" &&
@@ -88,7 +142,7 @@ float WaitForAttackMultiplier::GetValue(Action& action)
         actionName != "pull action" &&
         actionName != "pull end")
     {
-        return WaitForAttackStrategy::ShouldWait(botAI) ? 0.0f : 1.0f;
+        return WaitForAttackStrategy::ShouldWait(*this->botAI) ? 0.0f : 1.0f;
     }
 
     return 1.0f;

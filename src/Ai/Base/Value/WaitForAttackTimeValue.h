@@ -3,8 +3,7 @@
  * and/or modify it under version 3 of the License, or (at your option), any later version.
  */
 
-#ifndef _PLAYERBOT_WAITFORATTACKTIMEVALUE_H
-#define _PLAYERBOT_WAITFORATTACKTIMEVALUE_H
+#pragma once
 
 #include "Value.h"
 
@@ -21,5 +20,3 @@ class CombatStartTimeValue : public ManualSetValue<time_t>
 public:
     CombatStartTimeValue(PlayerbotAI* botAI) : ManualSetValue<time_t>(botAI, 0, "combat start time") {}
 };
-
-#endif

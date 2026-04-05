@@ -3,8 +3,7 @@
  * and/or modify it under version 3 of the License, or (at your option), any later version.
  */
 
-#ifndef _PLAYERBOT_WAITFORATTACKACTION_H
-#define _PLAYERBOT_WAITFORATTACKACTION_H
+#pragma once
 
 #include "MovementActions.h"
 
@@ -17,6 +16,9 @@ public:
         : MovementAction(botAI, "wait for attack keep safe distance") {}
 
     bool Execute(Event event) override;
+
+protected:
+    [[nodiscard]] WorldPosition GetBestPoint(AiObjectContext& context, Player& bot, Unit& target, float minDistance, float maxDistance) const;
 };
 
 class SetWaitForAttackTimeAction : public Action
@@ -27,5 +29,3 @@ public:
 
     bool Execute(Event event) override;
 };
-
-#endif
