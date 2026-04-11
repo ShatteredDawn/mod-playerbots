@@ -4,45 +4,14 @@
  */
 
 #include "GenericHunterNonCombatStrategy.h"
-#include "CreateNextAction.h"
 #include "EquipAction.h"
 #include "GenericActions.h"
 #include "HunterActions.h"
 #include "ImbueAction.h"
 
-class GenericHunterNonCombatStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
-{
-public:
-    GenericHunterNonCombatStrategyActionNodeFactory()
-    {
-        creators["rapid fire"] = &rapid_fire;
-        creators["boost"] = &rapid_fire;
-        creators["aspect of the pack"] = &aspect_of_the_pack;
-    }
-
-private:
-    static ActionNode* rapid_fire([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ { CreateNextAction<CastReadinessAction>(1.0f) },
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* aspect_of_the_pack([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ { CreateNextAction<CastAspectOfTheCheetahAction>(1.0f) },
-            /*C*/ {}
-        );
-    }
-};
-
 GenericHunterNonCombatStrategy::GenericHunterNonCombatStrategy(PlayerbotAI* botAI) : NonCombatStrategy(botAI)
 {
-    actionNodeFactories.Add(new GenericHunterNonCombatStrategyActionNodeFactory());
+    // No custom ActionNodeFactory needed
 }
 
 void GenericHunterNonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
