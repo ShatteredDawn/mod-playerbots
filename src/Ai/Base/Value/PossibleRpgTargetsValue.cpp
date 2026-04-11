@@ -15,6 +15,7 @@
 #include "GridNotifiersImpl.h"
 #include "CellImpl.h"
 #include "TravelMgr.h"
+#include <unordered_set>
 
 std::vector<uint32> PossibleRpgTargetsValue::allowedNpcFlags;
 
@@ -97,8 +98,11 @@ bool PossibleRpgTargetsValue::AcceptUnit(Unit* unit)
 
 std::vector<uint32> PossibleNewRpgTargetsValue::allowedNpcFlags;
 
+// Sparse starting zones where the default scan range is insufficient for WANDER_NPC (requires >= 3 NPCs)
+static const std::unordered_set<uint32> rpgRangeOverrideAreaIds = { 3526 /* Ammen Vale */, 2117 /* Deathknell */ };
+
 PossibleNewRpgTargetsValue::PossibleNewRpgTargetsValue(PlayerbotAI* botAI, float range)
-    : NearestUnitsValue(botAI, "possible new rpg targets", range, true)
+    : NearestUnitsValue(botAI, "possible new rpg targets", range, true), defaultRange(range)
 {
     if (allowedNpcFlags.empty())
     {
@@ -128,6 +132,11 @@ PossibleNewRpgTargetsValue::PossibleNewRpgTargetsValue(PlayerbotAI* botAI, float
 
 GuidVector PossibleNewRpgTargetsValue::Calculate()
 {
+    if (rpgRangeOverrideAreaIds.count(bot->GetAreaId()) && defaultRange < 200.0f)
+        range = 200.0f;
+    else
+        range = defaultRange;
+
     std::list<Unit*> targets;
     FindUnits(targets);
 
