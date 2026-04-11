@@ -1,8 +1,5 @@
 #include "NewRpgAction.h"
 
-#include <cmath>
-#include <cstdlib>
-
 #include "BroadcastHelper.h"
 #include "ChatHelper.h"
 #include "G3D/Vector2.h"
@@ -70,7 +67,8 @@ bool NewRpgStatusUpdateAction::Execute(Event)
                     RPG_WANDER_NPC,
                     RPG_DO_QUEST,
                     RPG_TRAVEL_FLIGHT,
-                    RPG_REST
+                    RPG_REST,
+                    RPG_OUTDOOR_PVP
                 }
             );
 
@@ -154,6 +152,15 @@ bool NewRpgStatusUpdateAction::Execute(Event)
             {
                 info.ChangeToIdle();
 
+                return true;
+            }
+            break;
+        }
+        case RPG_OUTDOOR_PVP:
+        {
+            if (info.HasStatusPersisted(statusOutDoorPvPDuration))
+            {
+                info.ChangeToIdle();
                 return true;
             }
             break;

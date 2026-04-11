@@ -13,6 +13,7 @@
 #include "NewRpgStrategy.h"
 #include "Object.h"
 #include "ObjectAccessor.h"
+#include "OutdoorPvPMgr.h"
 #include "ObjectDefines.h"
 #include "ObjectGuid.h"
 #include "ObjectMgr.h"
@@ -153,12 +154,10 @@ bool NewRpgBaseAction::MoveWorldObjectTo(ObjectGuid guid, float distance)
     return MoveTo(mapId, x, y, z, false, false, false, true);
 }
 
-bool NewRpgBaseAction::MoveRandomNear(float moveStep, MovementPriority priority)
+bool NewRpgBaseAction::MoveRandomNear(float moveStep, MovementPriority priority, WorldObject* center)
 {
     if (IsWaitingForLastMove(priority))
-    {
         return false;
-    }
 
     float distance = rand_norm() * moveStep;
     Map* map = bot->GetMap();
@@ -1171,6 +1170,11 @@ bool NewRpgBaseAction::RandomChangeStatus(std::vector<NewRpgStatus> candidateSta
             bot->SetStandState(UNIT_STAND_STATE_SIT);
             return true;
         }
+        case RPG_OUTDOOR_PVP:
+        {
+            botAI->rpgInfo.ChangeToOutdoorPvp();
+            return true;
+        }
         default:
         {
             botAI->rpgInfo.ChangeToRest();
@@ -1230,6 +1234,17 @@ bool NewRpgBaseAction::CheckRpgStatusAvailable(NewRpgStatus status)
             ObjectGuid flightMaster;
             uint32 fromNode, toNode;
             return SelectRandomFlightTaxiNode(flightMaster, fromNode, toNode);
+        }
+        case RPG_OUTDOOR_PVP:
+        {
+            if (!bot->IsPvP())
+                return false;
+            uint32 zoneId = bot->GetZoneId();
+            if (zoneId == AREA_NAGRAND)
+                return false;
+
+            OutdoorPvP* outdoorPvP = sOutdoorPvPMgr->GetOutdoorPvPToZoneId(zoneId);
+            return outdoorPvP != nullptr;
         }
         default:
             return false;
