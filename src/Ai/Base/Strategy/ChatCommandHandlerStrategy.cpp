@@ -10,6 +10,7 @@
 #include "CastCustomSpellAction.h"
 #include "AttackAction.h"
 #include "DruidShapeshiftActions.h"
+#include "SetFocusHealTargetsAction.h"
 #include "TellReputationAction.h"
 #include "QueryQuestAction.h"
 #include "QueryItemUsageAction.h"
@@ -469,6 +470,14 @@ void ChatCommandHandlerStrategy::InitTriggers(std::vector<TriggerNode*>& trigger
             }
         )
     );
+    triggers.push_back(
+        new TriggerNode(
+            "focus heal",
+            {
+                CreateNextAction<SetFocusHealTargetsAction>(relevance)
+            }
+        )
+    );
 }
 
 ChatCommandHandlerStrategy::ChatCommandHandlerStrategy(PlayerbotAI* botAI) : PassTroughStrategy(botAI)
@@ -565,4 +574,5 @@ ChatCommandHandlerStrategy::ChatCommandHandlerStrategy(PlayerbotAI* botAI) : Pas
     this->supported.push_back({ "pet", CreateNextAction<PetsAction>(relevance).factory });
     this->supported.push_back({ "pet attack", CreateNextAction<ChatPetAttackAction>(relevance).factory });
     this->supported.push_back({ "wait for attack time", CreateNextAction<SetWaitForAttackTimeAction>(relevance).factory });
+    this->supported.push_back({ "focus heal", CreateNextAction<SetFocusHealTargetsAction>(relevance).factory });
 }
