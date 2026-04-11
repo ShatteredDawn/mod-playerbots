@@ -29,6 +29,16 @@ std::vector<NextAction> CastAbolishPoisonOnPartyAction::getAlternatives()
     return alternatives;
 }
 
+bool CastLifebloomOnMainTankAction::isUseful()
+{
+    Unit* target = GetTarget();
+    if (!target || !target->IsAlive() || !CastSpellAction::isUseful())
+        return false;
+
+    Aura* lifebloom = botAI->GetAura("lifebloom", target, true, true);
+    return !lifebloom || lifebloom->GetStackAmount() < 3 || lifebloom->GetDuration() < 2000;
+}
+
 Value<Unit*>* CastEntanglingRootsCcAction::GetTargetValue()
 {
     return context->GetValue<Unit*>("cc target", "entangling roots");

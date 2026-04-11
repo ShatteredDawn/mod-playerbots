@@ -78,6 +78,7 @@ public:
     DruidTriggerFactoryInternal()
     {
         creators["omen of clarity"] = &DruidTriggerFactoryInternal::omen_of_clarity;
+        creators["clearcasting"] = &DruidTriggerFactoryInternal::clearcasting;
         creators["thorns"] = &DruidTriggerFactoryInternal::thorns;
         creators["thorns on party"] = &DruidTriggerFactoryInternal::thorns_on_party;
         creators["thorns on main tank"] = &DruidTriggerFactoryInternal::thorns_on_main_tank;
@@ -116,6 +117,7 @@ public:
 
 private:
     static Trigger* natures_swiftness(PlayerbotAI* botAI) { return new NaturesSwiftnessTrigger(botAI); }
+    static Trigger* clearcasting(PlayerbotAI* botAI) { return new ClearcastingTrigger(botAI); }
     static Trigger* eclipse_solar(PlayerbotAI* botAI) { return new EclipseSolarTrigger(botAI); }
     static Trigger* eclipse_lunar(PlayerbotAI* botAI) { return new EclipseLunarTrigger(botAI); }
     static Trigger* thorns(PlayerbotAI* botAI) { return new ThornsTrigger(botAI); }
