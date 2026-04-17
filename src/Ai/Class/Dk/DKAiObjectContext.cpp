@@ -8,6 +8,7 @@
 #include "BloodDKStrategy.h"
 #include "DKActions.h"
 #include "DKTriggers.h"
+#include "DeathKnightPullStrategy.h"
 #include "FrostDKStrategy.h"
 #include "GenericDKNonCombatStrategy.h"
 #include "GenericTriggers.h"
@@ -27,7 +28,7 @@ public:
 
 private:
     static Strategy* nc(PlayerbotAI* botAI) { return new GenericDKNonCombatStrategy(botAI); }
-    static Strategy* pull(PlayerbotAI* botAI) { return new PullStrategy(botAI, "icy touch"); }
+    static Strategy* pull(PlayerbotAI* botAI) { return new DeathKnightPullStrategy(botAI); }
     static Strategy* frost_aoe(PlayerbotAI* botAI) { return new FrostDKAoeStrategy(botAI); }
     static Strategy* unholy_aoe(PlayerbotAI* botAI) { return new UnholyDKAoeStrategy(botAI); }
 };

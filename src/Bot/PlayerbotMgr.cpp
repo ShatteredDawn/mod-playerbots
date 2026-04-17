@@ -127,7 +127,7 @@ void PlayerbotHolder::AddPlayerBot(ObjectGuid playerGuid, uint32 masterAccountId
             if (acctId == masterAccountId)
                 ++loadingForMaster;
         }
-        uint32_t count = mgr->GetPlayerbotsCount() + loadingForMaster;
+        int32_t count = mgr->GetPlayerbotsCount() + loadingForMaster;
         if (count >= PlayerbotAIConfig::instance().maxAddedBots)
         {
             allowed = false;

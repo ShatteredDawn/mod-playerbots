@@ -10,6 +10,7 @@
 #include "CastCustomSpellAction.h"
 #include "AttackAction.h"
 #include "DruidShapeshiftActions.h"
+#include "PullActions.h"
 #include "SetFocusHealTargetsAction.h"
 #include "TellReputationAction.h"
 #include "QueryQuestAction.h"
@@ -347,6 +348,39 @@ void ChatCommandHandlerStrategy::InitTriggers(std::vector<TriggerNode*>& trigger
             "target",
             {
                 CreateNextAction<TellTargetAction>(relevance)
+            }
+        )
+    );
+
+    triggers.push_back(
+        new TriggerNode(
+            "pull",
+            {
+                CreateNextAction<PullMyTargetAction>(relevance)
+            }
+        )
+    );
+    triggers.push_back(
+        new TriggerNode(
+            "pull back",
+            {
+                CreateNextAction<PullMyTargetAction>(relevance)
+            }
+        )
+    );
+    triggers.push_back(
+        new TriggerNode(
+            "pull rti",
+            {
+                CreateNextAction<PullRtiTargetAction>(relevance)
+            }
+        )
+    );
+    triggers.push_back(
+        new TriggerNode(
+            "ready",
+            {
+                CreateNextAction<ReadyCheckAction>(relevance)
             }
         )
     );

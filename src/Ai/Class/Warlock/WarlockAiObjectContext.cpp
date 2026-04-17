@@ -6,8 +6,10 @@
 #include "WarlockAiObjectContext.h"
 
 #include "AfflictionWarlockStrategy.h"
+#include "CreateNextAction.h"
 #include "DemonologyWarlockStrategy.h"
 #include "DestructionWarlockStrategy.h"
+#include "GenericSpellActions.h"
 #include "GenericTriggers.h"
 #include "GenericWarlockNonCombatStrategy.h"
 #include "NamedObjectContext.h"
@@ -35,7 +37,7 @@ public:
 
 private:
     static Strategy* nc(PlayerbotAI* botAI) { return new GenericWarlockNonCombatStrategy(botAI); }
-    static Strategy* pull(PlayerbotAI* botAI) { return new PullStrategy(botAI, "shoot"); }
+    static Strategy* pull(PlayerbotAI* botAI) { return new PullStrategy(botAI, "shoot", CreateNextAction<CastShootAction>(1.0f).factory); }
     static Strategy* boost(PlayerbotAI* botAI) { return new WarlockBoostStrategy(botAI); }
     static Strategy* cc(PlayerbotAI* botAI) { return new WarlockCcStrategy(botAI); }
     static Strategy* pet(PlayerbotAI* botAI) { return new WarlockPetStrategy(botAI); }
