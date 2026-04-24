@@ -18,7 +18,7 @@ void MaintenanceStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
 {
     triggers.push_back(
         new TriggerNode(
-            "random",
+            "seldom",
             {
                 CreateNextAction<CleanQuestLogAction>(6.0f)
             }
