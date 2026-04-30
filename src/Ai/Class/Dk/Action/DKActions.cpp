@@ -59,3 +59,68 @@ bool CastRaiseDeadAction::Execute(Event event)
 
     return true;
 }
+
+Unit* CastHysteriaAction::GetTarget()
+{
+    Group* const group = this->bot->GetGroup();
+
+    if (group == nullptr)
+    {
+        // @TODO: Use an enum instead of a magic number
+        if (this->bot->HasAura(49016))
+        {
+            return nullptr;
+        }
+
+        return this->bot;
+    }
+
+    for (const GroupReference* ref = group->GetFirstMember(); ref; ref = ref->next())
+    {
+        Player* const member = ref->GetSource();
+
+        if (member == nullptr || !member->IsAlive())
+        {
+            continue;
+        }
+
+        if (member->GetMap() != this->bot->GetMap() || this->bot->GetDistance(member) > PlayerbotAIConfig::instance().spellDistance)
+        {
+            continue;
+        }
+
+        // @TODO: Use an enum instead of a magic number
+        // Skip if already has hysteria
+        if (member->HasAura(49016))
+        {
+            continue;
+        }
+
+        // Priority 1: Melee DPS
+        if (PlayerbotAI::IsMelee(member) && PlayerbotAI::IsDps(member))
+        {
+            return member;
+        }
+
+        // Priority 2: Ranged DPS (physical, not casters)
+        if (PlayerbotAI::IsRanged(member) && PlayerbotAI::IsDps(member) && !PlayerbotAI::IsCaster(member))
+        {
+            return member;
+        }
+
+        // Priority 3: Tank
+        if (PlayerbotAI::IsTank(member))
+        {
+            return member;
+        }
+    }
+
+    // @TODO: Use an enum instead of a magic number
+    // Fallback to self if no hysteria
+    if (!this->bot->HasAura(49016))
+    {
+        return this->bot;
+    }
+
+    return nullptr;
+}

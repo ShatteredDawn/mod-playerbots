@@ -87,7 +87,6 @@ std::vector<NextAction> FrostDKStrategy::getDefaultActions()
     return {
         CreateNextAction<CastObliterateAction>(ACTION_DEFAULT + 0.7f),
         CreateNextAction<CastFrostStrikeAction>(ACTION_DEFAULT + 0.4f),
-        CreateNextAction<CastEmpowerRuneWeaponAction>(ACTION_DEFAULT + 0.3f),
         CreateNextAction<CastHornOfWinterAction>(ACTION_DEFAULT + 0.1f),
         CreateNextAction<MeleeAction>(ACTION_DEFAULT)
     };

@@ -85,6 +85,31 @@ void UnholyDKStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
 
     triggers.push_back(
         new TriggerNode(
+            "no pet",
+            {
+                CreateNextAction<CastRaiseDeadAction>(ACTION_NORMAL + 5.0f)
+            }
+        )
+    );
+    triggers.push_back(
+        new TriggerNode(
+            "has pet",
+            {
+                CreateNextAction<TogglePetSpellAutoCastAction>(60.0f)
+            }
+        )
+    );
+    triggers.push_back(
+        new TriggerNode(
+            "new pet",
+            {
+                CreateNextAction<SetPetStanceAction>(60.0f)
+            }
+        )
+    );
+
+    triggers.push_back(
+        new TriggerNode(
             "death and decay cooldown",
             {
                 CreateNextAction<CastGhoulFrenzyAction>(ACTION_DEFAULT + 0.9f),
@@ -141,14 +166,6 @@ void UnholyDKStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
             "dd cd and icy touch 3s",
             {
                 CreateNextAction<CastIcyTouchAction>(ACTION_HIGH + 2.0f)
-            }
-        )
-    );
-    triggers.push_back(
-        new TriggerNode(
-            "no rune",
-            {
-                CreateNextAction<CastEmpowerRuneWeaponAction>(ACTION_HIGH + 1.0f)
             }
         )
     );
