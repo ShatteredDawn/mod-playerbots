@@ -157,10 +157,6 @@ public:
         creators["bloodlust"] = &ShamanATriggerFactoryInternal::bloodlust;
         creators["elemental mastery"] = &ShamanATriggerFactoryInternal::elemental_mastery;
         creators["wind shear on enemy healer"] = &ShamanATriggerFactoryInternal::wind_shear_on_enemy_healer;
-        creators["cure poison"] = &ShamanATriggerFactoryInternal::cure_poison;
-        creators["party member cure poison"] = &ShamanATriggerFactoryInternal::party_member_cure_poison;
-        creators["cure disease"] = &ShamanATriggerFactoryInternal::cure_disease;
-        creators["party member cure disease"] = &ShamanATriggerFactoryInternal::party_member_cure_disease;
         creators["earth shield on main tank"] = &ShamanATriggerFactoryInternal::earth_shield_on_main_tank;
         creators["maelstrom weapon 3"] = &ShamanATriggerFactoryInternal::maelstrom_weapon_3;
         creators["maelstrom weapon 4"] = &ShamanATriggerFactoryInternal::maelstrom_weapon_4;
@@ -224,42 +220,38 @@ private:
     static Trigger* shock(PlayerbotAI* botAI) { return new ShockTrigger(botAI); }
     static Trigger* frost_shock_snare(PlayerbotAI* botAI) { return new FrostShockSnareTrigger(botAI); }
     static Trigger* wind_shear_on_enemy_healer(PlayerbotAI* botAI) { return new WindShearInterruptEnemyHealerSpellTrigger(botAI); }
-    static Trigger* cure_poison(PlayerbotAI* botAI) { return new CurePoisonTrigger(botAI); }
-    static Trigger* party_member_cure_poison(PlayerbotAI* botAI) { return new PartyMemberCurePoisonTrigger(botAI); }
-    static Trigger* cure_disease(PlayerbotAI* botAI) { return new CureDiseaseTrigger(botAI); }
-    static Trigger* party_member_cure_disease(PlayerbotAI* botAI) { return new PartyMemberCureDiseaseTrigger(botAI); }
-    static Trigger* earth_shield_on_main_tank(PlayerbotAI* ai) { return new EarthShieldOnMainTankTrigger(ai); }
-    static Trigger* flame_shock(PlayerbotAI* ai) { return new FlameShockTrigger(ai); }
+    static Trigger* earth_shield_on_main_tank(PlayerbotAI* botAI) { return new EarthShieldOnMainTankTrigger(botAI); }
+    static Trigger* flame_shock(PlayerbotAI* botAI) { return new FlameShockTrigger(botAI); }
     static Trigger* fire_elemental_totem(PlayerbotAI* botAI) { return new FireElementalTotemTrigger(botAI); }
     static Trigger* earth_shock_execute(PlayerbotAI* botAI) { return new EarthShockExecuteTrigger(botAI); }
-    static Trigger* spirit_walk_ready(PlayerbotAI* ai) { return new SpiritWalkTrigger(ai); }
-    static Trigger* chain_lightning_no_cd(PlayerbotAI* ai) { return new ChainLightningNoCdTrigger(ai); }
-    static Trigger* call_of_the_elements_and_enemy_within_melee(PlayerbotAI* ai) { return new CallOfTheElementsAndEnemyWithinMeleeTrigger(ai); }
-    static Trigger* maelstrom_weapon_5_and_medium_aoe(PlayerbotAI* ai) { return new MaelstromWeapon5AndMediumAoeTrigger(ai); }
-    static Trigger* maelstrom_weapon_4_and_medium_aoe(PlayerbotAI* ai) { return new MaelstromWeapon4AndMediumAoeTrigger(ai); }
-    static Trigger* call_of_the_elements(PlayerbotAI* ai) { return new CallOfTheElementsTrigger(ai); }
-    static Trigger* totemic_recall(PlayerbotAI* ai) { return new TotemicRecallTrigger(ai); }
-    static Trigger* no_earth_totem(PlayerbotAI* ai) { return new NoEarthTotemTrigger(ai); }
-    static Trigger* no_fire_totem(PlayerbotAI* ai) { return new NoFireTotemTrigger(ai); }
-    static Trigger* no_water_totem(PlayerbotAI* ai) { return new NoWaterTotemTrigger(ai); }
-    static Trigger* no_air_totem(PlayerbotAI* ai) { return new NoAirTotemTrigger(ai); }
-    static Trigger* set_strength_of_earth_totem(PlayerbotAI* ai) { return new SetStrengthOfEarthTotemTrigger(ai); }
-    static Trigger* set_stoneskin_totem(PlayerbotAI* ai) { return new SetStoneskinTotemTrigger(ai); }
-    static Trigger* set_tremor_totem(PlayerbotAI* ai) { return new SetTremorTotemTrigger(ai); }
-    static Trigger* set_earthbind_totem(PlayerbotAI* ai) { return new SetEarthbindTotemTrigger(ai); }
-    static Trigger* set_searing_totem(PlayerbotAI* ai) { return new SetSearingTotemTrigger(ai); }
-    static Trigger* set_magma_totem(PlayerbotAI* ai) { return new SetMagmaTotemTrigger(ai); }
-    static Trigger* set_flametongue_totem(PlayerbotAI* ai) { return new SetFlametongueTotemTrigger(ai); }
-    static Trigger* set_totem_of_wrath(PlayerbotAI* ai) { return new SetTotemOfWrathTrigger(ai); }
-    static Trigger* set_frost_resistance_totem(PlayerbotAI* ai) { return new SetFrostResistanceTotemTrigger(ai); }
-    static Trigger* set_healing_stream_totem(PlayerbotAI* ai) { return new SetHealingStreamTotemTrigger(ai); }
-    static Trigger* set_mana_spring_totem(PlayerbotAI* ai) { return new SetManaSpringTotemTrigger(ai); }
-    static Trigger* set_cleansing_totem(PlayerbotAI* ai) { return new SetCleansingTotemTrigger(ai); }
-    static Trigger* set_fire_resistance_totem(PlayerbotAI* ai) { return new SetFireResistanceTotemTrigger(ai); }
-    static Trigger* set_wrath_of_air_totem(PlayerbotAI* ai) { return new SetWrathOfAirTotemTrigger(ai); }
-    static Trigger* set_windfury_totem(PlayerbotAI* ai) { return new SetWindfuryTotemTrigger(ai); }
-    static Trigger* set_nature_resistance_totem(PlayerbotAI* ai) { return new SetNatureResistanceTotemTrigger(ai); }
-    static Trigger* set_grounding_totem(PlayerbotAI* ai) { return new SetGroundingTotemTrigger(ai); }
+    static Trigger* spirit_walk_ready(PlayerbotAI* botAI) { return new SpiritWalkTrigger(botAI); }
+    static Trigger* chain_lightning_no_cd(PlayerbotAI* botAI) { return new ChainLightningNoCdTrigger(botAI); }
+    static Trigger* call_of_the_elements_and_enemy_within_melee(PlayerbotAI* botAI) { return new CallOfTheElementsAndEnemyWithinMeleeTrigger(botAI); }
+    static Trigger* maelstrom_weapon_5_and_medium_aoe(PlayerbotAI* botAI) { return new MaelstromWeapon5AndMediumAoeTrigger(botAI); }
+    static Trigger* maelstrom_weapon_4_and_medium_aoe(PlayerbotAI* botAI) { return new MaelstromWeapon4AndMediumAoeTrigger(botAI); }
+    static Trigger* call_of_the_elements(PlayerbotAI* botAI) { return new CallOfTheElementsTrigger(botAI); }
+    static Trigger* totemic_recall(PlayerbotAI* botAI) { return new TotemicRecallTrigger(botAI); }
+    static Trigger* no_earth_totem(PlayerbotAI* botAI) { return new NoEarthTotemTrigger(botAI); }
+    static Trigger* no_fire_totem(PlayerbotAI* botAI) { return new NoFireTotemTrigger(botAI); }
+    static Trigger* no_water_totem(PlayerbotAI* botAI) { return new NoWaterTotemTrigger(botAI); }
+    static Trigger* no_air_totem(PlayerbotAI* botAI) { return new NoAirTotemTrigger(botAI); }
+    static Trigger* set_strength_of_earth_totem(PlayerbotAI* botAI) { return new SetStrengthOfEarthTotemTrigger(botAI); }
+    static Trigger* set_stoneskin_totem(PlayerbotAI* botAI) { return new SetStoneskinTotemTrigger(botAI); }
+    static Trigger* set_tremor_totem(PlayerbotAI* botAI) { return new SetTremorTotemTrigger(botAI); }
+    static Trigger* set_earthbind_totem(PlayerbotAI* botAI) { return new SetEarthbindTotemTrigger(botAI); }
+    static Trigger* set_searing_totem(PlayerbotAI* botAI) { return new SetSearingTotemTrigger(botAI); }
+    static Trigger* set_magma_totem(PlayerbotAI* botAI) { return new SetMagmaTotemTrigger(botAI); }
+    static Trigger* set_flametongue_totem(PlayerbotAI* botAI) { return new SetFlametongueTotemTrigger(botAI); }
+    static Trigger* set_totem_of_wrath(PlayerbotAI* botAI) { return new SetTotemOfWrathTrigger(botAI); }
+    static Trigger* set_frost_resistance_totem(PlayerbotAI* botAI) { return new SetFrostResistanceTotemTrigger(botAI); }
+    static Trigger* set_healing_stream_totem(PlayerbotAI* botAI) { return new SetHealingStreamTotemTrigger(botAI); }
+    static Trigger* set_mana_spring_totem(PlayerbotAI* botAI) { return new SetManaSpringTotemTrigger(botAI); }
+    static Trigger* set_cleansing_totem(PlayerbotAI* botAI) { return new SetCleansingTotemTrigger(botAI); }
+    static Trigger* set_fire_resistance_totem(PlayerbotAI* botAI) { return new SetFireResistanceTotemTrigger(botAI); }
+    static Trigger* set_wrath_of_air_totem(PlayerbotAI* botAI) { return new SetWrathOfAirTotemTrigger(botAI); }
+    static Trigger* set_windfury_totem(PlayerbotAI* botAI) { return new SetWindfuryTotemTrigger(botAI); }
+    static Trigger* set_nature_resistance_totem(PlayerbotAI* botAI) { return new SetNatureResistanceTotemTrigger(botAI); }
+    static Trigger* set_grounding_totem(PlayerbotAI* botAI) { return new SetGroundingTotemTrigger(botAI); }
 };
 
 SharedNamedObjectContextList<Strategy> ShamanAiObjectContext::sharedStrategyContexts;

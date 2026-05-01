@@ -17,17 +17,13 @@ public:
         creators["totem of wrath"] = &totem_of_wrath;
         creators["flametongue totem"] = &flametongue_totem;
         creators["magma totem"] = &magma_totem;
-        creators["searing totem"] = &searing_totem;
         creators["strength of earth totem"] = &strength_of_earth_totem;
-        creators["stoneskin totem"] = &stoneskin_totem;
         creators["cleansing totem"] = &cleansing_totem;
-        creators["mana spring totem"] = &mana_spring_totem;
-        creators["healing stream totem"] = &healing_stream_totem;
         creators["wrath of air totem"] = &wrath_of_air_totem;
         creators["windfury totem"] = &windfury_totem;
-        creators["grounding totem"] = &grounding_totem;
-        creators["wind shear"] = &wind_shear;
-        creators["purge"] = &purge;
+        creators["cleanse spirit"] = &cleanse_spirit;
+        creators["cleanse spirit poison on party"] = &cleanse_spirit_poison_on_party;
+        creators["cleanse spirit disease on party"] = &cleanse_spirit_disease_on_party;
     }
 
 private:
@@ -41,25 +37,25 @@ private:
     static ActionNode* totem_of_wrath([[maybe_unused]] PlayerbotAI* botAI)
     {
         return new ActionNode(
-            /*P*/ {},
-            /*A*/ { CreateNextAction<CastFlametongueTotemAction>(1.0f) },
-            /*C*/ {}
+            {},
+            { CreateNextAction<CastFlametongueTotemAction>(1.0f) },
+            {}
         );
     }
     static ActionNode* flametongue_totem([[maybe_unused]] PlayerbotAI* botAI)
     {
         return new ActionNode(
-            /*P*/ {},
-            /*A*/ { CreateNextAction<CastSearingTotemAction>(1.0f) },
-            /*C*/ {}
+            {},
+            { CreateNextAction<CastSearingTotemAction>(1.0f) },
+            {}
         );
     }
     static ActionNode* magma_totem([[maybe_unused]] PlayerbotAI* botAI)
     {
         return new ActionNode(
-            /*P*/ {},
-            /*A*/ { CreateNextAction<CastSearingTotemAction>(1.0f) },
-            /*C*/ {}
+            {},
+            { CreateNextAction<CastSearingTotemAction>(1.0f) },
+            {}
         );
     }
     static ActionNode* searing_totem(PlayerbotAI*)
@@ -73,9 +69,9 @@ private:
     static ActionNode* strength_of_earth_totem([[maybe_unused]] PlayerbotAI* botAI)
     {
         return new ActionNode(
-            /*P*/ {},
-            /*A*/ { CreateNextAction<CastStoneskinTotemAction>(1.0f) },
-            /*C*/ {}
+            {},
+            { CreateNextAction<CastStoneskinTotemAction>(1.0f) },
+            {}
         );
     }
     static ActionNode* stoneskin_totem(PlayerbotAI*)
@@ -89,9 +85,9 @@ private:
     static ActionNode* cleansing_totem([[maybe_unused]] PlayerbotAI* botAI)
     {
         return new ActionNode(
-            /*P*/ {},
-            /*A*/ { CreateNextAction<CastManaSpringTotemAction>(1.0f) },
-            /*C*/ {}
+            {},
+            { CreateNextAction<CastManaSpringTotemAction>(1.0f) },
+            {}
         );
     }
     static ActionNode* mana_spring_totem(PlayerbotAI*)
@@ -113,17 +109,17 @@ private:
     static ActionNode* wrath_of_air_totem([[maybe_unused]] PlayerbotAI* botAI)
     {
         return new ActionNode(
-            /*P*/ {},
-            /*A*/ { CreateNextAction<CastWindfuryTotemAction>(1.0f) },
-            /*C*/ {}
+            {},
+            { CreateNextAction<CastWindfuryTotemAction>(1.0f) },
+            {}
         );
     }
     static ActionNode* windfury_totem([[maybe_unused]] PlayerbotAI* botAI)
     {
         return new ActionNode(
-            /*P*/ {},
-            /*A*/ { CreateNextAction<SetGroundingTotemAction>(1.0f) },
-            /*C*/ {}
+            {},
+            { CreateNextAction<SetGroundingTotemAction>(1.0f) },
+            {}
         );
     }
     static ActionNode* grounding_totem(PlayerbotAI*)
@@ -147,6 +143,30 @@ private:
         return new ActionNode(
             {},
             {},
+            {}
+        );
+    }
+    static ActionNode* cleanse_spirit(PlayerbotAI*)
+    {
+        return new ActionNode(
+            {},
+            { CreateNextAction<CastCureToxinsActionSham>(1.0f) },
+            {}
+        );
+    }
+    static ActionNode* cleanse_spirit_poison_on_party(PlayerbotAI*)
+    {
+        return new ActionNode(
+            {},
+            { CreateNextAction<CastCureToxinsPoisonOnPartyActionSham>(1.0f) },
+            {}
+        );
+    }
+    static ActionNode* cleanse_spirit_disease_on_party(PlayerbotAI*)
+    {
+        return new ActionNode(
+            {},
+            { CreateNextAction<CastCureToxinsDiseaseOnPartyActionSham>(1.0f) },
             {}
         );
     }
@@ -187,14 +207,6 @@ void GenericShamanStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
     );
     triggers.push_back(
         new TriggerNode(
-            "medium mana",
-            {
-                CreateNextAction<UseManaPotion>(ACTION_DISPEL),
-            }
-        )
-    );
-    triggers.push_back(
-        new TriggerNode(
             "new pet",
             {
                 CreateNextAction<SetPetStanceAction>(65.0f),
@@ -205,22 +217,6 @@ void GenericShamanStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
 
 void ShamanCureStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
 {
-    triggers.push_back(
-        new TriggerNode(
-            "cure poison",
-            {
-                CreateNextAction<CastCurePoisonActionSham>(21.0f),
-            }
-        )
-    );
-    triggers.push_back(
-        new TriggerNode(
-            "party member cure poison",
-            {
-                CreateNextAction<CastCurePoisonOnPartyActionSham>(21.0f),
-            }
-        )
-    );
     triggers.push_back(
         new TriggerNode(
             "cleanse spirit poison",
@@ -234,22 +230,6 @@ void ShamanCureStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
             "party member cleanse spirit poison",
             {
                 CreateNextAction<CastCleanseSpiritPoisonOnPartyAction>(23.0f),
-            }
-        )
-    );
-    triggers.push_back(
-        new TriggerNode(
-            "cure disease",
-            {
-                CreateNextAction<CastCureDiseaseActionSham>(31.0f),
-            }
-        )
-    );
-    triggers.push_back(
-        new TriggerNode(
-            "party member cure disease",
-            {
-                CreateNextAction<CastCureDiseaseOnPartyActionSham>(30.0f),
             }
         )
     );
@@ -309,7 +289,7 @@ void ShamanBoostStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
     Player* bot = botAI->GetBot();
     int tab = AiFactory::GetPlayerSpecTab(bot);
 
-    if (tab == 0)  // Elemental
+    if (tab == SHAMAN_TAB_ELEMENTAL)
     {
         triggers.push_back(
             new TriggerNode(
@@ -320,7 +300,7 @@ void ShamanBoostStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
             )
         );
     }
-    else if (tab == 1)  // Enhancement
+    else if (tab == SHAMAN_TAB_ENHANCEMENT)
     {
         triggers.push_back(
             new TriggerNode(
@@ -339,7 +319,6 @@ void ShamanAoeStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
     Player* bot = botAI->GetBot();
     const uint8_t tab = AiFactory::GetPlayerSpecTab(bot);
 
-    // Elemental
     if (tab == SHAMAN_TAB_ELEMENTAL)
     {
         triggers.push_back(
@@ -357,7 +336,7 @@ void ShamanAoeStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
             )
         );
     }
-    // Enhancement
+
     if (tab == SHAMAN_TAB_ENHANCEMENT)
     {
         triggers.push_back(
@@ -395,6 +374,7 @@ void ShamanAoeStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
             )
         );
     }
+
     if (tab == SHAMAN_TAB_RESTORATION)
     {
         // Handled by "Healer DPS" Strategy

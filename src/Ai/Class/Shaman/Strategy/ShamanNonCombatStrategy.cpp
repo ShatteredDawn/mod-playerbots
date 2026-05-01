@@ -14,62 +14,67 @@ class ShamanNonCombatStrategyActionNodeFactory : public NamedObjectFactory<Actio
 public:
     ShamanNonCombatStrategyActionNodeFactory()
     {
-        creators["flametongue weapon"] = &flametongue_weapon;
-        creators["frostbrand weapon"] = &frostbrand_weapon;
-        creators["windfury weapon"] = &windfury_weapon;
-        creators["earthliving weapon"] = &earthliving_weapon;
-        creators["wind shear"] = &wind_shear;
-        creators["purge"] = &purge;
+        creators["flametongue weapon main hand"] = &flametongue_weapon_main_hand;
+        // creators["frostbrand weapon off hand"] = &frostbrand_weapon_off_hand;
+        creators["windfury weapon main hand"] = &windfury_weapon_main_hand;
+        creators["earthliving weapon main hand"] = &earthliving_weapon_main_hand;
+        creators["cleanse spirit"] = &cleanse_spirit;
+        creators["cleanse spirit poison on party"] = &cleanse_spirit_poison_on_party;
+        creators["cleanse spirit disease on party"] = &cleanse_spirit_disease_on_party;
     }
 
 private:
-    static ActionNode* flametongue_weapon([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ { CreateNextAction<CastRockbiterWeaponAction>(1.0f) },
-            /*C*/ {}
-        );
-    }
-    static ActionNode* frostbrand_weapon([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ { CreateNextAction<CastFlametongueWeaponAction>(1.0f) },
-            /*C*/ {}
-        );
-    }
-    static ActionNode* windfury_weapon([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ { CreateNextAction<CastFlametongueWeaponAction>(1.0f) },
-            /*C*/ {}
-        );
-    }
-    static ActionNode* earthliving_weapon([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ { CreateNextAction<CastFlametongueWeaponAction>(1.0f) },
-            /*C*/ {}
-        );
-    }
-    static ActionNode* wind_shear(PlayerbotAI*)
+    static ActionNode* flametongue_weapon_main_hand(PlayerbotAI*)
     {
         return new ActionNode(
             {},
-            {},
+            { CreateNextAction<CastRockbiterWeaponMainHandAction>(1.0f) },
             {}
         );
     }
-    static ActionNode* purge(PlayerbotAI*)
+    // static ActionNode* frostbrand_weapon_off_hand(PlayerbotAI*)
+    // {
+    //     return new ActionNode("frostbrand weapon off hand",
+    //                           /*P*/ {},
+    //                           /*A*/ { NextAction("flametongue weapon off hand") },
+    //                           /*C*/ {});
+    // }
+    static ActionNode* earthliving_weapon_main_hand(PlayerbotAI*)
+    {
+        return new ActionNode(
+            /*P*/ {},
+            /*A*/ { CreateNextAction<CastFlametongueWeaponMainHandAction>(1.0f) },
+            /*C*/ {}
+        );
+    }
+    static ActionNode* windfury_weapon_main_hand(PlayerbotAI*)
+    {
+        return new ActionNode(
+            /*P*/ {},
+            /*A*/ { CreateNextAction<CastFlametongueWeaponMainHandAction>(1.0f) },
+            /*C*/ {}
+        );
+    }
+    static ActionNode* cleanse_spirit(PlayerbotAI*)
     {
         return new ActionNode(
             {},
+            { CreateNextAction<CastCureToxinsActionSham>(1.0f) },
+            {});
+    }
+    static ActionNode* cleanse_spirit_poison_on_party(PlayerbotAI*)
+    {
+        return new ActionNode(
             {},
-            {}
-        );
+            { CreateNextAction<CastCureToxinsPoisonOnPartyActionSham>(1.0f) },
+            {});
+    }
+    static ActionNode* cleanse_spirit_disease_on_party(PlayerbotAI*)
+    {
+        return new ActionNode(
+            {},
+            { CreateNextAction<CastCureToxinsDiseaseOnPartyActionSham>(1.0f) },
+            {});
     }
 };
 
@@ -149,33 +154,50 @@ void ShamanNonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
     // Cure Triggers
     triggers.push_back(
         new TriggerNode(
-            "cure poison",
+            "cleanse spirit poison",
             {
-                CreateNextAction<CastCurePoisonActionSham>(21.0f),
+                CreateNextAction<CastCleanseSpiritAction>(24.0f),
             }
         )
     );
     triggers.push_back(
         new TriggerNode(
-            "party member cure poison",
+            "party member cleanse spirit poison",
             {
-                CreateNextAction<CastCurePoisonOnPartyActionSham>(21.0f),
+                CreateNextAction<CastCleanseSpiritPoisonOnPartyAction>(23.0f),
             }
         )
     );
     triggers.push_back(
         new TriggerNode(
-            "cure disease",
+            "cleanse spirit disease",
             {
-                CreateNextAction<CastCureDiseaseActionSham>(31.0f),
+                CreateNextAction<CastCleanseSpiritAction>(24.0f),
             }
         )
     );
     triggers.push_back(
         new TriggerNode(
-            "party member cure disease",
+            "party member cleanse spirit disease",
             {
-                CreateNextAction<CastCureDiseaseOnPartyActionSham>(30.0f),
+                CreateNextAction<CastCleanseSpiritDiseaseOnPartyAction>(23.0f),
+            }
+        )
+    );
+
+    triggers.push_back(
+        new TriggerNode(
+            "cleanse spirit curse",
+            {
+                CreateNextAction<CastCleanseSpiritAction>(24.0f),
+            }
+        )
+    );
+    triggers.push_back(
+        new TriggerNode(
+            "party member cleanse spirit curse",
+            {
+                CreateNextAction<CastCleanseSpiritCurseOnPartyAction>(23.0f),
             }
         )
     );
@@ -184,13 +206,13 @@ void ShamanNonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
     Player* bot = botAI->GetBot();
     int tab = AiFactory::GetPlayerSpecTab(bot);
 
-    if (tab == 0)  // Elemental
+    if (tab == SHAMAN_TAB_ELEMENTAL)
     {
         triggers.push_back(
             new TriggerNode(
                 "main hand weapon no imbue",
                 {
-                    CreateNextAction<CastFlametongueWeaponAction>(22.0f),
+                    CreateNextAction<CastFlametongueWeaponMainHandAction>(22.0f),
                 }
             )
         );
@@ -203,13 +225,13 @@ void ShamanNonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
             )
         );
     }
-    else if (tab == 1)  // Enhancement
+    else if (tab == SHAMAN_TAB_ENHANCEMENT)
     {
         triggers.push_back(
             new TriggerNode(
                 "main hand weapon no imbue",
                 {
-                    CreateNextAction<CastWindfuryWeaponAction>(22.0f),
+                    CreateNextAction<CastWindfuryWeaponMainHandAction>(22.0f),
                 }
             )
         );
@@ -217,7 +239,7 @@ void ShamanNonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
             new TriggerNode(
                 "off hand weapon no imbue",
                 {
-                    CreateNextAction<CastFlametongueWeaponAction>(21.0f),
+                    CreateNextAction<CastFlametongueWeaponMainHandAction>(21.0f),
                 }
             )
         );
@@ -230,13 +252,13 @@ void ShamanNonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
             )
         );
     }
-    else if (tab == 2)  // Restoration
+    else if (tab == SHAMAN_TAB_RESTORATION)
     {
         triggers.push_back(
             new TriggerNode(
                 "main hand weapon no imbue",
                 {
-                    CreateNextAction<CastEarthlivingWeaponAction>(22.0f),
+                    CreateNextAction<CastEarthlivingWeaponMainHandAction>(22.0f),
                 }
             )
         );
