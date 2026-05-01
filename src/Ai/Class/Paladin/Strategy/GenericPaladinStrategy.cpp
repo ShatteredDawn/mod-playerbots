@@ -76,6 +76,14 @@ void GenericPaladinStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
     );
     triggers.push_back(
         new TriggerNode(
+            "hand of freedom on party",
+            {
+                CreateNextAction<CastHandOfFreedomOnPartyAction>(ACTION_HIGH + 4.0f)
+            }
+        )
+    );
+    triggers.push_back(
+        new TriggerNode(
             "high mana",
             {
                 CreateNextAction<CastDivinePleaAction>(ACTION_HIGH)
