@@ -12,6 +12,7 @@
 #include "DruidShapeshiftActions.h"
 #include "PullActions.h"
 #include "SetFocusHealTargetsAction.h"
+#include "TellEmblemsAction.h"
 #include "TellReputationAction.h"
 #include "QueryQuestAction.h"
 #include "QueryItemUsageAction.h"
@@ -512,6 +513,14 @@ void ChatCommandHandlerStrategy::InitTriggers(std::vector<TriggerNode*>& trigger
             }
         )
     );
+    triggers.push_back(
+        new TriggerNode(
+            "emblems",
+            {
+                CreateNextAction<TellEmblemsAction>(relevance)
+            }
+        )
+    );
 }
 
 ChatCommandHandlerStrategy::ChatCommandHandlerStrategy(PlayerbotAI* botAI) : PassTroughStrategy(botAI)
@@ -536,6 +545,7 @@ ChatCommandHandlerStrategy::ChatCommandHandlerStrategy(PlayerbotAI* botAI) : Pas
     this->supported.push_back({ "teleport", CreateNextAction<TeleportAction>(relevance).factory });
     this->supported.push_back({ "taxi", CreateNextAction<TaxiAction>(relevance).factory });
     this->supported.push_back({ "repair", CreateNextAction<RepairAllAction>(relevance).factory });
+    this->supported.push_back({ "emblems", CreateNextAction<TellEmblemsAction>(relevance).factory });
     this->supported.push_back({ "talents", CreateNextAction<ChangeTalentsAction>(relevance).factory });
     this->supported.push_back({ "spells", CreateNextAction<ListSpellsAction>(relevance).factory });
     this->supported.push_back({ "co", CreateNextAction<ChangeCombatStrategyAction>(relevance).factory });
