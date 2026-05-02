@@ -20,9 +20,82 @@ void GenericPaladinStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
 
     triggers.push_back(
         new TriggerNode(
+            "hammer of justice interrupt",
+            {
+                CreateNextAction<CastHammerOfJusticeAction>(ACTION_INTERRUPT)
+            }
+        )
+    );
+    triggers.push_back(
+        new TriggerNode(
+            "hammer of justice on enemy healer",
+            {
+                CreateNextAction<CastHammerOfJusticeOnEnemyHealerAction>(ACTION_INTERRUPT)
+            }
+        )
+    );
+    triggers.push_back(
+        new TriggerNode(
+            "hammer of justice on snare target",
+            {
+                CreateNextAction<CastHammerOfJusticeSnareAction>(ACTION_INTERRUPT)
+            }
+        )
+    );
+    triggers.push_back(
+        new TriggerNode(
             "critical health",
             {
-                CreateNextAction<CastDivineShieldAction>(ACTION_HIGH + 5.0f)
+                CreateNextAction<CastDivineShieldAction>(ACTION_EMERGENCY)
+            }
+        )
+    );
+    triggers.push_back(
+        new TriggerNode(
+            "critical health",
+            {
+                CreateNextAction<CastLayOnHandsAction>(ACTION_EMERGENCY + 1.0f)
+            }
+        )
+    );
+    triggers.push_back(
+        new TriggerNode(
+            "party member critical health",
+            {
+                CreateNextAction<CastLayOnHandsOnPartyAction>(ACTION_EMERGENCY + 2.0f)
+            }
+        )
+    );
+    triggers.push_back(
+        new TriggerNode(
+            "divine shield low health",
+            {
+                CreateNextAction<CastFlashOfLightAction>(ACTION_EMERGENCY + 3.0f),
+                CreateNextAction<CastHolyLightAction>(ACTION_EMERGENCY + 2.0f)
+            }
+        )
+    );
+    triggers.push_back(
+        new TriggerNode(
+            "protect party member",
+            {
+                CreateNextAction<CastBlessingOfProtectionProtectAction>(ACTION_EMERGENCY + 3.0f)
+            }
+        )
+    );
+    triggers.push_back(
+        new TriggerNode(
+            "high mana",
+            {
+                CreateNextAction<CastDivinePleaAction>(ACTION_HIGH)
+            }
+        )
+    );
+    triggers.push_back(
+        new TriggerNode(
+            "critical health",
+            {
+                CreateNextAction<CastLayOnHandsAction>(ACTION_EMERGENCY)
             }
         )
     );
