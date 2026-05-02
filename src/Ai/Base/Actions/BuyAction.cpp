@@ -215,13 +215,7 @@ bool BuyAction::Execute(Event event)
         }
     }
 
-    if (!vendored)
-    {
-        botAI->TellError("There are no vendors nearby");
-        return false;
-    }
-
-    return true;
+    return vendored;
 }
 
 bool BuyAction::BuyItem(VendorItemData const* tItems, ObjectGuid vendorguid, ItemTemplate const* proto)
