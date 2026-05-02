@@ -8,9 +8,25 @@
 #include "ReachTargetActions.h"
 #include "WarriorActions.h"
 
+class GenericWarriorStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
+{
+public:
+    GenericWarriorStrategyActionNodeFactory() { creators["berserker rage"] = &berserker_rage; }
+
+private:
+    static ActionNode* berserker_rage(PlayerbotAI*)
+    {
+        return new ActionNode(
+            { CreateNextAction<CastBerserkerStanceAction>(1.0f) },
+            {},
+            {}
+        );
+    }
+};
+
 GenericWarriorStrategy::GenericWarriorStrategy(PlayerbotAI* botAI) : CombatStrategy(botAI)
 {
-
+    actionNodeFactories.Add(new GenericWarriorStrategyActionNodeFactory());
 }
 
 void GenericWarriorStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
@@ -21,6 +37,13 @@ void GenericWarriorStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
             "enemy out of melee",
             {
                 CreateNextAction<ReachMeleeAction>(ACTION_HIGH + 1.0f)
+            }
+        )
+    );
+    triggers.push_back(
+        new TriggerNode(
+            "fear sleep sap",
+            { CreateNextAction<CastBerserkerRageAction>(ACTION_EMERGENCY + 1.0f)
             }
         )
     );
