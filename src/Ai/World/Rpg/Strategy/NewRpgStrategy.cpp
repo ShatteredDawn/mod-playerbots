@@ -5,6 +5,7 @@
 
 #include "NewRpgStrategy.h"
 
+#include "NewRpgOutdoorPvP.h"
 #include "NewRpgAction.h"
 #include "CreateNextAction.h"
 
@@ -65,6 +66,14 @@ void NewRpgStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
             "travel flight status",
             {
                 CreateNextAction<NewRpgTravelFlightAction>(3.0f)
+            }
+        )
+    );
+    triggers.push_back(
+        new TriggerNode(
+            "outdoor pvp status",
+            {
+                CreateNextAction<NewRpgOutdoorPvpAction>(3.0f)
             }
         )
     );
