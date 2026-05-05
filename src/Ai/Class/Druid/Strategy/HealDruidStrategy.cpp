@@ -76,6 +76,16 @@ void HealDruidStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
             }
         )
     );
+
+    triggers.push_back(
+        new TriggerNode(
+            "clearcasting",
+            {
+                CreateNextAction<CastLifebloomOnMainTankAction>(ACTION_CRITICAL_HEAL - 1.0f)
+            }
+        )
+    );
+
     triggers.push_back(
         new TriggerNode(
             "group heal setting",
