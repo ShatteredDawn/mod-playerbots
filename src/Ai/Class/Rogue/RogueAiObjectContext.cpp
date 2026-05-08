@@ -7,8 +7,10 @@
 
 #include "AiObjectContext.h"
 #include "AssassinationRogueStrategy.h"
+#include "CreateNextAction.h"
 #include "DpsRogueStrategy.h"
 #include "GenericRogueNonCombatStrategy.h"
+#include "GenericSpellActions.h"
 #include "NamedObjectContext.h"
 #include "PullStrategy.h"
 #include "RogueActions.h"
@@ -35,7 +37,7 @@ private:
     static Strategy* boost(PlayerbotAI* botAI) { return new RogueBoostStrategy(botAI); }
     static Strategy* aoe(PlayerbotAI* botAI) { return new RogueAoeStrategy(botAI); }
     static Strategy* nc(PlayerbotAI* botAI) { return new GenericRogueNonCombatStrategy(botAI); }
-    static Strategy* pull(PlayerbotAI* botAI) { return new PullStrategy(botAI, "shoot"); }
+    static Strategy* pull(PlayerbotAI* botAI) { return new PullStrategy(botAI, "shoot", CreateNextAction<CastShootAction>(1.0f).factory); }
     static Strategy* stealthed(PlayerbotAI* botAI) { return new StealthedRogueStrategy(botAI); }
     static Strategy* stealth(PlayerbotAI* botAI) { return new StealthStrategy(botAI); }
     static Strategy* cc(PlayerbotAI* botAI) { return new RogueCcStrategy(botAI); }

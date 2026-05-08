@@ -5,7 +5,9 @@
 
 #include "PriestAiObjectContext.h"
 
+#include "CreateNextAction.h"
 #include "GenericPriestStrategy.h"
+#include "GenericSpellActions.h"
 #include "HolyPriestStrategy.h"
 #include "NamedObjectContext.h"
 #include "PriestActions.h"
@@ -40,7 +42,7 @@ private:
     static Strategy* buff(PlayerbotAI* botAI) { return new PriestBuffStrategy(botAI); }
     static Strategy* nc(PlayerbotAI* botAI) { return new PriestNonCombatStrategy(botAI); }
     static Strategy* shadow_aoe(PlayerbotAI* botAI) { return new ShadowPriestAoeStrategy(botAI); }
-    static Strategy* pull(PlayerbotAI* botAI) { return new PullStrategy(botAI, "shoot"); }
+    static Strategy* pull(PlayerbotAI* botAI) { return new PullStrategy(botAI, "shoot", CreateNextAction<CastShootAction>(1.0f).factory); }
     static Strategy* shadow_debuff(PlayerbotAI* botAI) { return new ShadowPriestDebuffStrategy(botAI); }
     static Strategy* cure(PlayerbotAI* botAI) { return new PriestCureStrategy(botAI); }
     static Strategy* healer_dps(PlayerbotAI* botAI) { return new PriestHealerDpsStrategy(botAI); }

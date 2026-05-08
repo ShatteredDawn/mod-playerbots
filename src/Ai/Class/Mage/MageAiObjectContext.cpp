@@ -5,10 +5,12 @@
 
 #include "MageAiObjectContext.h"
 #include "ArcaneMageStrategy.h"
+#include "CreateNextAction.h"
 #include "FireMageStrategy.h"
 #include "FrostFireMageStrategy.h"
 #include "FrostMageStrategy.h"
 #include "GenericMageNonCombatStrategy.h"
+#include "GenericSpellActions.h"
 #include "MageActions.h"
 #include "MageTriggers.h"
 #include "NamedObjectContext.h"
@@ -31,7 +33,7 @@ public:
 
 private:
     static Strategy* nc(PlayerbotAI* botAI) { return new GenericMageNonCombatStrategy(botAI); }
-    static Strategy* pull(PlayerbotAI* botAI) { return new PullStrategy(botAI, "shoot"); }
+    static Strategy* pull(PlayerbotAI* botAI) { return new PullStrategy(botAI, "shoot", CreateNextAction<CastShootAction>(1.0f).factory); }
     static Strategy* aoe(PlayerbotAI* botAI) { return new MageAoeStrategy(botAI); }
     static Strategy* cure(PlayerbotAI* botAI) { return new MageCureStrategy(botAI); }
     static Strategy* buff(PlayerbotAI* botAI) { return new MageBuffStrategy(botAI); }
