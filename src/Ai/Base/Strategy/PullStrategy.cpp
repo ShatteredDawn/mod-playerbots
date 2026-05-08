@@ -179,7 +179,11 @@ float PullMultiplier::GetValue(Action& action)
     if (!strategy || !strategy->HasTarget())
         return 1.0f;
 
+    if (!strategy->IsPullPendingToStart() && !strategy->HasPullStarted())
+        return 1.0f;
+
     std::string const actionName = action.getName();
+
     if (actionName == "pull my target" ||
         actionName == "pull rti target" ||
         actionName == "reach pull" ||
