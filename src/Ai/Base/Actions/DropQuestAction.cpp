@@ -61,13 +61,12 @@ bool DropQuestAction::Execute(Event event)
 bool CleanQuestLogAction::Execute(Event event)
 {
     Player* requester = event.getOwner() ? event.getOwner() : GetMaster();
-    if (!requester)
+    if (requester == nullptr)
     {
-        botAI->TellMaster("No event owner detected");
         return false;
     }
 
-    if (!sPlayerbotAIConfig.dropObsoleteQuests)
+    if (!PlayerbotAIConfig::instance().dropObsoleteQuests)
     {
         return false;
     }
