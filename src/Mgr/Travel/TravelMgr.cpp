@@ -4731,9 +4731,9 @@ void TravelMgr::PrepareDestinationCache()
             (creatureTemplate->unit_flags & 4096) == 0 &&
             creatureTemplate->rank == 0)
         {
-            uint32 roundX = (x / 50.0f) * 10.0f;
-            uint32 roundY = (y / 50.0f) * 10.0f;
-            uint32 roundZ = (z / 50.0f) * 10.0f;
+            int32 roundX = int32(std::lround(x / 50.0f));
+            int32 roundY = int32(std::lround(y / 50.0f));
+            int32 roundZ = int32(std::lround(z / 50.0f));
             tempLocsCache[std::make_tuple(mapId, roundX, roundY, roundZ)].push_back(creatureData);
             tempCreatureCache[templateEntry][areaId].push_back(WorldLocation(mapId, x, y, z));
         }
