@@ -520,6 +520,7 @@ public:
 void AddPlayerbotsSecureLoginScripts();
 
 void AddSC_TempestKeepBotScripts();
+void AddSC_HyjalSummitBotScripts();
 
 void AddPlayerbotsScripts()
 {
@@ -539,4 +540,5 @@ void AddPlayerbotsScripts()
     new HakkarTheSoulflayerScript();
     new HakkarTheSoulflayerPlayerScript();
     new HakkarTheSoulflayerUnitScriptPlayer();
+    AddSC_HyjalSummitBotScripts();
 }

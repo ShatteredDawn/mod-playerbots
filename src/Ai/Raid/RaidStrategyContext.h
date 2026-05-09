@@ -11,6 +11,7 @@
 #include "RaidNaxxStrategy.h"
 #include "RaidSSCStrategy.h"
 #include "RaidTempestKeepStrategy.h"
+#include "RaidHyjalSummitStrategy.h"
 #include "RaidZulAmanStrategy.h"
 #include "RaidOsStrategy.h"
 #include "RaidEoEStrategy.h"
@@ -34,6 +35,7 @@ public:
         creators["naxx"] = &RaidStrategyContext::naxx;
         creators["ssc"] = &RaidStrategyContext::ssc;
         creators["tempestkeep"] = &RaidStrategyContext::tempestkeep;
+        creators["hyjal"] = &RaidStrategyContext::hyjal;
         creators["zulaman"] = &RaidStrategyContext::zulaman;
         creators["zg"] = &RaidStrategyContext::zg;
         creators["wotlk-os"] = &RaidStrategyContext::wotlk_os;
@@ -54,6 +56,7 @@ private:
     static Strategy* naxx(PlayerbotAI* botAI) { return new RaidNaxxStrategy(botAI); }
     static Strategy* ssc(PlayerbotAI* botAI) { return new RaidSSCStrategy(botAI); }
     static Strategy* tempestkeep(PlayerbotAI* botAI) { return new RaidTempestKeepStrategy(botAI); }
+    static Strategy* hyjal(PlayerbotAI* botAI) { return new RaidHyjalSummitStrategy(botAI); }
     static Strategy* zulaman(PlayerbotAI* botAI) { return new RaidZulAmanStrategy(botAI); }
     static Strategy* zg(PlayerbotAI* botAI) { return new RaidZGStrategy(botAI); }
     static Strategy* wotlk_os(PlayerbotAI* botAI) { return new RaidOsStrategy(botAI); }
