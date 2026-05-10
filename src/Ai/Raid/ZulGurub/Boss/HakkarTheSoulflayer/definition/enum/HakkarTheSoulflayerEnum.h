@@ -1,0 +1,11 @@
+#pragma once
+
+enum class HakkarTheSoulflayerEnum
+{
+    ENTRY = 14834u,
+    SPELL_CAUSE_INSANITY = 24327u,
+    SPELL_BLOOD_SIPHON = 24324u,
+    SPELL_CORRUPTED_BLOOD = 24328u,
+    NON_TANK_THREAT_THRESHOLD = 95u,
+    BLOOD_SIPHON_COOL_DOWN = 90u,
+};

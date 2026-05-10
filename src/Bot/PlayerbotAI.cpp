@@ -1638,6 +1638,9 @@ void PlayerbotAI::ApplyInstanceStrategies(uint32 mapId, bool tellMaster)
     std::string strategyName;
     switch (mapId)
     {
+        case MAP_ZUL_GURUB:
+            strategyName = "zg";  // Zul'Gurub
+            break;
         case 249:
             strategyName = "onyxia";  // Onyxia's Lair
             break;
