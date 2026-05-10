@@ -6,6 +6,7 @@
 #ifndef _PLAYERBOT_DRUIDBEARACTIONS_H
 #define _PLAYERBOT_DRUIDBEARACTIONS_H
 
+#include "AiObjectContext.h"
 #include "GenericSpellActions.h"
 #include "ReachTargetActions.h"
 
@@ -21,12 +22,138 @@ class CastGrowlAction : public CastSpellAction
 {
 public:
     CastGrowlAction(PlayerbotAI* botAI) : CastSpellAction(botAI, "growl") {}
+
+    bool isUseful() override
+    {
+        Unit* const target = this->GetTarget();
+
+        if (target == nullptr)
+        {
+            return false;
+        }
+
+        const ObjectGuid targetTarget = target->GetTarget();
+
+        if (targetTarget.IsEmpty())
+        {
+            return false;
+        }
+
+        if (targetTarget == this->bot->GetGUID())
+        {
+            return false;
+        }
+
+        Player* const playerTargetTarget = ObjectAccessor::FindPlayer(targetTarget);
+
+        if (playerTargetTarget == nullptr)
+        {
+            return true;
+        }
+
+
+        Value<Unit*>* const rtiTargetValue = this->context->GetValue<Unit*>("rti target");
+
+        // This is a normally impossible situation where the Value is not correctly instantiated.
+        // It does not mean the value itself is empty.
+        if (rtiTargetValue == nullptr)
+        {
+            return false;
+        }
+
+        const Unit* const rtiTarget = rtiTargetValue->Get();
+
+        if (PlayerbotAI::IsMainTank(playerTargetTarget))
+        {
+            if (rtiTarget != nullptr && rtiTarget->GetGUID() == target->GetGUID())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        if (PlayerbotAI::IsAssistTank(playerTargetTarget))
+        {
+            if (rtiTarget != nullptr && rtiTarget->GetGUID() == target->GetGUID())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        return true;
+    }
 };
 
 class CastChallengingRoarAction : public CastMeleeDebuffSpellAction
 {
 public:
     CastChallengingRoarAction(PlayerbotAI* botAI) : CastMeleeDebuffSpellAction(botAI, "challenging roar") {}
+
+    bool isUseful() override
+    {
+        Unit* const target = this->GetTarget();
+
+        if (target == nullptr)
+        {
+            return false;
+        }
+
+        const ObjectGuid targetTarget = target->GetTarget();
+
+        if (targetTarget.IsEmpty())
+        {
+            return false;
+        }
+
+        if (targetTarget == this->bot->GetGUID())
+        {
+            return false;
+        }
+
+        Player* const playerTargetTarget = ObjectAccessor::FindPlayer(targetTarget);
+
+        if (playerTargetTarget == nullptr)
+        {
+            return true;
+        }
+
+
+        Value<Unit*>* const rtiTargetValue = this->context->GetValue<Unit*>("rti target");
+
+        // This is a normally impossible situation where the Value is not correctly instantiated.
+        // It does not mean the value itself is empty.
+        if (rtiTargetValue == nullptr)
+        {
+            return false;
+        }
+
+        const Unit* const rtiTarget = rtiTargetValue->Get();
+
+        if (PlayerbotAI::IsMainTank(playerTargetTarget))
+        {
+            if (rtiTarget != nullptr && rtiTarget->GetGUID() == target->GetGUID())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        if (PlayerbotAI::IsAssistTank(playerTargetTarget))
+        {
+            if (rtiTarget != nullptr && rtiTarget->GetGUID() == target->GetGUID())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        return true;
+    }
 };
 
 class CastMaulAction : public CastMeleeSpellAction

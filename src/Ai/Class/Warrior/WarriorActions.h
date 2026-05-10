@@ -7,7 +7,10 @@
 #define _PLAYERBOT_WARRIORACTIONS_H
 
 #include "AiObject.h"
+#include "AiObjectContext.h"
 #include "GenericSpellActions.h"
+#include "ObjectAccessor.h"
+#include "ObjectGuid.h"
 #include "Player.h"
 #include "PlayerbotAI.h"
 #include "ReachTargetActions.h"
@@ -38,7 +41,75 @@ public:
     }
 };
 
-MELEE_ACTION(CastChallengingShoutAction, "challenging shout");
+class CastChallengingShoutAction : public CastMeleeSpellAction
+{
+public:
+    CastChallengingShoutAction(PlayerbotAI* botAI) : CastMeleeSpellAction(botAI, "challenging shout") {}
+
+    bool isUseful() override
+    {
+        Unit* const target = this->GetTarget();
+
+        if (target == nullptr)
+        {
+            return false;
+        }
+
+        const ObjectGuid targetTarget = target->GetTarget();
+
+        if (targetTarget.IsEmpty())
+        {
+            return false;
+        }
+
+        if (targetTarget == this->bot->GetGUID())
+        {
+            return false;
+        }
+
+        Player* const playerTargetTarget = ObjectAccessor::FindPlayer(targetTarget);
+
+        if (playerTargetTarget == nullptr)
+        {
+            return true;
+        }
+
+
+        Value<Unit*>* const rtiTargetValue = this->context->GetValue<Unit*>("rti target");
+
+        // This is a normally impossible situation where the Value is not correctly instantiated.
+        // It does not mean the value itself is empty.
+        if (rtiTargetValue == nullptr)
+        {
+            return false;
+        }
+
+        const Unit* const rtiTarget = rtiTargetValue->Get();
+
+        if (PlayerbotAI::IsMainTank(playerTargetTarget))
+        {
+            if (rtiTarget != nullptr && rtiTarget->GetGUID() == target->GetGUID())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        if (PlayerbotAI::IsAssistTank(playerTargetTarget))
+        {
+            if (rtiTarget != nullptr && rtiTarget->GetGUID() == target->GetGUID())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+};
+
 DEBUFF_ACTION_R(CastIntimidatingShoutAction, "intimidating shout", 8.0f);
 // shouts 2.4.3
 BUFF_ACTION(CastCommandingShoutAction, "commanding shout");
@@ -59,7 +130,13 @@ MELEE_ACTION(CastThunderClapAction, "thunder clap");
 SNARE_ACTION(CastThunderClapSnareAction, "thunder clap");
 SNARE_ACTION(CastHamstringAction, "hamstring");
 MELEE_ACTION(CastOverpowerAction, "overpower");
-MELEE_ACTION(CastMockingBlowAction, "mocking blow");
+
+class CastMockingBlowAction : public CastMeleeSpellAction
+{
+public:
+    CastMockingBlowAction(PlayerbotAI* botAI) : CastMeleeSpellAction(botAI, "mocking blow") {}
+};
+
 // BUFF_ACTION(CastRetaliationAction, "retaliation");
 // arms 3.3.5
 SPELL_ACTION(CastHeroicThrowAction, "heroic throw");
@@ -106,7 +183,75 @@ DEBUFF_ACTION_R(CastPiercingHowlAction, "piercing howl", 8.0f);
 BUFF_ACTION(CastRampageAction, "rampage");
 
 // protection
-MELEE_ACTION_U(CastTauntAction, "taunt", GetTarget() && GetTarget()->GetTarget() != bot->GetGUID());
+class CastTauntAction : public CastMeleeSpellAction
+{
+public:
+    CastTauntAction(PlayerbotAI* botAI) : CastMeleeSpellAction(botAI, "taunt") {}
+
+    bool isUseful() override
+    {
+        Unit* const target = this->GetTarget();
+
+        if (target == nullptr)
+        {
+            return false;
+        }
+
+        const ObjectGuid targetTarget = target->GetTarget();
+
+        if (targetTarget.IsEmpty())
+        {
+            return false;
+        }
+
+        if (targetTarget == this->bot->GetGUID())
+        {
+            return false;
+        }
+
+        Player* const playerTargetTarget = ObjectAccessor::FindPlayer(targetTarget);
+
+        if (playerTargetTarget == nullptr)
+        {
+            return true;
+        }
+
+
+        Value<Unit*>* const rtiTargetValue = this->context->GetValue<Unit*>("rti target");
+
+        // This is a normally impossible situation where the Value is not correctly instantiated.
+        // It does not mean the value itself is empty.
+        if (rtiTargetValue == nullptr)
+        {
+            return false;
+        }
+
+        const Unit* const rtiTarget = rtiTargetValue->Get();
+
+        if (PlayerbotAI::IsMainTank(playerTargetTarget))
+        {
+            if (rtiTarget != nullptr && rtiTarget->GetGUID() == target->GetGUID())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        if (PlayerbotAI::IsAssistTank(playerTargetTarget))
+        {
+            if (rtiTarget != nullptr && rtiTarget->GetGUID() == target->GetGUID())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+};
+
 SNARE_ACTION(CastTauntOnSnareTargetAction, "taunt");
 BUFF_ACTION(CastBloodrageAction, "bloodrage");
 MELEE_ACTION(CastShieldBashAction, "shield bash");

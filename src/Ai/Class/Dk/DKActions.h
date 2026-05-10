@@ -6,6 +6,7 @@
 #ifndef _PLAYERBOT_DKACTIONS_H
 #define _PLAYERBOT_DKACTIONS_H
 
+#include "AiObjectContext.h"
 #include "Event.h"
 #include "GenericSpellActions.h"
 
@@ -41,10 +42,138 @@ class CastDarkCommandAction : public CastSpellAction
 {
 public:
     CastDarkCommandAction(PlayerbotAI* botAI) : CastSpellAction(botAI, "dark command") {}
-};
 
-BEGIN_RANGED_SPELL_ACTION(CastDeathGripAction, "death grip")
-END_SPELL_ACTION()
+    bool isUseful() override
+    {
+        Unit* const target = this->GetTarget();
+
+        if (target == nullptr)
+        {
+            return false;
+        }
+
+        const ObjectGuid targetTarget = target->GetTarget();
+
+        if (targetTarget.IsEmpty())
+        {
+            return false;
+        }
+
+        if (targetTarget == this->bot->GetGUID())
+        {
+            return false;
+        }
+
+        Player* const playerTargetTarget = ObjectAccessor::FindPlayer(targetTarget);
+
+        if (playerTargetTarget == nullptr)
+        {
+            return true;
+        }
+
+
+        Value<Unit*>* const rtiTargetValue = this->context->GetValue<Unit*>("rti target");
+
+        // This is a normally impossible situation where the Value is not correctly instantiated.
+        // It does not mean the value itself is empty.
+        if (rtiTargetValue == nullptr)
+        {
+            return false;
+        }
+
+        const Unit* const rtiTarget = rtiTargetValue->Get();
+
+        if (PlayerbotAI::IsMainTank(playerTargetTarget))
+        {
+            if (rtiTarget != nullptr && rtiTarget->GetGUID() == target->GetGUID())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        if (PlayerbotAI::IsAssistTank(playerTargetTarget))
+        {
+            if (rtiTarget != nullptr && rtiTarget->GetGUID() == target->GetGUID())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+};
+class CastDeathGripAction : public CastSpellAction
+{
+public:
+    CastDeathGripAction(PlayerbotAI* botAI) : CastSpellAction(botAI, "death grip") {}
+
+    bool isUseful() override
+    {
+        Unit* const target = this->GetTarget();
+
+        if (target == nullptr)
+        {
+            return false;
+        }
+
+        const ObjectGuid targetTarget = target->GetTarget();
+
+        if (targetTarget.IsEmpty())
+        {
+            return false;
+        }
+
+        if (targetTarget == this->bot->GetGUID())
+        {
+            return false;
+        }
+
+        Player* const playerTargetTarget = ObjectAccessor::FindPlayer(targetTarget);
+
+        if (playerTargetTarget == nullptr)
+        {
+            return true;
+        }
+
+
+        Value<Unit*>* const rtiTargetValue = this->context->GetValue<Unit*>("rti target");
+
+        // This is a normally impossible situation where the Value is not correctly instantiated.
+        // It does not mean the value itself is empty.
+        if (rtiTargetValue == nullptr)
+        {
+            return false;
+        }
+
+        const Unit* const rtiTarget = rtiTargetValue->Get();
+
+        if (PlayerbotAI::IsMainTank(playerTargetTarget))
+        {
+            if (rtiTarget != nullptr && rtiTarget->GetGUID() == target->GetGUID())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        if (PlayerbotAI::IsAssistTank(playerTargetTarget))
+        {
+            if (rtiTarget != nullptr && rtiTarget->GetGUID() == target->GetGUID())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+};
 
 // Unholy presence
 class CastUnholyMeleeSpellAction : public CastMeleeSpellAction
