@@ -202,14 +202,14 @@ private:
             return true;
         }
 
-        const CastCurePoisonActionSham* const castCurePoisonActionSham = dynamic_cast<const CastCurePoisonActionSham*>(&action);
+        const CastCureToxinsActionSham* const castCurePoisonActionSham = dynamic_cast<const CastCureToxinsActionSham*>(&action);
 
         if (castCurePoisonActionSham != nullptr)
         {
             return true;
         }
 
-        const CastCurePoisonOnPartyActionSham* const castCurePoisonOnPartyActionSham = dynamic_cast<const CastCurePoisonOnPartyActionSham*>(&action);
+        const CastCureToxinsPoisonOnPartyActionSham* const castCurePoisonOnPartyActionSham = dynamic_cast<const CastCureToxinsPoisonOnPartyActionSham*>(&action);
 
         if (castCurePoisonOnPartyActionSham != nullptr)
         {
