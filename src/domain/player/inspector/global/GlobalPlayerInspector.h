@@ -58,6 +58,46 @@ public:
 		if (player == nullptr)
 			return false;
 
+		if (player->isDead())
+		{
+			return false;
+		}
+
+		if (player->isBeingLoaded())
+		{
+			return false;
+		}
+
+		if (player->IsBeingTeleported())
+		{
+			return false;
+		}
+
+		if (player->IsCharmed())
+		{
+			return false;
+		}
+
+		if (player->IsUnderWater())
+		{
+			return false;
+		}
+
+		if (player->IsFlying())
+		{
+			return false;
+		}
+
+		if (player->IsDuringRemoveFromWorld())
+		{
+			return false;
+		}
+
+		if (player->IsCrowdControlled())
+		{
+			return false;
+		}
+
 		if (!player->HasActivePowerType(POWER_MANA))
 			return false;
 
