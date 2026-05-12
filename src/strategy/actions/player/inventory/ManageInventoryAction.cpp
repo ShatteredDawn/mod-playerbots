@@ -49,6 +49,7 @@
 #include "RecipeItemInspector.h"
 #include "TradeGoodItemInspector.h"
 #include "WeaponItemInspector.h"
+#include "scroll/ConsumableScrollInspector.h"
 
 using InspectorFactory = std::function<ItemActionStruct(const uint32_t botGUID, const uint64_t itemGUID)>;
 using SubclassMap = std::unordered_map<uint32_t, InspectorFactory>;
@@ -127,6 +128,15 @@ static const ClassMap inspectorFactories = {
 						LOG_DEBUG("playerbots.action.manage_inventory", "executing FOOD inspector");
 
 						return ConsumableFoodInspector(botGUID, itemGUID).determineItemAction();
+					}
+				},
+				{
+					ITEM_SUBCLASS_SCROLL,
+					[](const uint32_t botGUID, const uint64_t itemGUID)
+					{
+						LOG_DEBUG("playerbots.action.manage_inventory", "executing SCROLL inspector");
+
+						return ConsumableScrollInspector(botGUID, itemGUID).determineItemAction();
 					}
 				},
 				{

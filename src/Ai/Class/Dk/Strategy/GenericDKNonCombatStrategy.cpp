@@ -7,6 +7,9 @@
 #include "CreateNextAction.h"
 #include "DKActions.h"
 #include "GenericActions.h"
+#include "Strategy.h"
+#include "Trigger.h"
+#include "death-knight/RefillDeathKnightReagentsAction.h"
 
 class GenericDKNonCombatStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
 {
@@ -59,6 +62,14 @@ void GenericDKNonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& trigger
             "bone shield",
             {
                 CreateNextAction<CastBoneShieldAction>(21.0f)
+            }
+        )
+    );
+    triggers.emplace_back(
+        new TriggerNode(
+            "seldom",
+            {
+                CreateNextAction<RefillDeathKnightReagentsAction>(ACTION_HIGH)
             }
         )
     );

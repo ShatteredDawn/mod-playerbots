@@ -4,10 +4,14 @@
  */
 
 #include "GenericHunterNonCombatStrategy.h"
+#include "CreateNextAction.h"
 #include "EquipAction.h"
 #include "GenericActions.h"
 #include "HunterActions.h"
 #include "ImbueAction.h"
+#include "RefillHunterAmmunitionsAction.h"
+#include "Strategy.h"
+#include "Trigger.h"
 
 GenericHunterNonCombatStrategy::GenericHunterNonCombatStrategy(PlayerbotAI* botAI) : NonCombatStrategy(botAI)
 {
@@ -56,6 +60,14 @@ void GenericHunterNonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& tri
             "no ammo",
             {
                 CreateNextAction<EquipUpgradesPacketAction>(ACTION_HIGH + 1.0f)
+            }
+        )
+    );
+    triggers.emplace_back(
+        new TriggerNode(
+            "seldom",
+            {
+                CreateNextAction<RefillHunterAmmunitionsAction>(ACTION_HIGH + 2.0f)
             }
         )
     );
