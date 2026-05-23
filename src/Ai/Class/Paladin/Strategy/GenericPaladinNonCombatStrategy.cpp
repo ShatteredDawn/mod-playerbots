@@ -63,8 +63,8 @@ void GenericPaladinNonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& tr
 
     const uint8_t specTab = AiFactory::GetPlayerSpecTab(botAI->GetBot());
 
-    // Holy or Protection
-    if (specTab == PALADIN_TAB_HOLY || specTab == PALADIN_TAB_PROTECTION)
+    // Holy
+    if (specTab == PALADIN_TAB_HOLY)
     {
         triggers.push_back(
             new TriggerNode(
@@ -76,8 +76,8 @@ void GenericPaladinNonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& tr
         );
     }
 
-    // Retribution
-    if (specTab == PALADIN_TAB_RETRIBUTION)
+    // Retribution or Protection
+    if (specTab == PALADIN_TAB_RETRIBUTION || specTab == PALADIN_TAB_PROTECTION)
     {
         triggers.push_back(
             new TriggerNode(
