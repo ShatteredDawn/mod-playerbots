@@ -14,30 +14,10 @@ class GenericMageNonCombatStrategyActionNodeFactory : public NamedObjectFactory<
 public:
     GenericMageNonCombatStrategyActionNodeFactory()
     {
-        creators["molten armor"] = &molten_armor;
-        creators["mage armor"] = &mage_armor;
         creators["ice armor"] = &ice_armor;
     }
 
 private:
-    static ActionNode* molten_armor([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ { CreateNextAction<CastMageArmorAction>(1.0f) },
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* mage_armor([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ { CreateNextAction<CastIceArmorAction>(1.0f) },
-            /*C*/ {}
-        );
-    }
-
     static ActionNode* ice_armor([[maybe_unused]] PlayerbotAI* botAI)
     {
         return new ActionNode(
@@ -107,7 +87,7 @@ void MageBuffDpsStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
 {
     triggers.push_back(
         new TriggerNode(
-            "mage armor",
+            "molten armor",
             {
                 CreateNextAction<CastMoltenArmorAction>(19.0f)
             }
