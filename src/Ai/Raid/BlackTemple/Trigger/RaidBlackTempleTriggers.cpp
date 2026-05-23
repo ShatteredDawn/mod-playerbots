@@ -616,7 +616,7 @@ bool IllidanStormrageBotHasParasiticShadowfiendTrigger::IsActive()
     if (botAI->IsMainTank(bot))
         return false;
 
-    if (phase == 5 && FindNearestTrap(botAI, bot))
+    if (phase == 5 && FindNearestTrap(botAI))
         return false;
 
     Player* infected = GetBotWithParasiticShadowfiend(bot);
@@ -785,7 +785,7 @@ bool IllidanStormrageMaievPlacedShadowTrapTrigger::IsActive()
         return false;
     }
 
-    GameObject* trap = FindNearestTrap(botAI, bot);
+    GameObject* trap = FindNearestTrap(botAI);
     if (!trap)
         return false;
 

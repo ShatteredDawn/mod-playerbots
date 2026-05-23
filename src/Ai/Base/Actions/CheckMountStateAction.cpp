@@ -204,7 +204,7 @@ bool CheckMountStateAction::Mount()
     // Get bot mount data
     MountData mountData = CollectMountData(bot);
     int32 masterMountType = GetMountType(master);
-    int32 masterSpeed = CalculateMasterMountSpeed(master, mountData);
+    int32 masterSpeed = CalculateMasterMountSpeed(master);
 
     // Try shapeshift
     if (TryForms(master, masterMountType, masterSpeed))
@@ -490,7 +490,7 @@ static bool BotCanUseFlyingMount(Player const* bot)
     return true;
 }
 
-int32 CheckMountStateAction::CalculateMasterMountSpeed(Player* master, const MountData& mountData) const
+int32 CheckMountStateAction::CalculateMasterMountSpeed(Player* master) const
 {
     // Check riding skill and level requirements
     int32 ridingSkill = bot->GetPureSkillValue(SKILL_RIDING);

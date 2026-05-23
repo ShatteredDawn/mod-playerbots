@@ -494,7 +494,7 @@ ChatCommandHandlerStrategy::ChatCommandHandlerStrategy(PlayerbotAI* botAI) : Pas
     this->supported.push_back({ "drink", CreateNextAction<DrinkAction>(relevance).factory });
     this->supported.push_back({ "calc", CreateNextAction<TellCalculateItemAction>(relevance).factory });
     this->supported.push_back({ "open items", CreateNextAction<OpenItemAction>(relevance).factory });
-    this->supported.push_back( { "roll", CreateNextAction<RollAction>(relevance).factory });
+    this->supported.push_back({ "roll", CreateNextAction<RollAction>(relevance).factory });
     this->supported.push_back({ "unlock items", CreateNextAction<UnlockItemAction>(relevance).factory });
     this->supported.push_back({ "unlock traded item", CreateNextAction<UnlockTradedItemAction>(relevance).factory });
     this->supported.push_back({ "wipe", CreateNextAction<WipeAction>(relevance).factory });

@@ -55,7 +55,7 @@ private:
     void Dismount();
     bool ShouldFollowMasterMountState(Player* master, bool noAttackers, bool shouldMount) const;
     bool ShouldDismountForMaster(Player* master) const;
-    int32 CalculateMasterMountSpeed(Player* master, const MountData& mountData) const;
+    int32 CalculateMasterMountSpeed(Player* master) const;
     bool CheckForSwiftMount() const;
     std::map<uint32, std::map<int32, std::vector<uint32>>> GetAllMountSpells() const;
     bool TryForms(Player* master, int32 masterMountType, int32 masterSpeed) const;

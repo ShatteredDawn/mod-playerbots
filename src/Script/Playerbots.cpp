@@ -485,20 +485,20 @@ public:
         switch (bg->GetBgTypeID())
         {
             case BATTLEGROUND_WS:
-                data.allianceStrategy = urand(0, WS_STRATEGY_MAX - 1);
-                data.hordeStrategy = urand(0, WS_STRATEGY_MAX - 1);
+                data.allianceStrategy = uint8_t(urand(0, WS_STRATEGY_MAX - 1));
+                data.hordeStrategy = uint8_t(urand(0, WS_STRATEGY_MAX - 1));
                 break;
             case BATTLEGROUND_AB:
-                data.allianceStrategy = urand(0, AB_STRATEGY_MAX - 1);
-                data.hordeStrategy = urand(0, AB_STRATEGY_MAX - 1);
+                data.allianceStrategy = uint8_t(urand(0, AB_STRATEGY_MAX - 1));
+                data.hordeStrategy = uint8_t(urand(0, AB_STRATEGY_MAX - 1));
                 break;
             case BATTLEGROUND_AV:
-                data.allianceStrategy = urand(0, AV_STRATEGY_MAX - 1);
-                data.hordeStrategy = urand(0, AV_STRATEGY_MAX - 1);
+                data.allianceStrategy = uint8_t(urand(0, AV_STRATEGY_MAX - 1));
+                data.hordeStrategy = uint8_t(urand(0, AV_STRATEGY_MAX - 1));
                 break;
             case BATTLEGROUND_EY:
-                data.allianceStrategy = urand(0, EY_STRATEGY_MAX - 1);
-                data.hordeStrategy = urand(0, EY_STRATEGY_MAX - 1);
+                data.allianceStrategy = uint8_t(urand(0, EY_STRATEGY_MAX - 1));
+                data.hordeStrategy = uint8_t(urand(0, EY_STRATEGY_MAX - 1));
                 break;
             default:
                 break;
@@ -520,6 +520,7 @@ public:
 void AddPlayerbotsSecureLoginScripts();
 
 void AddSC_TempestKeepBotScripts();
+void AddSC_IcecrownBotScripts();
 void AddSC_HyjalSummitBotScripts();
 
 void AddPlayerbotsScripts()
@@ -540,5 +541,6 @@ void AddPlayerbotsScripts()
     new HakkarTheSoulflayerScript();
     new HakkarTheSoulflayerPlayerScript();
     new HakkarTheSoulflayerUnitScriptPlayer();
+    AddSC_IcecrownBotScripts();
     AddSC_HyjalSummitBotScripts();
 }
