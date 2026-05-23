@@ -18,7 +18,7 @@ bool SecurityCheckAction::isUseful()
     Player* const master = this->botAI->GetMaster();
 
     return master != nullptr
-        && master->GetSession()->GetSecurity() < SEC_GAMEMASTER
+        && !master->CanBeGameMaster()
         && !GET_PLAYERBOT_AI(master);
 }
 bool SecurityCheckAction::Execute(Event)
