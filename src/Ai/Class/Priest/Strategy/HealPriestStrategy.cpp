@@ -84,6 +84,7 @@ void HealPriestStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
         new TriggerNode(
             "party member almost full health",
             {
+                CreateNextAction<CastPowerWordShieldOnPartyAction>(ACTION_LIGHT_HEAL + 3.0f),
                 CreateNextAction<CastPrayerOfMendingAction>(ACTION_LIGHT_HEAL + 2.0f),
                 CreateNextAction<CastRenewOnPartyAction>(ACTION_LIGHT_HEAL + 1.0f)
             }
