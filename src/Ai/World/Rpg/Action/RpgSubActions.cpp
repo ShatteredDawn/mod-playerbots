@@ -19,6 +19,7 @@
 #include "LastMovementValue.h"
 #include "MovementActions.h"
 #include "PaladinActions.h"
+#include "PlayerbotTextMgr.h"
 #include "Playerbots.h"
 #include "PossibleRpgTargetsValue.h"
 #include "PriestActions.h"
@@ -230,7 +231,7 @@ bool RpgTaxiAction::Execute(Event)
         return false;
     }
 
-    uint32 path = nodes[urand(0, nodes.size() - 1)];
+    uint32 path = nodes[urand(0, uint32_t(nodes.size() - 1))];
     uint32 money = this->bot->GetMoney();
     this->bot->SetMoney(money + 100000);
 
@@ -413,7 +414,7 @@ bool RpgTrainAction::isPossible()
             continue;
         }
 
-        const uint32_t realCost = uint32_t(floor(trainerSpell->MoneyCost * reputationDiscount));
+        const uint32_t realCost = uint32_t(floor(float(trainerSpell->MoneyCost) * reputationDiscount));
 
         if (currentGold < realCost)
         {
@@ -528,7 +529,7 @@ std::vector<Item*> RpgTradeUsefulAction::CanGiveItems(GuidPosition guidPosition)
             if (bot->GetTradeData() && bot->GetTradeData()->HasItem(item->GetGUID()))
                 continue;
 
-            ItemUsage otherUsage = PAI_VALUE2(ItemUsage, "item usage", item->GetEntry());
+            ItemUsage otherUsage = PAI_VALUE2(ItemUsage, "item usage", int32_t(item->GetEntry()));
 
             if (std::find(myUsages.begin(), myUsages.end(), otherUsage) == myUsages.end())
                 giveItems.push_back(item);
@@ -567,12 +568,15 @@ bool RpgTradeUsefulAction::Execute(Event)
         if (bot->GetTradeData() && bot->GetTradeData()->HasItem(item->GetGUID()))
         {
             if (bot->GetGroup() && bot->GetGroup()->IsMember(guidP) && botAI->HasRealPlayerMaster())
-                botAI->TellMasterNoFacing(
-                    "You can use this " + chat->FormatItem(item->GetTemplate()) + " better than me, " +
-                    guidP.GetPlayer()->GetName() /*chat->FormatWorldobject(guidP.GetPlayer())*/ + ".");
+                botAI->TellMasterNoFacing(PlayerbotTextMgr::instance().GetBotTextOrDefault(
+                    "rpg_item_better_for_player",
+                    "You can use this %item better than me, %player.",
+                    {{"%item", chat->FormatItem(item->GetTemplate())}, {"%player", guidP.GetPlayer()->GetName()}}));
             else
-                bot->Say("You can use this " + chat->FormatItem(item->GetTemplate()) + " better than me, " +
-                             player->GetName() /*chat->FormatWorldobject(player)*/ + ".",
+                bot->Say(PlayerbotTextMgr::instance().GetBotTextOrDefault(
+                             "rpg_item_better_for_player",
+                             "You can use this %item better than me, %player.",
+                             {{"%item", chat->FormatItem(item->GetTemplate())}, {"%player", player->GetName()}}),
                          (bot->GetTeamId() == TEAM_ALLIANCE ? LANG_COMMON : LANG_ORCISH));
 
             if (!urand(0, 4) || items.size() < 2)
@@ -586,7 +590,10 @@ bool RpgTradeUsefulAction::Execute(Event)
             }
         }
         else
-            bot->Say("Start trade with" + chat->FormatWorldobject(player),
+            bot->Say(PlayerbotTextMgr::instance().GetBotTextOrDefault(
+                         "rpg_start_trade_with_player",
+                         "Start trade with %player",
+                         {{"%player", chat->FormatWorldobject(player)}}),
                      (bot->GetTeamId() == TEAM_ALLIANCE ? LANG_COMMON : LANG_ORCISH));
 
         botAI->SetNextCheckDelay(sPlayerbotAIConfig.rpgDelay);
