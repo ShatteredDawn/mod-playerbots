@@ -34,6 +34,11 @@ bool MediumManaTrigger::IsActive()
            AI_VALUE2(uint8, "mana", "self target") < sPlayerbotAIConfig.mediumMana;
 }
 
+bool LowEnergyTrigger::IsActive()
+{
+    return AI_VALUE2(uint8, "energy", "self target") < threshold;
+}
+
 bool NoPetTrigger::IsActive()
 {
     return (bot->GetMinionGUID().IsEmpty()) && (!AI_VALUE(Unit*, "pet target")) && (!bot->GetGuardianPet()) &&
@@ -100,7 +105,7 @@ bool TargetWithComboPointsLowerHealTrigger::IsActive()
         return false;
     }
     return ComboPointsAvailableTrigger::IsActive() &&
-           (target->GetHealth() / AI_VALUE(float, "estimated group dps")) <= lifeTime;
+           (float(target->GetHealth()) / AI_VALUE(float, "estimated group dps")) <= lifeTime;
 }
 
 bool LoseAggroTrigger::IsActive() { return !AI_VALUE2(bool, "has aggro", "current target"); }

@@ -21,10 +21,11 @@ private:
     // when Arcane Blast is unavailable - e.g. not yet learned at low levels).
     static ActionNode* arcane_blast([[maybe_unused]] PlayerbotAI* botAI)
     {
-        return new ActionNode("arcane blast",
-                              /*P*/ {},
-                              /*A*/ { NextAction("arcane barrage") },
-                              /*C*/ {});
+        return new ActionNode(
+            /*P*/ {},
+            /*A*/ { CreateNextAction<CastArcaneBarrageAction>(1.0f) },
+            /*C*/ {}
+        );
     }
 };
 

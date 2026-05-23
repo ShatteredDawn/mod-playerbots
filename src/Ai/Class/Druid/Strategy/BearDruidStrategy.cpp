@@ -3,7 +3,7 @@
  * and/or modify it under version 3 of the License, or (at your option), any later version.
  */
 
-#include "BearTankDruidStrategy.h"
+#include "BearDruidStrategy.h"
 
 #include "CreateNextAction.h"
 #include "ActionNode.h"
@@ -13,15 +13,13 @@
 #include "DruidShapeshiftActions.h"
 #include "DruidBearActions.h"
 
-class BearTankDruidStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
+class BearDruidStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
 {
 public:
-    BearTankDruidStrategyActionNodeFactory()
+    BearDruidStrategyActionNodeFactory()
     {
-        creators["melee"] = &melee;
         creators["feral charge - bear"] = &feral_charge_bear;
         creators["swipe (bear)"] = &swipe_bear;
-        creators["faerie fire (feral)"] = &faerie_fire_feral;
         creators["bear form"] = &bear_form;
         creators["dire bear form"] = &dire_bear_form;
         creators["mangle (bear)"] = &mangle_bear;
@@ -34,15 +32,6 @@ public:
     }
 
 private:
-    static ActionNode* melee([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ { CreateNextAction<CastFeralChargeBearAction>(1.0f) },
-            /*A*/ {},
-            /*C*/ {}
-        );
-    }
-
     static ActionNode* feral_charge_bear([[maybe_unused]] PlayerbotAI* botAI)
     {
         return new ActionNode(
@@ -56,15 +45,6 @@ private:
     {
         return new ActionNode(
             /*P*/ {},
-            /*A*/ {},
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* faerie_fire_feral([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ { CreateNextAction<CastFeralChargeBearAction>(1.0f) },
             /*A*/ {},
             /*C*/ {}
         );
@@ -152,48 +132,45 @@ private:
     }
 };
 
-BearTankDruidStrategy::BearTankDruidStrategy(PlayerbotAI* botAI) : FeralDruidStrategy(botAI)
+BearDruidStrategy::BearDruidStrategy(PlayerbotAI* botAI) : FeralDruidStrategy(botAI)
 {
-    actionNodeFactories.Add(new BearTankDruidStrategyActionNodeFactory());
+    actionNodeFactories.Add(new BearDruidStrategyActionNodeFactory());
 }
 
-std::vector<NextAction> BearTankDruidStrategy::getDefaultActions()
+std::vector<NextAction> BearDruidStrategy::getDefaultActions()
 {
     return {
-        CreateNextAction<CastMangleBearAction>(ACTION_DEFAULT + 0.5f),
-        CreateNextAction<CastFaerieFireFeralAction>(ACTION_DEFAULT + 0.4f),
-        CreateNextAction<CastLacerateAction>(ACTION_DEFAULT + 0.3f),
-        CreateNextAction<CastMaulAction>(ACTION_DEFAULT + 0.2f),
-        CreateNextAction<CastEnrageAction>(ACTION_DEFAULT + 0.1f),
-        CreateNextAction<MeleeAction>(ACTION_DEFAULT)
+        CreateNextAction<CastMaulAction>(5.2f),
+        CreateNextAction<CastEnrageAction>(5.1f),
+        CreateNextAction<MeleeAction>(5.0f)
     };
 }
 
-void BearTankDruidStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
+void BearDruidStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
 {
     FeralDruidStrategy::InitTriggers(triggers);
 
     triggers.push_back(
         new TriggerNode(
-            "enemy out of melee",
-            {
-                CreateNextAction<CastFeralChargeBearAction>(ACTION_NORMAL + 8.0f)
-            }
-        )
-    );
-    triggers.push_back(
-        new TriggerNode(
             "bear form",
             {
-                CreateNextAction<CastDireBearFormAction>(ACTION_HIGH + 8.0f)
+                CreateNextAction<CastDireBearFormAction>(28.0f)
             }
         )
     );
     triggers.push_back(
         new TriggerNode(
-            "low health",
+            "medium health",
             {
-                CreateNextAction<CastFrenziedRegenerationAction>(ACTION_HIGH + 7.0f)
+                CreateNextAction<CastFrenziedRegenerationAction>(27.0f)
+            }
+        )
+    );
+    triggers.push_back(
+        new TriggerNode(
+            "mangle (bear)",
+            {
+                CreateNextAction<CastMangleBearAction>(17.5f)
             }
         )
     );
@@ -201,7 +178,23 @@ void BearTankDruidStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
         new TriggerNode(
             "faerie fire (feral)",
             {
-                CreateNextAction<CastFaerieFireFeralAction>(ACTION_HIGH + 7.0f)
+                CreateNextAction<CastFaerieFireFeralAction>(17.0f)
+            }
+        )
+    );
+    triggers.push_back(
+        new TriggerNode(
+            "lacerate",
+            {
+                CreateNextAction<CastLacerateAction>(16.0f)
+            }
+        )
+    );
+    triggers.push_back(
+        new TriggerNode(
+            "demoralizing roar",
+            {
+                CreateNextAction<CastDemoralizingRoarAction>(15.5f)
             }
         )
     );
@@ -209,7 +202,7 @@ void BearTankDruidStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
         new TriggerNode(
             "high aoe",
             {
-                CreateNextAction<CastChallengingRoarAction>(ACTION_HIGH + 8.0f)
+                CreateNextAction<CastChallengingRoarAction>(26.5f)
             }
         )
     );
@@ -217,7 +210,15 @@ void BearTankDruidStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
         new TriggerNode(
             "lose aggro",
             {
-                CreateNextAction<CastGrowlAction>(ACTION_HIGH + 8.0f)
+                CreateNextAction<CastGrowlAction>(26.0f),
+                CreateNextAction<CastFaerieFireFeralAction>(25.5f)
+            }
+        ));
+    triggers.push_back(
+        new TriggerNode(
+            "berserk active",
+            {
+                CreateNextAction<CastMangleBearAction>(25.0f)
             }
         )
     );
@@ -225,8 +226,8 @@ void BearTankDruidStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
         new TriggerNode(
             "medium aoe",
             {
-                CreateNextAction<CastDemoralizingRoarAction>(ACTION_HIGH + 6.0f),
-                CreateNextAction<CastSwipeBearAction>(ACTION_HIGH + 6.0f)
+                CreateNextAction<CastDemoralizingRoarAction>(24.5f),
+                CreateNextAction<CastSwipeBearAction>(24.0f)
             }
         )
     );
@@ -234,7 +235,7 @@ void BearTankDruidStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
         new TriggerNode(
             "light aoe",
             {
-                CreateNextAction<CastSwipeBearAction>(ACTION_HIGH + 5.0f)
+                CreateNextAction<CastSwipeBearAction>(24.0f)
             }
         )
     );
@@ -242,7 +243,7 @@ void BearTankDruidStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
         new TriggerNode(
             "bash",
             {
-                CreateNextAction<CastBashAction>(ACTION_INTERRUPT + 2.0f)
+                CreateNextAction<CastBashAction>(42.0f)
             }
         )
     );
@@ -250,7 +251,7 @@ void BearTankDruidStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
         new TriggerNode(
             "bash on enemy healer",
             {
-                CreateNextAction<CastBashOnEnemyHealerAction>(ACTION_INTERRUPT + 1.0f)
+                CreateNextAction<CastBashOnEnemyHealerAction>(41.0f)
             }
         )
     );

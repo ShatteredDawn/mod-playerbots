@@ -182,6 +182,7 @@ class CastBanishOnCcAction : public CastCrowdControlSpellAction
 {
 public:
     CastBanishOnCcAction(PlayerbotAI* botAI) : CastCrowdControlSpellAction(botAI, "banish") {}
+    Value<Unit*>* GetTargetValue() override;
     bool isPossible() override;
 };
 
@@ -189,6 +190,7 @@ class CastFearOnCcAction : public CastCrowdControlSpellAction
 {
 public:
     CastFearOnCcAction(PlayerbotAI* botAI) : CastCrowdControlSpellAction(botAI, "fear") {}
+    Value<Unit*>* GetTargetValue() override;
     bool isPossible() override;
 };
 
