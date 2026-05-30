@@ -221,8 +221,9 @@ bool PlayerbotAIConfig::Initialize()
                                            "10297,10298,11481,11482,11488,11490,11492,10901,10888,10445,10985"),
         attunementQuests);
 
-    LoadSet<std::set<uint32>>(sConfigMgr->GetOption<std::string>("AiPlayerbot.UnobtainableItems", "12468,46978"),
-                              unobtainableItems);
+    LoadSet<std::set<uint32>>(
+        sConfigMgr->GetOption<std::string>("AiPlayerbot.UnobtainableItems", "12468,44869,44870,46978"),
+        unobtainableItems);
 
     botAutologin = sConfigMgr->GetOption<bool>("AiPlayerbot.BotAutologin", false);
     randomBotAutologin = sConfigMgr->GetOption<bool>("AiPlayerbot.RandomBotAutologin", true);
