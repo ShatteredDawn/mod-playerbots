@@ -1,6 +1,7 @@
 #include "RaidBwlStrategy.h"
 
 #include "CreateNextAction.h"
+#include "MageActions.h"
 #include "RaidBwlActions.h"
 #include "Strategy.h"
 
@@ -29,6 +30,24 @@ void RaidBwlStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
             "bwl affliction bronze",
             {
                 CreateNextAction<BwlUseHourglassSandAction>(ACTION_RAID)
+            }
+        )
+    );
+
+    triggers.push_back(
+        new TriggerNode(
+            "bwl wild magic",
+            {
+                CreateNextAction<CastIceBlockAction>(ACTION_RAID)
+            }
+        )
+    );
+
+    triggers.push_back(
+        new TriggerNode(
+            "bwl nefarian fear ward",
+            {
+                CreateNextAction<BwlNefarianFearWardAction>(ACTION_RAID)
             }
         )
     );
