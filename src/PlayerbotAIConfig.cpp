@@ -152,7 +152,6 @@ bool PlayerbotAIConfig::Initialize()
     tellWhenAvoidAoe = sConfigMgr->GetOption<bool>("AiPlayerbot.TellWhenAvoidAoe", false);
 
     randomGearLoweringChance = sConfigMgr->GetOption<float>("AiPlayerbot.RandomGearLoweringChance", 0.0f);
-    incrementalGearInit = sConfigMgr->GetOption<bool>("AiPlayerbot.IncrementalGearInit", true);
     randomGearQualityLimit = sConfigMgr->GetOption<int32>("AiPlayerbot.RandomGearQualityLimit", 3);
     randomGearScoreLimit = sConfigMgr->GetOption<int32>("AiPlayerbot.RandomGearScoreLimit", 0);
     preferClassArmorType  = sConfigMgr->GetOption<bool>("AiPlayerbot.PreferClassArmorType", false);
@@ -358,15 +357,10 @@ bool PlayerbotAIConfig::Initialize()
 
     // does not depend on global chance
     broadcastChanceGuildManagement = sConfigMgr->GetOption<uint32_t>("AiPlayerbot.BroadcastChanceGuildManagement", 30000);
-    ////////////////////////////
 
     toxicLinksRepliesChance = sConfigMgr->GetOption<uint32_t>("AiPlayerbot.ToxicLinksRepliesChance", 30);    // 0-100
     thunderfuryRepliesChance = sConfigMgr->GetOption<uint32_t>("AiPlayerbot.ThunderfuryRepliesChance", 40);  // 0-100
     guildRepliesRate = sConfigMgr->GetOption<uint32_t>("AiPlayerbot.GuildRepliesRate", 100);                 // 0-100
-    suggestDungeonsInLowerCaseRandomly =
-        sConfigMgr->GetOption<bool>("AiPlayerbot.SuggestDungeonsInLowerCaseRandomly", false);
-
-    ////////////////////////// !CHAT
 
     randomBotJoinBG = sConfigMgr->GetOption<bool>("AiPlayerbot.RandomBotJoinBG", true);
     randomBotAutoJoinBG = sConfigMgr->GetOption<bool>("AiPlayerbot.RandomBotAutoJoinBG", false);
@@ -403,7 +397,6 @@ bool PlayerbotAIConfig::Initialize()
     randomBotMaxLevel = sConfigMgr->GetOption<uint32_t>("AiPlayerbot.RandomBotMaxLevel", 80);
     if (randomBotMaxLevel > sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL))
         randomBotMaxLevel = sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL);
-    randomBotLoginAtStartup = sConfigMgr->GetOption<bool>("AiPlayerbot.RandomBotLoginAtStartup", true);
     randomBotTeleLowerLevel = sConfigMgr->GetOption<uint32_t>("AiPlayerbot.RandomBotTeleLowerLevel", 1);
     randomBotTeleHigherLevel = sConfigMgr->GetOption<uint32_t>("AiPlayerbot.RandomBotTeleHigherLevel", 3);
     openGoSpell = sConfigMgr->GetOption<uint32_t>("AiPlayerbot.OpenGoSpell", 6477);
@@ -592,8 +585,8 @@ bool PlayerbotAIConfig::Initialize()
     disableRandomLevels = sConfigMgr->GetOption<bool>("AiPlayerbot.DisableRandomLevels", false);
     randomBotRandomPassword = sConfigMgr->GetOption<bool>("AiPlayerbot.RandomBotRandomPassword", true);
     downgradeMaxLevelBot = sConfigMgr->GetOption<bool>("AiPlayerbot.DowngradeMaxLevelBot", true);
-    equipmentPersistence = sConfigMgr->GetOption<bool>("AiPlayerbot.EquipmentPersistence", false);
-    equipmentPersistenceLevel = sConfigMgr->GetOption<int32>("AiPlayerbot.EquipmentPersistenceLevel", 80);
+    equipAndSpecPersistence = sConfigMgr->GetOption<bool>("AiPlayerbot.EquipAndSpecPersistence", true);
+    equipAndSpecPersistenceLevel = sConfigMgr->GetOption<int32>("AiPlayerbot.EquipAndSpecPersistenceLevel", 1);
     groupInvitationPermission = sConfigMgr->GetOption<int32>("AiPlayerbot.GroupInvitationPermission", 1);
     keepAltsInGroup = sConfigMgr->GetOption<bool>("AiPlayerbot.KeepAltsInGroup", false);
     allowSummonInCombat = sConfigMgr->GetOption<bool>("AiPlayerbot.AllowSummonInCombat", true);
@@ -685,7 +678,7 @@ bool PlayerbotAIConfig::Initialize()
     dropObsoleteQuests = sConfigMgr->GetOption<bool>("AiPlayerbot.DropObsoleteQuests", true);
     allowLearnTrainerSpells = sConfigMgr->GetOption<bool>("AiPlayerbot.AllowLearnTrainerSpells", true);
     autoPickTalents = sConfigMgr->GetOption<bool>("AiPlayerbot.AutoPickTalents", true);
-    autoUpgradeEquip = sConfigMgr->GetOption<bool>("AiPlayerbot.AutoUpgradeEquip", false);
+    autoUpgradeEquip = sConfigMgr->GetOption<bool>("AiPlayerbot.AutoUpgradeEquip", true);
     hunterWolfPet = sConfigMgr->GetOption<int32>("AiPlayerbot.HunterWolfPet", 0);
     defaultPetStance = sConfigMgr->GetOption<int32>("AiPlayerbot.DefaultPetStance", 1);
     petChatCommandDebug = sConfigMgr->GetOption<bool>("AiPlayerbot.PetChatCommandDebug", 0);
