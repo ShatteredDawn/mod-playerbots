@@ -93,13 +93,14 @@ void TankPaladinStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
             }
         )
     );
-    triggers.push_back(new TriggerNode(
-        "light aoe",
-        {
-            CreateNextAction<CastAvengersShieldAction>(ACTION_HIGH + 5.0f)
-        }
-    )
-);
+    triggers.push_back(
+        new TriggerNode(
+            "light aoe",
+            {
+                CreateNextAction<CastAvengersShieldAction>(ACTION_HIGH + 5.0f)
+            }
+        )
+    );
     triggers.push_back(
         new TriggerNode(
             "medium aoe",
@@ -120,13 +121,6 @@ void TankPaladinStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
     triggers.push_back(
         new TriggerNode(
             "medium health",
-                { CreateNextAction<CastHolyShieldAction>(ACTION_HIGH + 4.0f)
-            }
-        )
-    );
-    triggers.push_back(
-        new TriggerNode(
-            "low health",
             {
                 CreateNextAction<CastHolyShieldAction>(ACTION_HIGH + 4.0f)
             }
@@ -134,20 +128,12 @@ void TankPaladinStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
     );
     triggers.push_back(
         new TriggerNode(
-            "critical health",
+            "avenging wrath",
             {
-                CreateNextAction<CastHolyShieldAction>(ACTION_HIGH + 4.0f)
+                CreateNextAction<CastAvengingWrathAction>(ACTION_HIGH + 2.0f)
             }
         )
     );
-    triggers.push_back(
-        new TriggerNode(
-        "avenging wrath",
-        {
-            CreateNextAction<CastAvengingWrathAction>(ACTION_HIGH + 2.0f)
-        }
-    )
-);
     triggers.push_back(
         new TriggerNode(
             "target critical health",

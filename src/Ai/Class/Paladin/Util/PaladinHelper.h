@@ -8,6 +8,7 @@
 
 #include <initializer_list>
 
+#include "Player.h"
 #include "Unit.h"
 
 class Player;
@@ -18,6 +19,8 @@ static constexpr uint32 SPELL_HAND_OF_PROTECTION = 1022;
 static constexpr uint32 SPELL_HAND_OF_SALVATION = 1038;
 static constexpr uint32 SPELL_HAND_OF_FREEDOM = 1044;
 static constexpr uint32 SPELL_HAND_OF_SACRIFICE = 6940;
+static constexpr uint32 SPELL_BLESSING_OF_SANCTUARY = 20911;
+static constexpr uint32 SPELL_GREATER_BLESSING_OF_SANCTUARY = 25899;
 
 inline bool HasHandFromCaster(Unit* target, Player* caster, std::initializer_list<uint32> spellIds)
 {

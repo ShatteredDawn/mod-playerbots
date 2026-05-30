@@ -93,8 +93,6 @@ public:
         creators["shadow protection"] = &PriestTriggerFactoryInternal::shadow_protection;
         creators["shadow protection on party"] = &PriestTriggerFactoryInternal::shadow_protection_on_party;
         creators["shackle undead"] = &PriestTriggerFactoryInternal::shackle_undead;
-        creators["prayer of fortitude on party"] = &PriestTriggerFactoryInternal::prayer_of_fortitude_on_party;
-        creators["prayer of spirit on party"] = &PriestTriggerFactoryInternal::prayer_of_spirit_on_party;
         creators["holy fire"] = &PriestTriggerFactoryInternal::holy_fire;
         creators["touch of weakness"] = &PriestTriggerFactoryInternal::touch_of_weakness;
         creators["hex of weakness"] = &PriestTriggerFactoryInternal::hex_of_weakness;
@@ -137,8 +135,6 @@ private:
     static Trigger* shadow_protection_on_party(PlayerbotAI* botAI) { return new ShadowProtectionOnPartyTrigger(botAI); }
     static Trigger* shadow_protection(PlayerbotAI* botAI) { return new ShadowProtectionTrigger(botAI); }
     static Trigger* shackle_undead(PlayerbotAI* botAI) { return new ShackleUndeadTrigger(botAI); }
-    static Trigger* prayer_of_fortitude_on_party(PlayerbotAI* botAI) { return new PrayerOfFortitudeTrigger(botAI); }
-    static Trigger* prayer_of_spirit_on_party(PlayerbotAI* botAI) { return new PrayerOfSpiritTrigger(botAI); }
     static Trigger* feedback(PlayerbotAI* botAI) { return new FeedbackTrigger(botAI); }
     static Trigger* fear_ward(PlayerbotAI* botAI) { return new FearWardTrigger(botAI); }
     static Trigger* shadowguard(PlayerbotAI* botAI) { return new ShadowguardTrigger(botAI); }

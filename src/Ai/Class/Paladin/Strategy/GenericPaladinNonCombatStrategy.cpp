@@ -10,6 +10,7 @@
 #include "AiFactory.h"
 #include "ImbueAction.h"
 #include "PaladinActions.h"
+#include "PaladinGreaterBlessingAction.h"
 
 GenericPaladinNonCombatStrategy::GenericPaladinNonCombatStrategy(PlayerbotAI* botAI) : NonCombatStrategy(botAI)
 {
@@ -70,7 +71,7 @@ void GenericPaladinNonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& tr
             new TriggerNode(
                 "often",
                 {
-                    CreateNextAction<ImbueWithOilAction>(1.0f)
+                    CreateNextAction<ImbueWithOilAction>(ACTION_IDLE + 1.0f)
                 }
             )
         );
@@ -83,9 +84,18 @@ void GenericPaladinNonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& tr
             new TriggerNode(
                 "often",
                 {
-                    CreateNextAction<ImbueWithStoneAction>(1.0f)
+                    CreateNextAction<ImbueWithStoneAction>(ACTION_IDLE + 1.0f)
                 }
             )
         );
     }
+
+    triggers.push_back(
+        new TriggerNode(
+            "greater blessing needed",
+            {
+                CreateNextAction<CastGreaterBlessingAssignmentAction>(ACTION_NORMAL)
+            }
+        )
+    );
 }
