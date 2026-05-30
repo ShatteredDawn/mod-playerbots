@@ -566,6 +566,8 @@ bool PlayerbotAIConfig::Initialize()
     randomBotGuildSizeMax = sConfigMgr->GetOption<uint32_t>("AiPlayerbot.RandomBotGuildSizeMax", 15);
     deleteRandomBotGuilds = sConfigMgr->GetOption<bool>("AiPlayerbot.DeleteRandomBotGuilds", false);
 
+    botSendMailEnabled = sConfigMgr->GetOption<bool>("AiPlayerbot.BotSendMailEnabled", true);
+
     guildTaskEnabled = sConfigMgr->GetOption<bool>("AiPlayerbot.EnableGuildTasks", false);
     minGuildTaskChangeTime = sConfigMgr->GetOption<uint32_t>("AiPlayerbot.MinGuildTaskChangeTime", 3 * 24 * 3600);
     maxGuildTaskChangeTime = sConfigMgr->GetOption<uint32_t>("AiPlayerbot.MaxGuildTaskChangeTime", 4 * 24 * 3600);
