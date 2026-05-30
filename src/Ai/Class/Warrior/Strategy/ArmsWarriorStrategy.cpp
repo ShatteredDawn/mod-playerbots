@@ -108,6 +108,7 @@ std::vector<NextAction> ArmsWarriorStrategy::getDefaultActions()
     return {
         CreateNextAction<CastBladestormAction>(ACTION_DEFAULT + 0.2f),
         CreateNextAction<CastMortalStrikeAction>(ACTION_DEFAULT + 0.1f),
+        CreateNextAction<CastSunderArmorAction>(ACTION_DEFAULT + 0.05f),
         CreateNextAction<MeleeAction>(ACTION_DEFAULT)
     };
 }
