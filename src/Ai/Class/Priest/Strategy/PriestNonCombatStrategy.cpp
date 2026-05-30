@@ -30,6 +30,14 @@ void PriestNonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
     );
     triggers.push_back(
         new TriggerNode(
+            "vampiric embrace",
+            {
+                CreateNextAction<CastVampiricEmbraceAction>(16.0f)
+            }
+        )
+    );
+    triggers.push_back(
+        new TriggerNode(
             "party member dead",
             {
                 CreateNextAction<CastRemoveShadowformAction>(ACTION_CRITICAL_HEAL + 11.0f),

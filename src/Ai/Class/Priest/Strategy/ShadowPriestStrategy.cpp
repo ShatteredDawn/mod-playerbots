@@ -55,14 +55,6 @@ void ShadowPriestStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
     );
     triggers.push_back(
         new TriggerNode(
-            "vampiric embrace",
-            {
-                CreateNextAction<CastVampiricEmbraceAction>(16.0f)
-            }
-        )
-    );
-    triggers.push_back(
-        new TriggerNode(
             "silence",
             {
                 CreateNextAction<CastSilenceAction>(ACTION_INTERRUPT + 1.0f)
