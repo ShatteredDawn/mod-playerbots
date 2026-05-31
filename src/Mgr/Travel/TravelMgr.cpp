@@ -4763,7 +4763,7 @@ void TravelMgr::PrepareDestinationCache()
 
                 LevelBracket bracket = zone2LevelBracket[areaId];
                 WorldPosition loc(mapId, x + cos(orient) * 5.0f, y + sin(orient) * 5.0f, z + 0.5f, orient + M_PI);
-                for (int i = bracket.low; i <= bracket.high; i++)
+                for (uint32_t i = bracket.low; i <= bracket.high; i++)
                 {
                     if (forHorde)
                         hordeHubsPerLevelCache[i].push_back(loc);
@@ -4788,7 +4788,7 @@ void TravelMgr::PrepareDestinationCache()
             bLoc.loc = WorldLocation(mapId, x + cos(orient) * 6.0f, y + sin(orient) * 6.0f, z + 2.0f, orient + M_PI);
             bLoc.entry = templateEntry;
             uint32 level = (creatureTemplate->minlevel + creatureTemplate->maxlevel + 1) / 2;
-            for (int32 l = 1; l <= maxLevel; l++)
+            for (uint32_t l = 1; l <= maxLevel; l++)
             {
                 // Bots 1-60 go to base game bankers (all have minlevel 30 or 45)
                 if (l <=60 && level > 45)
@@ -4819,13 +4819,13 @@ void TravelMgr::PrepareDestinationCache()
             for (int32 l = (int32)level - (int32)sPlayerbotAIConfig.randomBotTeleLowerLevel;
                  l <= (int32)level + (int32)sPlayerbotAIConfig.randomBotTeleHigherLevel; l++)
             {
-                if (l < 1 || l > maxLevel)
+                if (l < 1 || l > int32_t(maxLevel))
                     continue;
 
-                    locsPerLevelCache[(uint8)l].push_back(WorldLocation(std::get<0>(gridTuple),
-                        static_cast<float>(std::get<1>(gridTuple)) * 50.0f,
-                        static_cast<float>(std::get<2>(gridTuple)) * 50.0f,
-                        static_cast<float>(std::get<3>(gridTuple)) * 50.0f));
+                locsPerLevelCache[(uint8)l].push_back(WorldLocation(std::get<0>(gridTuple),
+                    static_cast<float>(std::get<1>(gridTuple)) * 50.0f,
+                    static_cast<float>(std::get<2>(gridTuple)) * 50.0f,
+                    static_cast<float>(std::get<3>(gridTuple)) * 50.0f));
             }
         }
     }

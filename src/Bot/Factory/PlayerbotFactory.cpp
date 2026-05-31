@@ -566,7 +566,6 @@ void PlayerbotFactory::Randomize(bool incremental)
     if (!sPlayerbotAIConfig.equipAndSpecPersistence ||
         botLevel < sPlayerbotAIConfig.equipAndSpecPersistenceLevel)
     {
-    {
         bot->resetTalents(true);
     }
 
