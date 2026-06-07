@@ -17,6 +17,7 @@
 #include "SpellAuraEffects.h"
 
 static constexpr uint32 SPELL_COLD_WEATHER_FLYING = 54197;
+static constexpr float PARACHUTE_LAND_THRESHOLD = 15.0f;
 
 // Define the static map / init bool for caching bot preferred mount data globally
 std::unordered_map<uint32, PreferredMountCache> CheckMountStateAction::mountCache;
@@ -118,6 +119,21 @@ bool CheckMountStateAction::isUseful()
 
 bool CheckMountStateAction::Execute(Event /*event*/)
 {
+    // Forced flight dismount:
+    // Bots get stale flight movement flags after a forced dismount (e.g: Dalaran) because the post landing dismount cleanup
+    // needs MSG_MOVE_FALL_LAND (a client opcode) and client movement packets. The stale flags cause the bot to be stuck with
+    // the parachute, or even keep the bot hovering indefinitely and block MMAP routing.
+    // Note: Without MSG_MOVE_FALL_LAND, HandleFall doesn't trigger, meaning bots don't get fall damage in forced dismounts anyway,
+    // so the parachute usage here is more of an immersion feature.
+    if (bot->HasFeatherFallAura())
+    {
+        float floorZ = bot->GetMapHeight(bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ());
+        if (floorZ != INVALID_HEIGHT && floorZ != VMAP_INVALID_HEIGHT_VALUE &&
+            bot->GetPositionZ() - floorZ <= PARACHUTE_LAND_THRESHOLD)
+            bot->RemoveAurasByType(SPELL_AURA_FEATHER_FALL);
+    }
+    ClearStaleFlightFlags();
+
     // Determine if there are no attackers
     bool noAttackers = !AI_VALUE2(bool, "combat", "self target") || !AI_VALUE(uint8, "attacker count");
     bool enemy = AI_VALUE(Unit*, "enemy player target");
@@ -234,14 +250,17 @@ void CheckMountStateAction::Dismount()
     WorldPacket emptyPacket;
     bot->GetSession()->HandleCancelMountAuraOpcode(emptyPacket);
 
-    bool const wantsFly = bot->HasIncreaseMountedFlightSpeedAura() || bot->HasFlyAura();
-    bool const isWaterWalking = bot->HasUnitMovementFlag(MOVEMENTFLAG_WATERWALKING);
-    bool const isFlying = bot->HasUnitMovementFlag(MOVEMENTFLAG_FLYING);
-    bool const hasGravityDisabled = bot->HasUnitMovementFlag(MOVEMENTFLAG_DISABLE_GRAVITY);
-    if (!wantsFly && !isWaterWalking && (isFlying || hasGravityDisabled))
+    ClearStaleFlightFlags();
+}
+
+void CheckMountStateAction::ClearStaleFlightFlags()
+{
+    if (bot->HasIncreaseMountedFlightSpeedAura() || bot->HasFlyAura())
+        return;
+
+    if (bot->HasUnitMovementFlag(MOVEMENTFLAG_FLYING | MOVEMENTFLAG_DISABLE_GRAVITY))
     {
-        bot->RemoveUnitMovementFlag(
-            MOVEMENTFLAG_FLYING | MOVEMENTFLAG_CAN_FLY | MOVEMENTFLAG_DISABLE_GRAVITY);
+        bot->RemoveUnitMovementFlag(MOVEMENTFLAG_FLYING | MOVEMENTFLAG_DISABLE_GRAVITY | MOVEMENTFLAG_CAN_FLY);
         if (!bot->IsRooted())
             bot->SendMovementFlagUpdate();
     }
