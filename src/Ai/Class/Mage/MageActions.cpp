@@ -12,7 +12,7 @@
 
 std::vector<NextAction> CastMoltenArmorAction::getAlternatives()
 {
-    if (!AI_VALUE2(uint32, "spell id", "molten armor"))
+    if (!botAI->HasSpell("molten armor"))
     {
         return { CreateNextAction<CastMageArmorAction>(1.0f) };
     }
@@ -22,7 +22,7 @@ std::vector<NextAction> CastMoltenArmorAction::getAlternatives()
 
 std::vector<NextAction> CastMageArmorAction::getAlternatives()
 {
-    if (!AI_VALUE2(uint32, "spell id", "mage armor"))
+    if (!botAI->HasSpell("mage armor"))
     {
         return { CreateNextAction<CastIceArmorAction>(1.0f) };
     }

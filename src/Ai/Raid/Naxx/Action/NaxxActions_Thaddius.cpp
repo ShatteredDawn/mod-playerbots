@@ -231,17 +231,9 @@ bool ThaddiusMovePolarityAction::Execute(Event)
         // center ranged
         {3504.68f, -2936.68f},
     };
-
-    const bool hasNegativeChargeById = NaxxSpellIds::HasAnyAura(
-        this->botAI,
-        this->bot,
-        { NaxxSpellIds::NegativeCharge10, NaxxSpellIds::NegativeCharge25, NaxxSpellIds::NegativeChargeStack }
-    );
-
-    const bool hasNegativeChargeByName = this->botAI->HasAura("negative charge", bot, false, false, -1, true);
-    const bool hasNegativeCharge = hasNegativeChargeById || hasNegativeChargeByName;
-
-    if (hasNegativeCharge)
+    if (NaxxSpellIds::HasAnyAura(bot,
+            {NaxxSpellIds::NegativeCharge10, NaxxSpellIds::NegativeCharge25, NaxxSpellIds::NegativeChargeStack}) ||
+        botAI->HasAura("negative charge", bot, false, false, -1, true))
     {
         const uint8_t positionIndex = uint8_t(this->botAI->IsRanged(this->bot));
 
@@ -257,16 +249,9 @@ bool ThaddiusMovePolarityAction::Execute(Event)
             MovementPriority::MOVEMENT_COMBAT
         );
     }
-
-    const bool hasPositiveChargeById = NaxxSpellIds::HasAnyAura(
-        this->botAI,
-        this->bot,
-        { NaxxSpellIds::PositiveCharge10, NaxxSpellIds::PositiveCharge25, NaxxSpellIds::PositiveChargeStack }
-    );
-    const bool hasPositiveChargeByName = this->botAI->HasAura("positive charge", bot, false, false, -1, true);
-    const bool hasPositiveCharge = hasPositiveChargeById || hasPositiveChargeByName;
-
-    if (hasPositiveCharge)
+    else if (NaxxSpellIds::HasAnyAura(bot,
+                 {NaxxSpellIds::PositiveCharge10, NaxxSpellIds::PositiveCharge25, NaxxSpellIds::PositiveChargeStack}) ||
+             botAI->HasAura("positive charge", bot, false, false, -1, true))
     {
         const uint8_t positionIndex = 2 + uint8_t(this->botAI->IsRanged(this->bot));
 

@@ -153,7 +153,7 @@ bool SapphironFlightPositionAction::MoveToNearestIcebolt()
     {
         Player* const member = ref->GetSource();
 
-        const bool hasIceboltAuraById = NaxxSpellIds::HasAnyAura(this->botAI, member, {NaxxSpellIds::Icebolt10, NaxxSpellIds::Icebolt25});
+        const bool hasIceboltAuraById = NaxxSpellIds::HasAnyAura(member, {NaxxSpellIds::Icebolt10, NaxxSpellIds::Icebolt25});
         const bool hasIceboltAuraByName = this->botAI->HasAura("icebolt", member, false, false, -1, true);
 
         if (!hasIceboltAuraById && !hasIceboltAuraByName)

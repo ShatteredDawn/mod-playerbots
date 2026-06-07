@@ -233,7 +233,6 @@ float AnubrekhanGenericMultiplier::GetValue(Action& action)
     }
 
     const bool hasLocustSwarmAuraById = NaxxSpellIds::HasAnyAura(
-        this->botAI,
         boss,
         { NaxxSpellIds::LocustSwarm10, NaxxSpellIds::LocustSwarm10Alt, NaxxSpellIds::LocustSwarm25 }
     );

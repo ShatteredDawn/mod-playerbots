@@ -4,6 +4,13 @@
 #include "PlayerbotAIConfig.h"
 #include "UnitAI.h"
 
+namespace
+{
+constexpr uint32 SPELL_UNDERSTUDY_TAUNT = 29060;
+constexpr uint32 SPELL_BONE_BARRIER     = 29061;
+constexpr uint32 SPELL_BLOOD_STRIKE     = 61696;
+}
+
 // @TODO: This needs a complete rewrite.
 bool RazuviousUseObedienceCrystalAction::Execute(Event /*event*/)
 {
@@ -65,7 +72,8 @@ bool RazuviousUseObedienceCrystalAction::Execute(Event /*event*/)
 
             if (forceObedience->GetDuration() <= (duration_time - 5000))
             {
-                if (target->GetVictim() && botAI->HasAura(29061, target->GetVictim()))
+                Unit* victim = target->GetVictim();
+                if (victim && victim->HasAura(SPELL_BONE_BARRIER))
                 {
                     tauntUseful = false;
                 }
@@ -84,21 +92,21 @@ bool RazuviousUseObedienceCrystalAction::Execute(Event /*event*/)
             if (tauntUseful && !charmedUnit->HasSpellCooldown(29060))
             {
                 // shield
-                if (!charmedUnit->HasSpellCooldown(29061))
+                if (!charmedUnit->HasSpellCooldown(SPELL_BONE_BARRIER))
                 {
-                    charmedUnit->CastSpell(charmedUnit, 29061, true);
-                    charmedUnit->AddSpellCooldown(29061, 0, 30 * 1000);
+                    charmedUnit->CastSpell(charmedUnit, SPELL_BONE_BARRIER, true);
+                    charmedUnit->AddSpellCooldown(SPELL_BONE_BARRIER, 0, 30 * 1000);
                 }
 
-                charmedUnit->CastSpell(target, 29060, true);
-                charmedUnit->AddSpellCooldown(29060, 0, 20 * 1000);
+                charmedUnit->CastSpell(target, SPELL_UNDERSTUDY_TAUNT, true);
+                charmedUnit->AddSpellCooldown(SPELL_UNDERSTUDY_TAUNT, 0, 20 * 1000);
             }
 
             // strike
-            if (!charmedUnit->HasSpellCooldown(61696))
+            if (!charmedUnit->HasSpellCooldown(SPELL_BLOOD_STRIKE))
             {
-                charmedUnit->CastSpell(target, 61696, true);
-                charmedUnit->AddSpellCooldown(61696, 0, 4 * 1000);
+                charmedUnit->CastSpell(target, SPELL_BLOOD_STRIKE, true);
+                charmedUnit->AddSpellCooldown(SPELL_BLOOD_STRIKE, 0, 4 * 1000);
             }
         }
 

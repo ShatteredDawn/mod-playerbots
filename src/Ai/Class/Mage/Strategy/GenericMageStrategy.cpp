@@ -11,6 +11,18 @@
 #include "MageActions.h"
 #include "RangedCombatStrategy.h"
 
+namespace
+{
+constexpr uint32 SPELL_CONJURE_MANA_SAPPHIRE = 42985;
+constexpr uint32 SPELL_CONJURE_MANA_EMERALD = 27101;
+constexpr uint32 SPELL_CONJURE_MANA_RUBY = 10054;
+constexpr uint32 SPELL_CONJURE_MANA_CITRINE = 10053;
+constexpr uint32 SPELL_CONJURE_MANA_JADE = 3552;
+constexpr uint32 SPELL_CONJURE_MANA_AGATE = 759;
+constexpr uint32 SPELL_FROSTFIRE_BOLT = 44614;
+constexpr uint32 SPELL_ICE_SHARDS = 15047;
+}
+
 class GenericMageStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
 {
 public:
@@ -168,7 +180,7 @@ void GenericMageStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
 
     // Mana Threshold Triggers
     Player* bot = botAI->GetBot();
-    if (bot->HasSpell(42985))  // Mana Sapphire
+    if (bot->HasSpell(SPELL_CONJURE_MANA_SAPPHIRE))
         triggers.push_back(
             new TriggerNode(
                 "high mana",
@@ -177,7 +189,7 @@ void GenericMageStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
                 }
             )
         );
-    else if (bot->HasSpell(27101))  // Mana Emerald
+    else if (bot->HasSpell(SPELL_CONJURE_MANA_EMERALD))
         triggers.push_back(
             new TriggerNode(
                 "high mana",
@@ -186,7 +198,7 @@ void GenericMageStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
                 }
             )
         );
-    else if (bot->HasSpell(10054))  // Mana Ruby
+    else if (bot->HasSpell(SPELL_CONJURE_MANA_RUBY))
         triggers.push_back(
             new TriggerNode(
                 "high mana",
@@ -195,7 +207,7 @@ void GenericMageStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
                 }
             )
         );
-    else if (bot->HasSpell(10053))  // Mana Citrine
+    else if (bot->HasSpell(SPELL_CONJURE_MANA_CITRINE))
         triggers.push_back(
             new TriggerNode(
                 "high mana",
@@ -204,7 +216,7 @@ void GenericMageStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
                 }
             )
         );
-    else if (bot->HasSpell(3552))  // Mana Jade
+    else if (bot->HasSpell(SPELL_CONJURE_MANA_JADE))
         triggers.push_back(
             new TriggerNode(
                 "high mana",
@@ -213,7 +225,7 @@ void GenericMageStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
                 }
             )
         );
-    else if (bot->HasSpell(759))  // Mana Agate
+    else if (bot->HasSpell(SPELL_CONJURE_MANA_AGATE))
         triggers.push_back(
             new TriggerNode(
                 "high mana",
@@ -311,7 +323,7 @@ void MageBoostStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
     }
     else if (tab == MAGE_TAB_FIRE)
     {
-        if (bot->HasSpell(44614) /*Frostfire Bolt*/ && bot->HasAura(15047) /*Ice Shards*/)
+        if (bot->HasSpell(SPELL_FROSTFIRE_BOLT) && bot->HasAura(SPELL_ICE_SHARDS))
         { // Frostfire
             triggers.push_back(
                 new TriggerNode(
