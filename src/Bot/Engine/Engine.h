@@ -61,10 +61,27 @@ private:
     std::list<ActionExecutionListener*> listeners;
 };
 
+enum class EngineIterationResultEnum
+{
+    ACTION_EXECUTED,
+    CONTINUE,
+    STOP
+};
+
 class Engine : public PlayerbotAIAware
 {
 public:
     Engine(PlayerbotAI* botAI, AiObjectContext* factory);
+
+    /**
+     * Refactoring area
+     */
+
+    [[nodiscard]] EngineIterationResultEnum iterate(const bool minimal) noexcept;
+
+    /**
+     * End of refactoring area
+     */
 
     void Init();
     void addStrategy(std::string const name, bool init = true);
@@ -81,7 +98,7 @@ public:
     void ChangeStrategy(std::string const names);
     std::string const GetLastAction() { return lastAction; }
 
-    virtual bool doNextAction(Unit*, uint32 depth = 0, bool minimal = false);
+    bool doNextAction(bool minimal = false);
     ActionResult ExecuteAction(NextAction::Factory actionFactory, Event event = Event());
 
     void AddActionExecutionListener(ActionExecutionListener* listener) { actionExecutionListeners.Add(listener); }

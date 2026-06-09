@@ -8,56 +8,68 @@
 
 PlayerbotAIBase::PlayerbotAIBase(bool isBotAI) : nextAICheckDelay(0), _isBotAI(isBotAI) {}
 
-void PlayerbotAIBase::UpdateAI(uint32 elapsed, bool minimal)
+void PlayerbotAIBase::UpdateAI(uint32_t elapsed)
 {
-    if (totalPmo)
-        totalPmo->finish();
+    if (this->totalPmo != nullptr)
+    {
+        this->totalPmo->finish();
+    }
 
-    totalPmo = sPerfMonitor.start(PERF_MON_TOTAL, "PlayerbotAIBase::FullTick");
+    this->totalPmo = PerfMonitor::instance().start(PERF_MON_TOTAL, "PlayerbotAIBase::FullTick");
 
-    if (nextAICheckDelay > elapsed)
-        nextAICheckDelay -= elapsed;
+    if (this->nextAICheckDelay > elapsed)
+    {
+        this->nextAICheckDelay -= elapsed;
+    }
     else
-        nextAICheckDelay = 0;
+    {
+        this->nextAICheckDelay = 0;
+    }
 
-    if (!CanUpdateAI())
+    if (!this->CanUpdateAI())
+    {
         return;
+    }
 
-    UpdateAIInternal(elapsed, minimal);
-    YieldThread(nullptr);
+    this->UpdateAIInternal();
+    this->YieldThread(nullptr);
 }
 
-void PlayerbotAIBase::SetNextCheckDelay(uint32 const delay)
+void PlayerbotAIBase::SetNextCheckDelay(const uint32_t delay)
 {
-    // if (nextAICheckDelay < delay)
-    // LOG_DEBUG("playerbots", "Setting lesser delay {} -> {}", nextAICheckDelay, delay);
-
-    nextAICheckDelay = delay;
-
-    // if (nextAICheckDelay > sPlayerbotAIConfig.globalCoolDown)
-    // LOG_DEBUG("playerbots",  "std::set next check delay: {}", nextAICheckDelay);
+    this->nextAICheckDelay = delay;
 }
 
-void PlayerbotAIBase::IncreaseNextCheckDelay(uint32 delay)
+void PlayerbotAIBase::IncreaseNextCheckDelay(const uint32_t delay)
 {
-    nextAICheckDelay += delay;
-
-    // if (nextAICheckDelay > sPlayerbotAIConfig.globalCoolDown)
-    //     LOG_DEBUG("playerbots",  "increase next check delay: {}", nextAICheckDelay);
+    this->nextAICheckDelay += delay;
 }
 
-bool PlayerbotAIBase::CanUpdateAI() { return nextAICheckDelay == 0; }
-
-void PlayerbotAIBase::YieldThread(Player* bot, uint32 delay)
+bool PlayerbotAIBase::CanUpdateAI()
 {
-    if (nextAICheckDelay < delay)
+    return this->nextAICheckDelay == 0;
+}
+
+// @TODO: This is extremely poorly named. This is NOT yielding the thread,
+// but rather setting the next check delay to the specified value if it is greater than the current value.
+void PlayerbotAIBase::YieldThread(const Player* bot, const uint32_t delay)
+{
+    if (this->nextAICheckDelay < delay)
     {
         // Adding a deterministic per-bot slight offset (0–200 ms) to stagger updates and prevent cpu spikes.
         uint32 offset = bot ? (bot->GetGUID().GetCounter() % 201) : 0;
-        nextAICheckDelay = delay + offset;
+    {
+        this->nextAICheckDelay = delay + offset;
+    }
     }
 }
 
-bool PlayerbotAIBase::IsActive() { return nextAICheckDelay < sPlayerbotAIConfig.maxWaitForMove; }
+bool PlayerbotAIBase::IsActive()
+{
+    return this->nextAICheckDelay < PlayerbotAIConfig::instance().maxWaitForMove;
+}
 
-bool PlayerbotAIBase::IsBotAI() const { return _isBotAI; }
+bool PlayerbotAIBase::IsBotAI() const
+{
+    return this->_isBotAI;
+}

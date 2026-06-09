@@ -387,8 +387,22 @@ public:
     PlayerbotAI(Player* bot);
     virtual ~PlayerbotAI();
 
-    void UpdateAI(uint32 elapsed, bool minimal = false) override;
-    void UpdateAIInternal(uint32 elapsed, bool minimal = false) override;
+    /**
+     * Refactoring area
+     */
+
+    void handleBotDeath() noexcept;
+    void handleBotResurrection() noexcept;
+    void invalidateTarget() noexcept;
+
+    /**
+     * End of refactoring area
+     */
+
+    void UpdateAI(uint32_t elapsed) override;
+    void UpdateAIInternal() override;
+
+    void handleChatReplies();
 
     std::string const HandleRemoteCommand(std::string const command);
     void HandleCommand(uint32 type, std::string const text, Player* fromPlayer);
@@ -400,7 +414,7 @@ public:
     void ChangeEngine(BotState type);
     void ChangeEngineOnCombat();
     void ChangeEngineOnNonCombat();
-    void DoNextAction(bool minimal = false);
+    void DoNextAction();
     virtual bool DoSpecificAction(NextAction::Factory actionFactory, Event event = Event(), bool silent = false);
     void ChangeStrategy(std::string const name, BotState type);
     void ClearStrategies(BotState type);
@@ -543,15 +557,16 @@ public:
     // Checks if the bot is summoned as alt of a player
     bool IsAlt();
     Player* GetGroupLeader();
-    uint32 GetFixedBotNumber(uint32 maxNum = 100);
+    // Returns a semi-random (cycling) number that is fixed for each bot.
+    [[nodiscard]] uint32_t getBotPercentileNumber(uint32_t maxNum = 100, float cyclePerMin = 1) const noexcept;
     GrouperType GetGrouperType();
     GuilderType GetGuilderType();
     bool HasPlayerNearby(WorldPosition* pos, float range = sPlayerbotAIConfig.reactDistance);
     bool HasPlayerNearby(float range = sPlayerbotAIConfig.reactDistance);
     bool HasManyPlayersNearby(uint32 trigerrValue = 20, float range = sPlayerbotAIConfig.sightDistance);
     bool AllowActive(ActivityType activityType);
-    bool AllowActivity(ActivityType activityType = ALL_ACTIVITY, bool checkNow = false);
-    uint32 AutoScaleActivity(uint32 mod);
+    bool allowActivity(ActivityType activityType = ALL_ACTIVITY, bool checkNow = false);
+    [[nodiscard]] uint32_t autoScaleActivity(uint32_t mod) const noexcept;
 
     // Check if player is safe to use.
     bool IsSafe(Player* player);
@@ -570,7 +585,7 @@ public:
 
     void SetMaster(Player* newMaster) { master = newMaster; }
     AiObjectContext* GetAiObjectContext() { return aiObjectContext; }
-    ChatHelper* GetChatHelper() { return &chatHelper; }
+
     bool IsOpposing(Player* player);
     static bool IsOpposing(uint8 race1, uint8 race2);
     PlayerbotSecurity* GetSecurity() { return &security; }
@@ -626,6 +641,18 @@ private:
         return player && player->GetSession() && player->IsInWorld() && !player->IsDuringRemoveFromWorld() &&
                !player->IsBeingTeleported();
     }
+
+    /**
+     * Refactoring area
+     * All following methods have been created to rationalise the code.
+     */
+
+private:
+    bool handleCurrentSpell() noexcept;
+    const Spell* getCurrentlyCastingSpell() const noexcept;
+    void updateNextTransportCheck(const uint32_t elapsed) noexcept;
+    void handleNextTransportCheck() noexcept;
+
 protected:
     Player* bot;
     Player* master;
@@ -634,7 +661,6 @@ protected:
     Engine* currentEngine;
     Engine* engines[BOT_STATE_MAX];
     BotState currentState;
-    ChatHelper chatHelper;
     std::list<ChatCommandHolder> chatCommands;
     std::list<ChatQueuedReply> chatReplies;
     PacketHandlingHelper botOutgoingPacketHandlers;

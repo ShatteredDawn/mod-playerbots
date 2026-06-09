@@ -539,7 +539,7 @@ void PlayerbotHolder::OnBotLogin(Player* const bot)
     }
 
     // check activity
-    botAI->AllowActivity(ALL_ACTIVITY, true);
+    botAI->allowActivity(ALL_ACTIVITY, true);
 
     // set delay on login
     botAI->SetNextCheckDelay(urand(2000, 4000));
@@ -1474,10 +1474,10 @@ PlayerbotMgr::~PlayerbotMgr()
         PlayerbotsMgr::instance().RemovePlayerBotData(master->GetGUID(), false);
 }
 
-void PlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool /*minimal*/)
+void PlayerbotMgr::UpdateAIInternal()
 {
-    SetNextCheckDelay(sPlayerbotAIConfig.reactDelay);
-    CheckTellErrors(elapsed);
+    this->SetNextCheckDelay(PlayerbotAIConfig::instance().reactDelay);
+    this->checkTellErrors();
 }
 
 void PlayerbotMgr::HandleCommand(uint32 type, std::string const text)
@@ -1667,37 +1667,66 @@ void PlayerbotMgr::TellError(std::string const botName, std::string const text)
     errors[text] = names;
 }
 
-void PlayerbotMgr::CheckTellErrors(uint32)
+/**
+ * @brief Deliver aggregated error messages to the master with rate limiting.
+ *
+ * @details
+ * Sends queued bot error messages to the master if the configured delay has
+ * elapsed. Each message is aggregated by error text and lists the bot names
+ * that reported it. Clears the queue when the master or session is unavailable
+ * or after sending.
+ */
+void PlayerbotMgr::checkTellErrors()
 {
-    time_t now = time(nullptr);
-    if ((now - lastErrorTell) < sPlayerbotAIConfig.errorDelay / 1000)
-        return;
+    const time_t now = time(nullptr);
 
-    lastErrorTell = now;
-
-    for (PlayerBotErrorMap::iterator i = errors.begin(); i != errors.end(); ++i)
+    if ((now - this->lastErrorTell) < (PlayerbotAIConfig::instance().errorDelay / 1000))
     {
-        std::string const text = i->first;
-        std::set<std::string> names = i->second;
+        return;
+    }
 
+    this->lastErrorTell = now;
+
+    if (this->master == nullptr)
+    {
+        this->errors.clear();
+
+        return;
+    }
+
+    WorldSession* const session = this->master->GetSession();
+
+    if (session == nullptr)
+    {
+        this->errors.clear();
+
+        return;
+    }
+
+    ChatHandler chatHandler{session};
+
+    for (const std::pair<const std::string, std::set<std::string>>& error : this->errors)
+    {
+        const std::string& text = error.first;
+        const std::set<std::string>& names = error.second;
         std::ostringstream out;
-        bool first = true;
-        for (std::set<std::string>::iterator j = names.begin(); j != names.end(); ++j)
+
+        for (std::set<std::string>::const_iterator j = names.begin(); j != names.end(); ++j)
         {
-            if (!first)
+            if (j != names.begin())
+            {
                 out << ", ";
-            else
-                first = false;
+            }
 
             out << *j;
         }
 
         out << "|cfff00000: " << text;
 
-        ChatHandler(master->GetSession()).PSendSysMessage(out.str().c_str());
+        chatHandler.PSendSysMessage(out.str().c_str());
     }
 
-    errors.clear();
+    this->errors.clear();
 }
 
 void PlayerbotsMgr::AddPlayerbotData(Player* player, bool isBotAI)
@@ -1754,38 +1783,46 @@ void PlayerbotsMgr::RemovePlayerBotData(ObjectGuid const& guid, bool is_AI)
 
 PlayerbotAI* PlayerbotsMgr::GetPlayerbotAI(Player* player)
 {
-    if (!(sPlayerbotAIConfig.enabled) || !player)
+    if (player == nullptr || !(PlayerbotAIConfig::instance().enabled))
     {
         return nullptr;
     }
-    // if (player->GetSession()->isLogingOut() || player->IsDuringRemoveFromWorld())
-    // {
-    //     return nullptr;
-    // }
-    auto itr = _playerbotsAIMap.find(player->GetGUID());
-    if (itr != _playerbotsAIMap.end())
+
+    std::unordered_map<ObjectGuid, PlayerbotAIBase*>::iterator itr = this->_playerbotsAIMap.find(player->GetGUID());
+
+    if (itr == this->_playerbotsAIMap.end())
     {
-        if (itr->second->IsBotAI())
-            return dynamic_cast<PlayerbotAI*>(itr->second);
+        return nullptr;
     }
 
-    return nullptr;
+    if (!itr->second->IsBotAI())
+    {
+        return nullptr;
+    }
+
+    return dynamic_cast<PlayerbotAI*>(itr->second);
 }
 
 PlayerbotMgr* PlayerbotsMgr::GetPlayerbotMgr(Player* player)
 {
-    if (!(sPlayerbotAIConfig.enabled) || !player)
+    if (player == nullptr || !(PlayerbotAIConfig::instance().enabled))
     {
         return nullptr;
     }
-    auto itr = _playerbotsMgrMap.find(player->GetGUID());
-    if (itr != _playerbotsMgrMap.end())
+
+    std::unordered_map<ObjectGuid, PlayerbotAIBase*>::iterator itr = this->_playerbotsMgrMap.find(player->GetGUID());
+
+    if (itr == this->_playerbotsMgrMap.end())
     {
-        if (!itr->second->IsBotAI())
-            return dynamic_cast<PlayerbotMgr*>(itr->second);
+        return nullptr;
     }
 
-    return nullptr;
+    if (itr->second->IsBotAI())
+    {
+        return nullptr;
+    }
+
+    return dynamic_cast<PlayerbotMgr*>(itr->second);
 }
 
 void PlayerbotMgr::HandleSetSecurityKeyCommand(Player* player, const std::string& key)

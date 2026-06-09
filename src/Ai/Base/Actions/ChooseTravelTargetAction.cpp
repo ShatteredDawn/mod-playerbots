@@ -243,7 +243,7 @@ void ChooseTravelTargetAction::ReportTravelTarget(TravelTarget* newTarget, Trave
 
         out << round(newTarget->getDestination()->distanceTo(&botLocation)) << "y";
 
-        out << " for " << chat->FormatQuest(quest);
+        out << " for " << ChatHelper::FormatQuest(quest);
 
         out << " to " << QuestDestination->getTitle();
 
@@ -880,7 +880,7 @@ TravelDestination* ChooseTravelTargetAction::FindDestination(Player* bot, std::s
 
 bool ChooseTravelTargetAction::isUseful()
 {
-    if (!botAI->AllowActivity(TRAVEL_ACTIVITY))
+    if (!botAI->allowActivity(TRAVEL_ACTIVITY))
         return false;
 
     return !context->GetValue<TravelTarget*>("travel target")->Get()->isActive() &&

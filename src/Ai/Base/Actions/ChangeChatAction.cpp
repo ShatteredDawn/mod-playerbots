@@ -5,27 +5,27 @@
 
 #include "ChangeChatAction.h"
 
+#include "AiObjectContext.h"
 #include "Event.h"
-#include "Playerbots.h"
+#include "ChatHelper.h"
+#include "PlayerbotAI.h"
 
 bool ChangeChatAction::Execute(Event event)
 {
-    std::string const text = event.getParam();
-    ChatMsg parsed = chat->parseChat(text);
+    const std::string text = event.getParam();
+    const ChatMsg parsed = ChatHelper::parseChat(text);
+
+    std::ostringstream out{};
+
     if (parsed == CHAT_MSG_SYSTEM)
     {
-        std::ostringstream out;
-        out << "Current chat is " << chat->FormatChat(*context->GetValue<ChatMsg>("chat"));
-        botAI->TellMaster(out);
-    }
-    else
-    {
-        context->GetValue<ChatMsg>("chat")->Set(parsed);
-
-        std::ostringstream out;
-        out << "Chat set to " << chat->FormatChat(parsed);
-        botAI->TellMaster(out);
+        out << "Current chat is " << ChatHelper::FormatChat(*this->context->GetValue<ChatMsg>("chat"));
+        return this->botAI->TellMaster(out);
     }
 
-    return true;
-}
+    this->context->GetValue<ChatMsg>("chat")->Set(parsed);
+
+    out << "Chat set to " << ChatHelper::FormatChat(parsed);
+    return this->botAI->TellMaster(out);
+
+};

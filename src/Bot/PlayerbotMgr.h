@@ -36,7 +36,7 @@ public:
     PlayerBotMap::const_iterator GetPlayerBotsBegin() const { return playerBots.begin(); }
     PlayerBotMap::const_iterator GetPlayerBotsEnd() const { return playerBots.end(); }
 
-    void UpdateAIInternal([[maybe_unused]] uint32 elapsed, [[maybe_unused]] bool minimal = false) override{};
+    void UpdateAIInternal() override{};
     void UpdateSessions();
     void HandleBotPackets(WorldSession* session);
 
@@ -73,7 +73,7 @@ public:
     void OnPlayerLogin(Player* player);
     void CancelLogout();
 
-    void UpdateAIInternal(uint32 elapsed, bool minimal = false) override;
+    void UpdateAIInternal() override;
     void TellError(std::string const botName, std::string const text);
 
     Player* GetMaster() const { return master; };
@@ -87,7 +87,7 @@ public:
 
 protected:
     void OnBotLoginInternal(Player* const bot) override;
-    void CheckTellErrors(uint32 elapsed);
+    void checkTellErrors();
 
 private:
     Player* const master;

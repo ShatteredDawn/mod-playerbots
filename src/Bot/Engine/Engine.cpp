@@ -144,116 +144,166 @@ void Engine::Init()
     }
 }
 
-bool Engine::doNextAction(Unit*, uint32, bool minimal)
+EngineIterationResultEnum Engine::iterate(const bool minimal) noexcept
 {
-    LogAction("--- AI Tick ---");
+    ActionBasket* const basket = this->queue.Peek();
 
-    if (sPlayerbotAIConfig.logValuesPerTick)
-        LogValues();
-
-    bool actionExecuted = false;
-    ActionBasket* basket = nullptr;
-    time_t currentTime = time(nullptr);
-
-    // Update triggers and push default actions
-    ProcessTriggers(minimal);
-    PushDefaultActions();
-
-    uint32 iterations = 0;
-    uint32 iterationsPerTick = this->queue.Size() * (minimal ? 2 : sPlayerbotAIConfig.iterationsPerTick);
-
-    while (++iterations <= iterationsPerTick)
+    if (basket == nullptr)
     {
-        basket = this->queue.Peek();
+        return EngineIterationResultEnum::STOP;
+    }
 
-        if (!basket)
-            break;
+    // for reference
+    float relevance = basket->getRelevance();
+    const bool skipPrerequisites = basket->isSkipPrerequisites();
 
-        float relevance = basket->getRelevance();  // for reference
-        bool skipPrerequisites = basket->isSkipPrerequisites();
+    if (minimal && (relevance < 100.0f))
+    {
+        return EngineIterationResultEnum::STOP;
+    }
 
-        if (minimal && (relevance < 100))
-            continue;
+    const Event event = basket->getEvent();
+    // NOTE: Pop() deletes basket
+    ActionNode* const actionNode = this->queue.Pop();
 
-        Event event = basket->getEvent();
-        ActionNode* actionNode = this->queue.Pop();  // NOTE: Pop() deletes basket
-        Action& action = actionNode->getAction();
+    if (actionNode == nullptr)
+    {
+        return EngineIterationResultEnum::STOP;
+    }
 
-        if (!action.isUseful())
+    Action& action = actionNode->getAction();
+
+    if (!action.isUseful())
+    {
+        this->LogAction("A:%s - USELESS", action.getName().c_str());
+        lastRelevance = relevance;
+
+        // Always delete after processing the action node
+        delete actionNode;
+
+        return EngineIterationResultEnum::CONTINUE;
+    }
+
+    // Apply multipliers early to avoid unnecessary iterations
+    for (Multiplier* const multiplier : multipliers)
+    {
+        relevance *= multiplier->GetValue(action);
+        action.setRelevance(relevance);
+
+        if (relevance <= 0.0f)
         {
-            LogAction("A:%s - USELESS", action.getName().c_str());
-            lastRelevance = relevance;
-            delete actionNode;  // Always delete after processing the action node
-
-            continue;
-        }
-
-        // Apply multipliers early to avoid unnecessary iterations
-        for (Multiplier* multiplier : multipliers)
-        {
-            relevance *= multiplier->GetValue(action);
-            action.setRelevance(relevance);
-
-            if (relevance <= 0)
-            {
-                LogAction("Multiplier %s made action %s useless", multiplier->getName().c_str(), action.getName().c_str());
-                break;
-            }
-        }
-
-        if (relevance <= 0.0f || !action.isPossible())
-        {
-            this->multiplyAndPush(actionNode->getAlternatives(), relevance + 0.003f, false, event);
+            this->LogAction("Multiplier %s made action %s useless", multiplier->getName().c_str(), action.getName().c_str());
 
             delete actionNode;
 
-            continue;
+            return EngineIterationResultEnum::CONTINUE;
         }
+    }
 
-        if (!skipPrerequisites)
+    if (relevance <= 0.0f || !action.isPossible())
+    {
+        this->multiplyAndPush(actionNode->getAlternatives(), relevance + 0.003f, false, event);
+
+
+        delete actionNode;
+
+        return EngineIterationResultEnum::CONTINUE;
+    }
+
+    if (!skipPrerequisites)
+    {
+        this->LogAction("A:%s - PREREQ", action.getName().c_str());
+
+        if (this->multiplyAndPush(actionNode->getPrerequisites(), relevance + 0.002f, false, event))
         {
-            LogAction("A:%s - PREREQ", action.getName().c_str());
+            this->PushAgain(actionNode, relevance + 0.001f, event);
 
-            if (multiplyAndPush(actionNode->getPrerequisites(), relevance + 0.002f, false, event))
-            {
-                PushAgain(actionNode, relevance + 0.001f, event);
-                continue;
-            }
+            return EngineIterationResultEnum::CONTINUE;
         }
+    }
 
-        PerfMonitorOperation* pmo = sPerfMonitor.start(PERF_MON_ACTION, action.getName(), &aiObjectContext->performanceStack);
+    PerfMonitorOperation* const pmo = PerfMonitor::instance().start(PERF_MON_ACTION, action.getName(), &aiObjectContext->performanceStack);
 
-        actionExecuted = this->listenAndExecute(action, event);
+    bool actionExecuted = this->listenAndExecute(action, event);
 
-        if (pmo)
-            pmo->finish();
+    if (pmo)
+    {
+        pmo->finish();
+    }
 
-        if (actionExecuted)
+    if (actionExecuted)
+    {
+        this->LogAction("A:%s - OK", action.getName().c_str());
+
+        this->multiplyAndPush(actionNode->getContinuers(), relevance, false, event);
+
+        lastRelevance = relevance;
+
+        // Safe memory management
+        delete actionNode;
+
+        return EngineIterationResultEnum::ACTION_EXECUTED;
+    }
+
+    this->multiplyAndPush(actionNode->getAlternatives(), relevance + 0.003f, false, event);
+
+    // Always delete after processing the action node
+    delete actionNode;
+
+    return EngineIterationResultEnum::CONTINUE;
+}
+
+bool Engine::doNextAction(bool minimal)
+{
+    this->LogAction("--- AI Tick ---");
+
+    if (PlayerbotAIConfig::instance().logValuesPerTick)
+    {
+        this->LogValues();
+    }
+
+    bool actionExecuted = false;
+    const time_t currentTime = time(nullptr);
+
+    // Update triggers and push default actions
+
+    this->ProcessTriggers(minimal);
+    this->PushDefaultActions();
+
+    const std::size_t queueSize = this->queue.Size();
+    std::size_t iterationsPerTick = queueSize * 2;
+
+    if (!minimal)
+    {
+        iterationsPerTick = queueSize * PlayerbotAIConfig::instance().iterationsPerTick;
+    }
+
+    for (size_t i = 0; i < iterationsPerTick; ++i)
+    {
+        const EngineIterationResultEnum result = this->iterate(minimal);
+
+        if (result == EngineIterationResultEnum::ACTION_EXECUTED)
         {
-            LogAction("A:%s - OK", action.getName().c_str());
-
-            this->multiplyAndPush(actionNode->getContinuers(), relevance, false, event);
-
-            lastRelevance = relevance;
-
-            delete actionNode;  // Safe memory management
+            actionExecuted = true;
 
             break;
         }
 
-        // LogAction("A:%s - FAILED", action->getName().c_str());
-        this->multiplyAndPush(actionNode->getAlternatives(), relevance + 0.003f, false, event);
-
-        delete actionNode;  // Always delete after processing the action node
+        if (result == EngineIterationResultEnum::STOP)
+        {
+            break;
+        }
     }
 
-    if (time(nullptr) - currentTime > 1)
+    if (time(nullptr) - currentTime > 1u)
     {
-        LogAction("Execution time exceeded 1 second");
+        this->LogAction("Execution time exceeded 1 second");
     }
 
     if (!actionExecuted)
-        LogAction("no actions executed");
+    {
+        this->LogAction("no actions executed");
+    }
 
     this->queue.RemoveExpired();
 
@@ -435,64 +485,117 @@ Strategy* Engine::GetStrategy(std::string const name)
     return i != strategies.end() ? i->second : nullptr;
 }
 
+/**
+ * @brief Process triggers, collect fired events, and enqueue handler actions.
+ *
+ * @details
+ * This pass evaluates each registered `TriggerNode` at most once per tick, caching
+ * the resulting `Event` per `Trigger` to avoid duplicate checks. It respects
+ * trigger throttling via `Trigger::needCheck()` (unless in test mode) and supports
+ * a minimal mode that skips low-relevance triggers. When a trigger fires, its
+ * handler actions are enqueued with `multiplyAndPush()`. Finally, all triggers are
+ * reset to clear internal state for the next tick.
+ *
+ * @param minimal If true, only process triggers with high relevance.
+ */
 void Engine::ProcessTriggers(bool minimal)
 {
-    std::unordered_map<Trigger*, Event> fires;
-    uint32 now = getMSTime();
-    for (std::vector<TriggerNode*>::iterator i = triggers.begin(); i != triggers.end(); i++)
+    std::unordered_map<Trigger*, Event> fires{};
+
+    const uint32_t now = getMSTime();
+
+    for (TriggerNode* const triggerNode : triggers)
     {
-        TriggerNode* node = *i;
-        if (!node)
-            continue;
-
-        Trigger* trigger = node->getTrigger();
-        if (!trigger)
+        if (triggerNode == nullptr)
         {
-            trigger = aiObjectContext->GetTrigger(node->getName());
-            node->setTrigger(trigger);
+            continue;
         }
 
-        if (!trigger)
-            continue;
+        Trigger* trigger = triggerNode->getTrigger();
 
-        if (fires.find(trigger) != fires.end())
-            continue;
-
-        if (testMode || trigger->needCheck(now))
+        if (trigger == nullptr)
         {
-            if (minimal && node->getFirstRelevance() < 100)
-                continue;
+            trigger = this->aiObjectContext->GetTrigger(triggerNode->getName());
 
-            PerfMonitorOperation* pmo =
-                sPerfMonitor.start(PERF_MON_TRIGGER, trigger->getName(), &aiObjectContext->performanceStack);
-            Event event = trigger->Check();
-            if (pmo)
-                pmo->finish();
-
-            if (!event)
-                continue;
-
-            fires[trigger] = event;
-            LogAction("T:%s", trigger->getName().c_str());
+            triggerNode->setTrigger(trigger);
         }
+
+        if (trigger == nullptr)
+        {
+            continue;
+        }
+
+        if (fires.contains(trigger))
+        {
+            continue;
+        }
+
+        if (!testMode && !trigger->needCheck(now))
+        {
+            continue;
+        }
+
+        if (minimal && triggerNode->getFirstRelevance() < 100)
+        {
+            continue;
+        }
+
+        PerfMonitorOperation* pmo = PerfMonitor::instance().start(
+            PERF_MON_TRIGGER,
+            trigger->getName(),
+            &aiObjectContext->performanceStack
+        );
+        Event event = trigger->Check();
+
+        if (pmo)
+        {
+            pmo->finish();
+        }
+
+        if (event.GetSource().empty())
+        {
+            continue;
+        }
+
+        fires[trigger] = event;
+
+        this->LogAction("T:%s", trigger->getName().c_str());
     }
 
-    for (std::vector<TriggerNode*>::iterator i = triggers.begin(); i != triggers.end(); i++)
+    for (TriggerNode* const triggerNode : triggers)
     {
-        TriggerNode* node = *i;
-        Trigger* trigger = node->getTrigger();
-        if (fires.find(trigger) == fires.end())
+        if (triggerNode == nullptr)
+        {
             continue;
+        }
+
+        Trigger* trigger = triggerNode->getTrigger();
+
+        if (trigger == nullptr || !fires.contains(trigger))
+        {
+            continue;
+        }
 
         Event event = fires[trigger];
 
-        this->multiplyAndPush(node->getHandlers(), 0.0f, false, event);
+        this->multiplyAndPush(triggerNode->getHandlers(), 0.0f, false, event);
     }
 
-    for (std::vector<TriggerNode*>::iterator i = triggers.begin(); i != triggers.end(); i++)
+    for (TriggerNode* const triggerNode : triggers)
     {
-        if (Trigger* trigger = (*i)->getTrigger())
-            trigger->Reset();
+        if (triggerNode == nullptr)
+        {
+            continue;
+        }
+
+        Trigger* trigger = triggerNode->getTrigger();
+
+        if (trigger == nullptr)
+        {
+            continue;
+        }
+
+        trigger->Reset();
     }
 }
 

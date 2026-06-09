@@ -3,12 +3,11 @@
  * and/or modify it under version 3 of the License, or (at your option), any later version.
  */
 
-#ifndef _PLAYERBOT_EXTERNALEVENTHELPER_H
-#define _PLAYERBOT_EXTERNALEVENTHELPER_H
+#pragma once
 
 #include <map>
-
-#include "Common.h"
+#include <string>
+#include <cstdint>
 
 class AiObjectContext;
 class Player;
@@ -19,12 +18,10 @@ class ExternalEventHelper
 public:
     ExternalEventHelper(AiObjectContext* aiObjectContext) : aiObjectContext(aiObjectContext) {}
 
-    bool ParseChatCommand(std::string const command, Player* owner = nullptr);
-    void HandlePacket(std::map<uint16, std::string>& handlers, WorldPacket const& packet, Player* owner = nullptr);
-    bool HandleCommand(std::string const name, std::string const param, Player* owner = nullptr);
+    bool ParseChatCommand(const std::string command, Player& owner);
+    void HandlePacket(std::map<uint16_t, std::string>& handlers, WorldPacket const& packet, Player* owner = nullptr);
+    bool HandleCommand(const std::string name, const std::string param, Player& owner);
 
 private:
     AiObjectContext* aiObjectContext;
 };
-
-#endif

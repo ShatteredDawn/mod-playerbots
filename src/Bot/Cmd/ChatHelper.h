@@ -8,9 +8,7 @@
 
 #include <map>
 
-#include "Common.h"
 #include "ObjectGuid.h"
-#include "PlayerbotAIAware.h"
 #include "SharedDefines.h"
 
 class GameObject;
@@ -30,16 +28,13 @@ struct ItemWithRandomProperty {
     int32 randomPropertyId{0};
 };
 
-class ChatHelper : public PlayerbotAIAware
+class ChatHelper
 {
 public:
-    ChatHelper(PlayerbotAI* botAI);
-
     static std::string const formatMoney(uint32 copper);
     static uint32 parseMoney(std::string const text);
     static ItemIds parseItems(std::string const text);
     static ItemWithRandomProperty parseItemWithRandomProperty(std::string const text);
-    uint32 parseSpell(std::string const text);
     static std::string parseValue(const std::string& type, const std::string& text);
 
     static std::string const FormatQuest(Quest const* quest);
@@ -64,18 +59,26 @@ public:
     static uint32 parseItemQuality(std::string const text);
     static bool parseItemClass(std::string const text, uint32* itemClass, uint32* itemSubClass);
     static uint32 parseSlot(std::string const text);
-    uint32 parseSkill(std::string const text);
+    static uint32 ParseSkill(std::string const text);
 
     static bool parseableItem(std::string const text);
 
-    void eraseAllSubStr(std::string& mainStr, std::string const toErase);
+    static void EraseAllSubStr(std::string& mainStr, std::string const toErase);
 
     static std::set<uint32> ExtractAllQuestIds(const std::string& text);
     static std::set<uint32> ExtractAllItemIds(const std::string& text);
 
 private:
+    ChatHelper() = delete;
+    ~ChatHelper() = delete;
+
+    ChatHelper(ChatHelper const&) = delete;
+    ChatHelper& operator=(ChatHelper const&) = delete;
+
+    ChatHelper(ChatHelper&&) = delete;
+    ChatHelper& operator=(ChatHelper&&) = delete;
+
     static std::map<std::string, uint32> consumableSubClasses;
-    static std::map<std::string, uint32> tradeSubClasses;
     static std::map<std::string, uint32> itemQualities;
     static std::map<std::string, uint32> projectileSubClasses;
     static std::map<std::string, uint32> slots;

@@ -6,7 +6,8 @@
 #ifndef _PLAYERBOT_AIOBJECT_H
 #define _PLAYERBOT_AIOBJECT_H
 
-#include "Common.h"
+#include <string>
+
 #include "PlayerbotAIAware.h"
 
 class AiObjectContext;
@@ -23,7 +24,6 @@ protected:
     Player* bot;
     Player* GetMaster();
     AiObjectContext* context;
-    ChatHelper* chat;
 };
 
 class AiNamedObject : public AiObject

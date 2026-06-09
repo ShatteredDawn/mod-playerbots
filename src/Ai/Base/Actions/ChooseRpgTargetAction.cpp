@@ -33,7 +33,7 @@ bool ChooseRpgTargetAction::HasSameTarget(ObjectGuid guid, uint32 max, GuidVecto
         if (!botAI)
             continue;
 
-        if (!botAI->AllowActivity(GRIND_ACTIVITY))
+        if (!botAI->allowActivity(GRIND_ACTIVITY))
             continue;
 
         if (PAI_VALUE(GuidPosition, "rpg target") != guid)
@@ -255,7 +255,7 @@ bool ChooseRpgTargetAction::Execute(Event)
     {
         std::ostringstream out;
         out << "found: ";
-        out << chat->FormatWorldobject(guidP.GetWorldObject());
+        out << ChatHelper::FormatWorldobject(guidP.GetWorldObject());
         out << " " << relevances.front();
 
         botAI->TellMasterNoFacing(out);
@@ -268,7 +268,7 @@ bool ChooseRpgTargetAction::Execute(Event)
 
 bool ChooseRpgTargetAction::isUseful()
 {
-    if (!botAI->AllowActivity(RPG_ACTIVITY))
+    if (!botAI->allowActivity(RPG_ACTIVITY))
         return false;
 
     GuidPosition guidP = AI_VALUE(GuidPosition, "rpg target");

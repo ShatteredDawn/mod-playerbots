@@ -97,7 +97,7 @@ public:
     }
 
     void LogPlayerLocation();
-    void UpdateAIInternal(uint32 elapsed, bool minimal = false) override;
+    void UpdateAIInternal() override;
 
     uint32 activeBots = 0;
     static bool HandlePlayerbotConsoleCommand(ChatHandler* handler, char const* args);
