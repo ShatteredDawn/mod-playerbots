@@ -1,0 +1,147 @@
+#pragma once
+
+#include <cstdint>
+
+#include "Item.h"
+#include "ItemTemplate.h"
+
+#include "StatsWeightCalculator.h"
+#include "AbstractItemInspector.h"
+#include "ItemActionStruct.h"
+#include "ItemActionEnum.h"
+#include "InventoryService.h"
+
+class ArmorItemInspector : public AbstractItemInspector
+{
+public:
+	ArmorItemInspector(
+		uint64_t playerLowGUID,
+		uint64_t itemLowGUID
+	) : AbstractItemInspector(playerLowGUID, itemLowGUID)
+	{}
+
+	bool isInspectable() const override
+	{
+		const uint8_t itemClass = this->getCurrentItemClass();
+
+		return AbstractItemInspector::isInspectable() && itemClass == ITEM_CLASS_ARMOR;
+	}
+
+	ItemActionStruct determineItemAction() const override
+	{
+		if (!this->isInspectable())
+		{
+			LOG_DEBUG("playerbots.armor.inspector", "Item is not inspectable");
+
+			return this->getDefaultItemAction();
+		}
+
+		if (this->isForbiddenItem())
+			return this->getForbiddenItemAction();
+
+		const ObjectGuid playerGUID = ObjectGuid::Create<HighGuid::Player>(this->playerLowGUID);
+		Player* player = ObjectAccessor::FindPlayer(playerGUID);
+
+		if (player == nullptr)
+		{
+			LOG_DEBUG("playerbots.armor.inspector", "player nullptr");
+
+			return this->getDefaultItemAction();
+		}
+
+		Item* const item = this->getMutableCurrentItem();
+
+		if (item == nullptr)
+		{
+			LOG_DEBUG("playerbots.armor.inspector", "item nullptr");
+
+			return this->getDefaultItemAction();
+		}
+
+		const InventoryResult canUseItem = player->CanUseItem(item);
+
+		if (canUseItem != EQUIP_ERR_OK)
+		{
+			LOG_DEBUG("playerbots.armor.inspector", "player can't use item");
+
+			return this->getSellAction();
+		}
+
+		StatsWeightCalculator statisticsWeightCalculator(player);
+		const ItemTemplate* const itemTemplate = this->getCurrentItemTemplate();
+
+		if (itemTemplate == nullptr)
+		{
+			LOG_DEBUG("playerbots.armor.inspector", "item template nullptr");
+
+			return this->getDefaultItemAction();
+		}
+
+		std::vector<EquipmentSlots> slots = InventoryService::GetInstance().getItemEquipmentSlots(itemTemplate);
+		const float newItemStatisticsWeight = statisticsWeightCalculator.CalculateItem(itemTemplate->ItemId);
+
+		statisticsWeightCalculator.Reset();
+
+		for (uint8_t i = 0; i < slots.size(); ++i)
+		{
+			const uint32_t equipmentSlot = slots[i];
+			const Item* const currentlyEquippedItem = player->GetItemByPos(INVENTORY_SLOT_BAG_0, equipmentSlot);
+
+			if (currentlyEquippedItem == nullptr)
+			{
+				LOG_DEBUG("playerbots.armor.inspector", "current item is nullptr");
+
+				return {
+					.action = ItemActionEnum::EQUIP,
+					.bagSlot = this->getBagSlot(),
+					.containerSlot = this->getItemSlot(),
+					.equipmentSlot = equipmentSlot
+				};
+			}
+
+			const ItemTemplate* const currentlyEquippedItemTemplate = currentlyEquippedItem->GetTemplate();
+
+			if (currentlyEquippedItemTemplate == nullptr)
+			{
+				LOG_DEBUG("playerbots.armor.inspector", "current item template nullptr");
+
+				return this->getDefaultItemAction();
+			}
+
+			const float existingItemStatisticsWeight = statisticsWeightCalculator.CalculateItem(currentlyEquippedItemTemplate->ItemId);
+
+			if (existingItemStatisticsWeight < newItemStatisticsWeight)
+			{
+				LOG_DEBUG("playerbots.armor.inspector", "Current item is worse than item");
+
+				return {
+					.action = ItemActionEnum::EQUIP,
+					.bagSlot = this->getBagSlot(),
+					.containerSlot = this->getItemSlot(),
+					.equipmentSlot = equipmentSlot
+				};
+			}
+		}
+
+		return this->getSellAction();
+	}
+
+	bool isForbiddenItem() const
+	{
+		const std::unordered_set<uint32_t> forbiddenItems = this->getForbiddenItemsGUIDs();
+
+		const ItemTemplate* const itemTemplate = this->getCurrentItemTemplate();
+
+		if (itemTemplate == nullptr)
+			return true;
+
+		return forbiddenItems.contains(itemTemplate->ItemId);
+	}
+
+protected:
+
+	const std::unordered_set<uint32_t> getForbiddenItemsGUIDs() const
+	{
+		return {};
+	}
+};

@@ -8,6 +8,7 @@
 #include "CreateNextAction.h"
 #include "ImbueAction.h"
 #include "MageActions.h"
+#include "mage/RefillMageReagentsAction.h"
 
 class GenericMageNonCombatStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
 {
@@ -20,7 +21,7 @@ public:
     }
 
 private:
-    static ActionNode* molten_armor([[maybe_unused]] PlayerbotAI* botAI)
+    static ActionNode* molten_armor(PlayerbotAI*)
     {
         return new ActionNode(
             /*P*/ {},
@@ -29,7 +30,7 @@ private:
         );
     }
 
-    static ActionNode* mage_armor([[maybe_unused]] PlayerbotAI* botAI)
+    static ActionNode* mage_armor(PlayerbotAI*)
     {
         return new ActionNode(
             /*P*/ {},
@@ -38,7 +39,7 @@ private:
         );
     }
 
-    static ActionNode* ice_armor([[maybe_unused]] PlayerbotAI* botAI)
+    static ActionNode* ice_armor(PlayerbotAI*)
     {
         return new ActionNode(
             /*P*/ {},
@@ -86,6 +87,14 @@ void GenericMageNonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& trigg
             "no mana gem",
             {
                 CreateNextAction<CastConjureManaGemAction>(20.0f)
+            }
+        )
+    );
+    triggers.emplace_back(
+        new TriggerNode(
+            "seldom",
+            {
+                CreateNextAction<RefillMageReagentsAction>(ACTION_HIGH)
             }
         )
     );

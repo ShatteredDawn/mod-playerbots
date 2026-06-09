@@ -8,6 +8,7 @@
 #include "CreateNextAction.h"
 #include "GenericActions.h"
 #include "WarlockActions.h"
+#include "warlock/RefillWarlockReagentsAction.h"
 
 class GenericWarlockNonCombatStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
 {
@@ -27,7 +28,7 @@ public:
     // Pets are summoned based on the non-combat strategy you have active, the warlock's level, and if they have a soul shard available
 
 private:
-    static ActionNode* fel_armor([[maybe_unused]] PlayerbotAI* botAI)
+    static ActionNode* fel_armor(PlayerbotAI*)
     {
         return new ActionNode(
             /*P*/ {},
@@ -36,7 +37,7 @@ private:
         );
     }
 
-    static ActionNode* demon_armor([[maybe_unused]] PlayerbotAI* botAI)
+    static ActionNode* demon_armor(PlayerbotAI*)
     {
         return new ActionNode(
             /*P*/ {},
@@ -44,7 +45,7 @@ private:
             /*C*/ {}
         );
     }
-    static ActionNode* summon_voidwalker([[maybe_unused]] PlayerbotAI* botAI)
+    static ActionNode* summon_voidwalker(PlayerbotAI*)
     {
         return new ActionNode(
             /*P*/ {},
@@ -52,7 +53,7 @@ private:
             /*C*/ {}
         );
     }
-    static ActionNode* summon_succubus([[maybe_unused]] PlayerbotAI* botAI)
+    static ActionNode* summon_succubus(PlayerbotAI*)
     {
         return new ActionNode(
             /*P*/ {},
@@ -60,7 +61,7 @@ private:
             /*C*/ {}
         );
     }
-    static ActionNode* summon_felhunter([[maybe_unused]] PlayerbotAI* botAI)
+    static ActionNode* summon_felhunter(PlayerbotAI*)
     {
         return new ActionNode(
             /*P*/ {},
@@ -68,7 +69,7 @@ private:
             /*C*/ {}
         );
     }
-    static ActionNode* summon_felguard([[maybe_unused]] PlayerbotAI* botAI)
+    static ActionNode* summon_felguard(PlayerbotAI*)
     {
         return new ActionNode(
             /*P*/ {},
@@ -179,6 +180,14 @@ void GenericWarlockNonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& tr
             "life tap",
             {
                 CreateNextAction<CastLifeTapAction>(23.0f)
+            }
+        )
+    );
+    triggers.emplace_back(
+        new TriggerNode(
+            "seldom",
+            {
+                CreateNextAction<RefillWarlockReagentsAction>(ACTION_HIGH)
             }
         )
     );

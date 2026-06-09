@@ -8,6 +8,7 @@
 #include "CreateNextAction.h"
 #include "GenericActions.h"
 #include "ShamanActions.h"
+#include "shaman/RefillShamanReagentsAction.h"
 
 class ShamanNonCombatStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
 {
@@ -201,6 +202,17 @@ void ShamanNonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
             }
         )
     );
+
+
+    triggers.emplace_back(
+        new TriggerNode(
+            "seldom",
+            {
+                CreateNextAction<RefillShamanReagentsAction>(ACTION_HIGH)
+            }
+        )
+    );
+
 
     // Out of Combat Buff Triggers
     Player* bot = botAI->GetBot();

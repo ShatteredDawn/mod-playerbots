@@ -18,6 +18,7 @@
 #include "QueryItemUsageAction.h"
 #include "AddLootAction.h"
 #include "LootAction.h"
+#include "Trigger.h"
 #include "UseItemAction.h"
 #include "TellItemCountAction.h"
 #include "EquipAction.h"
@@ -48,6 +49,7 @@
 #include "PetsAction.h"
 #include "PetAttackAction.h"
 #include "LootRollAction.h"
+#include "ManageInventoryAction.h"
 
 class ChatCommandActionNodeFactoryInternal : public NamedObjectFactory<ActionNode>
 {
@@ -521,6 +523,15 @@ void ChatCommandHandlerStrategy::InitTriggers(std::vector<TriggerNode*>& trigger
             }
         )
     );
+
+    triggers.push_back(
+        new TriggerNode(
+            "manage inventory",
+            {
+                CreateNextAction<ManageInventoryAction>(relevance)
+            }
+        )
+    );
 }
 
 ChatCommandHandlerStrategy::ChatCommandHandlerStrategy(PlayerbotAI* botAI) : PassTroughStrategy(botAI)
@@ -530,6 +541,7 @@ ChatCommandHandlerStrategy::ChatCommandHandlerStrategy(PlayerbotAI* botAI) : Pas
     this->supported.push_back({ "tell pvp stats", CreateNextAction<TellPvpStatsAction>(relevance).factory });
     this->supported.push_back({ "quests", CreateNextAction<ListQuestsAction>(relevance).factory });
     this->supported.push_back({ "stats", CreateNextAction<StatsAction>(relevance).factory });
+    this->supported.push_back({ "manage inventory", CreateNextAction<ManageInventoryAction>(relevance).factory });
     this->supported.push_back({ "leave", CreateNextAction<LeaveGroupAction>(relevance).factory });
     this->supported.push_back({ "reputation", CreateNextAction<TellReputationAction>(relevance).factory });
     this->supported.push_back({ "log", CreateNextAction<LogLevelAction>(relevance).factory });

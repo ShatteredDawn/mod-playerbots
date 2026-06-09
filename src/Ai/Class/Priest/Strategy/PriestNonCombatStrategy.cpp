@@ -10,6 +10,7 @@
 #include "ImbueAction.h"
 #include "PriestActions.h"
 #include "PriestNonCombatStrategyActionNodeFactory.h"
+#include "priest/RefillPriestReagentsAction.h"
 
 PriestNonCombatStrategy::PriestNonCombatStrategy(PlayerbotAI* botAI) : NonCombatStrategy(botAI)
 {
@@ -102,6 +103,15 @@ void PriestNonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
             }
         )
     );
+    triggers.emplace_back(
+        new TriggerNode(
+            "seldom",
+            {
+                CreateNextAction<RefillPriestReagentsAction>(ACTION_HIGH)
+            }
+        )
+    );
+
 }
 
 void PriestBuffStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
