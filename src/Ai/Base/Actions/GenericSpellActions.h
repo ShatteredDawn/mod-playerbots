@@ -333,7 +333,6 @@ public:
         return "self target";
     }
     bool isPossible() override;
-    bool isUseful() override;
 };
 
 class CastWillOfTheForsakenAction : public CastSpellAction
@@ -343,7 +342,22 @@ public:
 
     std::string const GetTargetName() override { return "self target"; }
     bool isPossible() override;
-    bool isUseful() override;
+};
+
+class CastStoneformAction : public CastSpellAction
+{
+public:
+    CastStoneformAction(PlayerbotAI* botAI) : CastSpellAction(botAI, "stoneform") {}
+
+    std::string const GetTargetName() override { return "self target"; }
+};
+
+class CastEscapeArtistAction : public CastSpellAction
+{
+public:
+    CastEscapeArtistAction(PlayerbotAI* botAI) : CastSpellAction(botAI, "escape artist") {}
+
+    std::string const GetTargetName() override { return "self target"; }
 };
 
 class UseTrinketAction : public Action
