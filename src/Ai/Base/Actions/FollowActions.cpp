@@ -430,6 +430,26 @@ bool FollowAction::isUseful()
     const std::string target = formation->GetTargetName();
     const Unit* followTarget = this->getResolvedFollowTarget(target);
 
+    if (followTarget == nullptr)
+    {
+        followTarget = this->botAI->GetMaster();
+    }
+
+    if (followTarget == nullptr)
+    {
+        Value<Unit*>* const groupLeaderValue = this->context->GetValue<Unit*>("group leader");
+
+        if (groupLeaderValue != nullptr)
+        {
+            const Unit* const groupLeader = groupLeaderValue->Get();
+
+            if (groupLeader != nullptr)
+            {
+                followTarget = groupLeader;
+            }
+        }
+    }
+
     if (followTarget != nullptr)
     {
         if (followTarget->HasUnitState(UNIT_STATE_IN_FLIGHT))
