@@ -149,6 +149,16 @@ void RaidMcStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
             }
         )
     );
+
+    // Trash
+    triggers.push_back(
+        new TriggerNode(
+            "mc core hound mark",
+            {
+                CreateNextAction<McCoreHoundMarkAction>(ACTION_RAID)
+            }
+        )
+    );
 }
 
 void RaidMcStrategy::InitMultipliers(std::vector<Multiplier*>& multipliers)
