@@ -31,7 +31,6 @@ public:
         creators["frostbolt"] = &frostbolt;
         creators["frostfire bolt"] = &frostfire_bolt;
         creators["scorch"] = &scorch;
-        creators["evocation"] = &evocation;
         creators["remove curse"] = &remove_curse;
         creators["remove curse on party"] = &remove_curse_on_party;
         creators["fireball"] = &fireball;
@@ -61,15 +60,6 @@ private:
         return new ActionNode(
             /*P*/ {},
             /*A*/ { CreateNextAction<CastShootAction>(1.0f) },
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* evocation([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ { CreateNextAction<UseManaPotion>(1.0f) },
             /*C*/ {}
         );
     }
@@ -235,12 +225,6 @@ void GenericMageStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
             )
         );
 
-    triggers.push_back(
-        new TriggerNode(
-            "medium mana", { CreateNextAction<UseManaPotion>(90.0f)
-            }
-        )
-    );
     triggers.push_back(
         new TriggerNode(
             "low mana",

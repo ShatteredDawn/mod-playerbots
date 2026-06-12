@@ -20,7 +20,6 @@ public:
     ShadowPriestStrategyActionNodeFactory()
     {
         creators["mind blast"] = &mind_blast;
-        creators["dispersion"] = &dispersion;
         creators["mind flay"] = &mind_flay;
         creators["smite"] = &smite;
     }
@@ -53,14 +52,6 @@ private:
         );
     }
 
-    static ActionNode* dispersion([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ { CreateNextAction<UseManaPotion>(1.0f) },
-            /*C*/ {}
-        );
-    }
 };
 
 #endif

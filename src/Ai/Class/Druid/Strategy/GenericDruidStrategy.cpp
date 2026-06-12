@@ -30,7 +30,6 @@ public:
         creators["entangling roots on cc"] = &entangling_roots_on_cc;
         creators["cyclone on cc"] = &cyclone_on_cc;
         creators["hibernate on cc"] = &hibernate_on_cc;
-        creators["innervate"] = &innervate;
     }
 
 private:
@@ -120,15 +119,6 @@ private:
         return new ActionNode(
             /*P*/ { CreateNextAction<CastCasterFormAction>(1.0f) },
             /*A*/ {},
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* innervate([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ { CreateNextAction<UseManaPotion>(1.0f) },
             /*C*/ {}
         );
     }
