@@ -19,9 +19,6 @@ public:
         creators["piercing howl"] = &piercing_howl;
         creators["mocking blow"] = &mocking_blow;
         creators["heroic strike"] = &heroic_strike;
-        creators["enraged regeneration"] = &enraged_regeneration;
-        creators["retaliation"] = &retaliation;
-        creators["shattering throw"] = &shattering_throw;
     }
 
 private:
@@ -66,33 +63,6 @@ private:
         return new ActionNode(
             /*P*/ {},
             /*A*/ { CreateNextAction<MeleeAction>(1.0f) },
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* enraged_regeneration(PlayerbotAI*)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* retaliation(PlayerbotAI*)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* shattering_throw(PlayerbotAI*)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
             /*C*/ {}
         );
     }

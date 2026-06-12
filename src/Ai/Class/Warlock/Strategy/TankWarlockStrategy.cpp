@@ -7,51 +7,13 @@
 #include "CreateNextAction.h"
 #include "WarlockActions.h"
 
-// Combat strategy for a Warlock Tank, for certain bosses like Twin Emperors
-// Priority is set to spam Searing Pain and use Shadow Ward on CD
-// Disabled by default
-// To enable, type "co +tank"
-// To disable, type "co -tank"
-
-// ===== Action Node Factory =====
-class TankWarlockStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
-{
-public:
-    TankWarlockStrategyActionNodeFactory()
-    {
-        creators["shadow ward"] = &shadow_ward;
-        creators["searing pain"] = &searing_pain;
-    }
-
-private:
-    static ActionNode* shadow_ward(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-    }
-
-    static ActionNode* searing_pain(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-    }
-};
-
-// ===== Warlock Tank Combat Strategy =====
 TankWarlockStrategy::TankWarlockStrategy(PlayerbotAI* botAI) : GenericWarlockStrategy(botAI)
 {
-    actionNodeFactories.Add(new TankWarlockStrategyActionNodeFactory());
+    // No custom ActionNodeFactory needed
 }
 
 std::vector<NextAction> TankWarlockStrategy::getDefaultActions()
 {
-    // Shadow Ward is the highest priority, Searing Pain next.
     return {
         CreateNextAction<CastShadowWardAction>(27.5f),
         CreateNextAction<CastSearingPainAction>(27.0f)

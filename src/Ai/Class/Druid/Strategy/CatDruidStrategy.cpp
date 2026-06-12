@@ -17,39 +17,15 @@ class CatDruidStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
 public:
     CatDruidStrategyActionNodeFactory()
     {
-        creators["faerie fire (feral)"] = &faerie_fire_feral;
-        creators["melee"] = &melee;
         creators["feral charge - cat"] = &feral_charge_cat;
         creators["cat form"] = &cat_form;
         creators["claw"] = &claw;
-        creators["mangle (cat)"] = &mangle_cat;
-        creators["rake"] = &rake;
-        creators["ferocious bite"] = &ferocious_bite;
-        creators["rip"] = &rip;
         creators["pounce"] = &pounce;
         creators["ravage"] = &ravage;
         creators["prowl"] = &prowl;
     }
 
 private:
-    static ActionNode* faerie_fire_feral([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* melee([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
-            /*C*/ {}
-        );
-    }
-
     static ActionNode* feral_charge_cat([[maybe_unused]] PlayerbotAI* botAI)
     {
         return new ActionNode(
@@ -73,42 +49,6 @@ private:
         return new ActionNode(
             /*P*/ {},
             /*A*/ { CreateNextAction<MeleeAction>(1.0f) },
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* mangle_cat([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* rake([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* ferocious_bite([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* rip([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
             /*C*/ {}
         );
     }
@@ -139,7 +79,6 @@ private:
             /*C*/ {}
         );
     }
-
 };
 
 CatDruidStrategy::CatDruidStrategy(PlayerbotAI* botAI) : FeralDruidStrategy(botAI)

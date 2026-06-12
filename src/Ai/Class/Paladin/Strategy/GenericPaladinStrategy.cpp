@@ -219,7 +219,6 @@ void PaladinCureStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
 
 void PaladinBoostStrategy::InitTriggers(std::vector<TriggerNode*>&)
 {
-
 }
 
 void PaladinCcStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)

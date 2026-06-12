@@ -9,38 +9,9 @@
 #include "GenericActions.h"
 #include "ImbueAction.h"
 
-class GenericDKNonCombatStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
-{
-public:
-    GenericDKNonCombatStrategyActionNodeFactory()
-    {
-        creators["bone shield"] = &bone_shield;
-        creators["horn of winter"] = &horn_of_winter;
-    }
-
-private:
-    static ActionNode* bone_shield(PlayerbotAI*)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* horn_of_winter(PlayerbotAI*)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
-            /*C*/ {}
-        );
-    }
-};
-
 GenericDKNonCombatStrategy::GenericDKNonCombatStrategy(PlayerbotAI* botAI) : NonCombatStrategy(botAI)
 {
-    actionNodeFactories.Add(new GenericDKNonCombatStrategyActionNodeFactory());
+    // No custom ActionNodeFactory needed
 }
 
 void GenericDKNonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
@@ -71,9 +42,4 @@ void GenericDKNonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& trigger
             }
         )
     );
-}
-
-void DKBuffDpsStrategy::InitTriggers(std::vector<TriggerNode*>&)
-{
-
 }

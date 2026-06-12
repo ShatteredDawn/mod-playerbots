@@ -17,7 +17,6 @@ public:
         creators["intercept"] = &intercept;
         creators["piercing howl"] = &piercing_howl;
         creators["pummel"] = &pummel;
-        creators["enraged regeneration"] = &enraged_regeneration;
     }
 
 private:
@@ -53,15 +52,6 @@ private:
         return new ActionNode(
             /*P*/ {},
             /*A*/ { CreateNextAction<CastInterceptAction>(1.0f) },
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* enraged_regeneration(PlayerbotAI*)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
             /*C*/ {}
         );
     }

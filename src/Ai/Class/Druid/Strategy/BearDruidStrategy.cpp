@@ -19,16 +19,11 @@ public:
     BearDruidStrategyActionNodeFactory()
     {
         creators["feral charge - bear"] = &feral_charge_bear;
-        creators["swipe (bear)"] = &swipe_bear;
-        creators["bear form"] = &bear_form;
         creators["dire bear form"] = &dire_bear_form;
-        creators["mangle (bear)"] = &mangle_bear;
         creators["maul"] = &maul;
         creators["bash"] = &bash;
         creators["swipe"] = &swipe;
         creators["lacerate"] = &lacerate;
-        creators["demoralizing roar"] = &demoralizing_roar;
-        creators["taunt spell"] = &growl;
     }
 
 private:
@@ -41,38 +36,11 @@ private:
         );
     }
 
-    static ActionNode* swipe_bear([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* bear_form([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
-            /*C*/ {}
-        );
-    }
-
     static ActionNode* dire_bear_form([[maybe_unused]] PlayerbotAI* botAI)
     {
         return new ActionNode(
             /*P*/ { CreateNextAction<CastCasterFormAction>(1.0f) },
             /*A*/ { CreateNextAction<CastBearFormAction>(1.0f) },
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* mangle_bear([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
             /*C*/ {}
         );
     }
@@ -109,24 +77,6 @@ private:
         return new ActionNode(
             /*P*/ {},
             /*A*/ { CreateNextAction<CastMaulAction>(1.0f) },
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* growl([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* demoralizing_roar([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
             /*C*/ {}
         );
     }

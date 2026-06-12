@@ -20,7 +20,6 @@ public:
         creators["seal of vengeance"] = &seal_of_vengeance;
         creators["seal of command"] = &seal_of_command;
         creators["blessing of might"] = &blessing_of_might;
-        creators["crusader strike"] = &crusader_strike;
         creators["repentance"] = &repentance;
         creators["repentance on enemy healer"] = &repentance_on_enemy_healer;
         creators["repentance on snare target"] = &repentance_on_snare_target;
@@ -60,15 +59,6 @@ private:
         return new ActionNode(
             /*P*/ {},
             /*A*/ { CreateNextAction<CastBlessingOfKingsAction>(1.0f) },
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* crusader_strike([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
             /*C*/ {}
         );
     }

@@ -9,27 +9,9 @@
 #include "MovementActions.h"
 #include "ReachTargetActions.h"
 
-class RestoDruidStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
-{
-public:
-    RestoDruidStrategyActionNodeFactory() {
-        creators["nourish on party"] = &nourish_on_party;
-    }
-
-private:
-    static ActionNode* nourish_on_party([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
-            /*C*/ {}
-        );
-    }
-};
-
 RestoDruidStrategy::RestoDruidStrategy(PlayerbotAI* botAI) : GenericDruidStrategy(botAI)
 {
-    actionNodeFactories.Add(new RestoDruidStrategyActionNodeFactory());
+    // No custom ActionNodeFactory needed
 }
 
 void RestoDruidStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
