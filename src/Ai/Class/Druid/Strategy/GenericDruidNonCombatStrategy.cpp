@@ -27,7 +27,6 @@ public:
         creators["remove curse on party"] = &remove_curse_on_party;
         creators["abolish poison on party"] = &abolish_poison_on_party;
         creators["revive"] = &revive;
-        creators["prowl"] = &prowl;
         creators["aquatic form"] = &aquatic_form;
     }
 
@@ -103,15 +102,6 @@ private:
     {
         return new ActionNode(
             /*P*/ { CreateNextAction<CastCasterFormAction>(1.0f) },
-            /*A*/ {},
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* prowl([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ { CreateNextAction<CastCatFormAction>(1.0f) },
             /*A*/ {},
             /*C*/ {}
         );
@@ -301,14 +291,6 @@ void GenericDruidNonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& trig
                 "often",
                 {
                     CreateNextAction<ImbueWithStoneAction>(1.0f)
-                }
-            )
-        );
-        triggers.push_back(
-            new TriggerNode(
-                "prowl",
-                {
-                    CreateNextAction<CastProwlAction>(ACTION_INTERRUPT)
                 }
             )
         );

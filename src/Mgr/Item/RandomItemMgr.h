@@ -14,12 +14,11 @@
 
 #include "AiFactory.h"
 #include "ItemTemplate.h"
+#include "Player.h"
 
 class ChatHandler;
 
 struct ItemTemplate;
-
-enum EquipmentSlots : uint32;
 
 enum RandomItemType
 {
