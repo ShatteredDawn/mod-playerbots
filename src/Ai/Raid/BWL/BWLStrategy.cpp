@@ -51,4 +51,22 @@ void RaidBwlStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
             }
         )
     );
+
+    triggers.push_back(
+        new TriggerNode(
+            "bwl death talon wyrmguard tank",
+            {
+                CreateNextAction<BwlDeathTalonWyrmguardTankMoveAwayAction>(ACTION_RAID)
+            }
+        )
+    );
+
+    triggers.push_back(
+        new TriggerNode(
+            "bwl death talon wyrmguard ranged",
+            {
+                CreateNextAction<BwlDeathTalonWyrmguardRangedMoveAwayAction>(ACTION_RAID)
+            }
+        )
+    );
 }
