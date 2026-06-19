@@ -9,6 +9,7 @@
 #include "ChatHelper.h"
 #include "GuildTaskMgr.h"
 #include "Item.h"
+#include "ItemTemplate.h"
 #include "LootObjectStack.h"
 #include "PlayerbotAIConfig.h"
 #include "PlayerbotFactory.h"
@@ -207,8 +208,15 @@ ItemUsage ItemUsageValue::Calculate()
             return ITEM_USAGE_NONE; // Not skilled enough to disenchant
         }
 
-        // BoE (Bind on Equip) items should NOT be disenchanted unless they are already bound
-        if (itemTemplate->Bonding == BIND_WHEN_PICKED_UP || (itemTemplate->Bonding == BIND_WHEN_EQUIPPED && isSoulbound))
+        if (
+            enchantingSkill >= itemTemplate->RequiredDisenchantSkill
+            && (
+                itemTemplate->Bonding == BIND_WHEN_PICKED_UP
+                || (
+                    itemTemplate->Bonding == BIND_WHEN_EQUIPPED && isSoulbound
+                )
+            )
+        )
         {
             return ITEM_USAGE_DISENCHANT;
         }
