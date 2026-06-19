@@ -1,5 +1,4 @@
-#ifndef _PLAYERBOT_RAIDGRUULSLAIRSTRATEGY_H
-#define _PLAYERBOT_RAIDGRUULSLAIRSTRATEGY_H
+#pragma once
 
 #include "Strategy.h"
 
@@ -13,5 +12,3 @@ public:
     void InitTriggers(std::vector<TriggerNode*>& triggers) override;
     void InitMultipliers(std::vector<Multiplier*> &multipliers) override;
 };
-
-#endif

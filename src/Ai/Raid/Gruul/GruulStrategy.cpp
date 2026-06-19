@@ -8,7 +8,7 @@ void RaidGruulsLairStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
     // High King Maulgar
     triggers.push_back(
         new TriggerNode(
-            "high king maulgar is main tank",
+            "high king maulgar boss engaged by main tank",
             {
                 CreateNextAction<HighKingMaulgarMainTankAttackMaulgarAction>(ACTION_RAID + 1.0f)
             }
@@ -17,7 +17,7 @@ void RaidGruulsLairStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
 
     triggers.push_back(
         new TriggerNode(
-            "high king maulgar is first assist tank",
+            "high king maulgar olm engaged by first assist tank",
             {
                 CreateNextAction<HighKingMaulgarFirstAssistTankAttackOlmAction>(ACTION_RAID + 1.0f)
             }
@@ -26,7 +26,7 @@ void RaidGruulsLairStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
 
     triggers.push_back(
         new TriggerNode(
-            "high king maulgar is second assist tank",
+            "high king maulgar blindeye engaged by second assist tank",
             {
                 CreateNextAction<HighKingMaulgarSecondAssistTankAttackBlindeyeAction>(ACTION_RAID + 1.0f)
             }
@@ -35,7 +35,7 @@ void RaidGruulsLairStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
 
     triggers.push_back(
         new TriggerNode(
-            "high king maulgar is mage tank",
+            "high king maulgar krosh engaged by mage tank",
             {
                 CreateNextAction<HighKingMaulgarMageTankAttackKroshAction>(ACTION_RAID + 1.0f)
             }
@@ -44,7 +44,7 @@ void RaidGruulsLairStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
 
     triggers.push_back(
         new TriggerNode(
-            "high king maulgar is moonkin tank",
+            "high king maulgar kiggler engaged by moonkin tank",
             {
                 CreateNextAction<HighKingMaulgarMoonkinTankAttackKigglerAction>(ACTION_RAID + 1.0f)
             }
@@ -62,36 +62,36 @@ void RaidGruulsLairStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
 
     triggers.push_back(
         new TriggerNode(
-            "high king maulgar healer in danger",
-            {
-                CreateNextAction<HighKingMaulgarHealerFindSafePositionAction>(ACTION_RAID + 1.0f)
-            }
-        )
-    );
-
-    triggers.push_back(
-        new TriggerNode(
             "high king maulgar boss channeling whirlwind",
             {
-                CreateNextAction<HighKingMaulgarRunAwayFromWhirlwindAction>(ACTION_EMERGENCY + 6.0f)
+                CreateNextAction<HighKingMaulgarRunAwayFromWhirlwindAction>(ACTION_EMERGENCY + 7.0f)
             }
         )
     );
 
     triggers.push_back(
         new TriggerNode(
-            "high king maulgar wild felstalker spawned",
+            "high king maulgar krosh casts blast wave",
             {
-                CreateNextAction<HighKingMaulgarBanishFelstalkerAction>(ACTION_RAID + 2.0f)
+                CreateNextAction<HighKingMaulgarMoveAwayFromBlastNovaDangerAction>(ACTION_EMERGENCY + 6.0f)
             }
         )
     );
 
     triggers.push_back(
         new TriggerNode(
-            "high king maulgar pulling olm and blindeye",
+            "high king maulgar wild fel stalker spawned",
             {
-                CreateNextAction<HighKingMaulgarMisdirectOlmAndBlindeyeAction>(ACTION_RAID + 2.0f)
+                CreateNextAction<HighKingMaulgarBanishFelStalkerAction>(ACTION_RAID + 2.0f)
+            }
+        )
+    );
+
+    triggers.push_back(
+        new TriggerNode(
+            "high king maulgar pulling ogre council",
+            {
+                CreateNextAction<HighKingMaulgarMisdirectOgresToTanksAction>(ACTION_RAID + 2.0f)
             }
         )
     );
@@ -127,10 +127,15 @@ void RaidGruulsLairStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
 
 void RaidGruulsLairStrategy::InitMultipliers(std::vector<Multiplier*>& multipliers)
 {
-    multipliers.push_back(new HighKingMaulgarDisableTankAssistMultiplier(botAI));
+    // High King Maulgar
+    multipliers.push_back(new HighKingMaulgarDelayBloodlustAndHeroismMultiplier(botAI));
+    multipliers.push_back(new HighKingMaulgarControlTankActionsMultiplier(botAI));
     multipliers.push_back(new HighKingMaulgarAvoidWhirlwindMultiplier(botAI));
     multipliers.push_back(new HighKingMaulgarDisableArcaneShotOnKroshMultiplier(botAI));
-    multipliers.push_back(new HighKingMaulgarDisableMageTankAOEMultiplier(botAI));
-    multipliers.push_back(new GruulTheDragonkillerMainTankMovementMultiplier(botAI));
-    multipliers.push_back(new GruulTheDragonkillerGroundSlamMultiplier(botAI));
+    multipliers.push_back(new HighKingMaulgarDisableMageTankAoeMultiplier(botAI));
+
+    // Gruul the Dragonkiller
+    multipliers.push_back(new GruulTheDragonkillerDelayBloodlustAndHeroismMultiplier(botAI));
+    multipliers.push_back(new GruulTheDragonkillerControlTankMovementMultiplier(botAI));
+    multipliers.push_back(new GruulTheDragonkillerStaySpreadForShatterMultiplier(botAI));
 }
