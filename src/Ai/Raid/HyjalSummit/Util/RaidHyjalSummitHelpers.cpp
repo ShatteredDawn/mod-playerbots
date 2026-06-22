@@ -7,8 +7,12 @@
 
 #include <algorithm>
 
-#include "Playerbots.h"
+#include "DynamicObject.h"
+#include "Group.h"
+#include "Player.h"
+#include "PlayerbotAI.h"
 #include "RaidBossHelpers.h"
+#include "Spell.h"
 #include "Timer.h"
 
 namespace HyjalSummitHelpers
