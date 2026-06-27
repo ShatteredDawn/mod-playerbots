@@ -74,6 +74,7 @@ bool TaxiAction::Execute(Event event)
             continue;
         }
 
+        this->bot->GetSession()->SendLearnNewTaxiNode(npc);
         ObjectMgr* const objectMgr = ObjectMgr::instance();
 
         if (objectMgr == nullptr)

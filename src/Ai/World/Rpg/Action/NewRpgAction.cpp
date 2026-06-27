@@ -560,6 +560,8 @@ bool NewRpgTravelFlightAction::Execute(Event)
         bot->Dismount();
     }
 
+    this->bot->GetSession()->SendLearnNewTaxiNode(flightMaster);
+
     if (!this->bot->ActivateTaxiPathTo(nodes, flightMaster, 0))
     {
         LOG_DEBUG(
