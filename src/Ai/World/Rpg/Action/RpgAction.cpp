@@ -108,7 +108,7 @@ bool RpgAction::SetNextRpgAction()
     {
         std::vector<std::pair<Action*, uint32>> sortedActions;
 
-        for (uint64_t i = 0; i < actions.size(); i++)
+        for (uint32_t i = 0; i < actions.size(); i++)
         {
             sortedActions.push_back(std::make_pair(actions[i].get(), relevances[i]));
         }

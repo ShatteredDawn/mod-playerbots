@@ -117,6 +117,11 @@ bool ChooseRpgTargetAction::Execute(Event)
 
     if (master == nullptr || master == bot || GET_PLAYERBOT_AI(master) == nullptr || master->GetMapId() != bot->GetMapId() || master->IsBeingTeleported())
     {
+        Player* player = master;
+        masterRpgTarget = PAI_VALUE(GuidPosition, "rpg target");
+    }
+    else
+    {
         master = nullptr;
     }
 
@@ -201,6 +206,7 @@ bool ChooseRpgTargetAction::Execute(Event)
 
     SET_AI_VALUE(std::string, "next rpg action", "");
 
+    // Only fires when following a playerbot master.
     for (auto it = begin(targets); it != end(targets);)
     {
         //Remove empty targets.
@@ -339,7 +345,7 @@ bool ChooseRpgTargetAction::isFollowValid(Player* bot, WorldPosition pos)
                 groupLeader != nullptr
                 && !groupLeader->isMoving()
             )
-            || PAI_VALUE(WorldPosition, "last long move").distance(pos) < sPlayerbotAIConfig.reactDistance
+            || PAI_VALUE(WorldPosition, "last long move").distance(pos) < PlayerbotAIConfig::instance().reactDistance
         )
             return true;
     }

@@ -4755,6 +4755,31 @@ void TravelMgr::PrepareDestinationCache()
                 if (forAlliance)
                     allianceFlightMasterCache[guid] = pos;
                 flightMastersCount++;
+
+                // Zones that have flight masters but no innkeepers — use flight master as hub
+                static const std::set<uint32> zonesWithoutInnkeeper = {
+                    AREA_BLASTED_LANDS,
+                    AREA_AZSHARA,
+                    AREA_WESTERN_PLAGUELANDS,
+                    AREA_BURNING_STEPPES,
+                    AREA_SEARING_GORGE,
+                    361,  // Felwood (47-57)
+                    490,  // Un'Goro Crater (49-56)
+                    AREA_CRYSTALSONG_FOREST,
+                    AREA_WINTERGRASP
+                };
+                if (zonesWithoutInnkeeper.count(areaId))
+                {
+                    LevelBracket bracket = zone2LevelBracket[areaId];
+                    WorldPosition loc(mapId, x + cos(orient) * 5.0f, y + sin(orient) * 5.0f, z + 0.5f, orient + M_PI);
+                    for (uint32 i = bracket.low; i <= bracket.high; i++)
+                    {
+                        if (forHorde)
+                            hordeHubsPerLevelCache[i].push_back(loc);
+                        if (forAlliance)
+                            allianceHubsPerLevelCache[i].push_back(loc);
+                    }
+                }
             }
             else if (creatureTemplate->npcflag & UNIT_NPC_FLAG_INNKEEPER)
             {

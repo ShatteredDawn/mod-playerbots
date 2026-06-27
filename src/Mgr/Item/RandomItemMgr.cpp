@@ -5,8 +5,11 @@
 
 #include "RandomItemMgr.h"
 
+#include "SpellMgr.h"
 #include "DBCStores.h"
 #include "ItemTemplate.h"
+
+#include "PlayerbotAIConfig.h"
 
 std::unordered_set<uint32> RandomItemMgr::itemCache;
 
@@ -524,7 +527,7 @@ uint32 RandomItemMgr::CalculateStatWeight(ItemTemplate const* proto, uint8 playe
             continue;
 
         // check if it is valid spell
-        SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellData.SpellId);
+        SpellInfo const* spellInfo = SpellMgr::instance()->GetSpellInfo(spellData.SpellId);
         if (!spellInfo)
             continue;
 
@@ -966,7 +969,7 @@ uint32 RandomItemMgr::GetAmmo(uint32 level, uint32 subClass) const
         return 0;
 
     std::vector<uint32> const& ammo = subItr->second;
-    if (!sPlayerbotAIConfig.limitGearExpansion)
+    if (!PlayerbotAIConfig::instance().limitGearExpansion)
         return ammo.front();
 
     static constexpr uint32 EXPANSION_ITEM_ID_TBC   = 23728; // approx. first item in TBC content (patch 2.0)

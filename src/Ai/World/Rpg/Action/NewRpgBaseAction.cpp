@@ -864,7 +864,7 @@ bool NewRpgBaseAction::GetQuestPOIPosAndObjectiveIdx(uint32 questId, std::vector
         bool inComplete = false;
         for (int64_t objective : incompleteObjectiveIdx)
         {
-            if (qPoi.ObjectiveIndex == objective)
+            if (qPoi.ObjectiveIndex == static_cast<int32>(objective))
             {
                 inComplete = true;
                 break;

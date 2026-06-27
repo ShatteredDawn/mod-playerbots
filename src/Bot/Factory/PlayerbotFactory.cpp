@@ -613,8 +613,8 @@ void PlayerbotFactory::Randomize(bool incremental)
 
     const int64_t botLevel = this->level;
 
-    if (!sPlayerbotAIConfig.equipAndSpecPersistence ||
-        botLevel < sPlayerbotAIConfig.equipAndSpecPersistenceLevel)
+    if (!PlayerbotAIConfig::instance().equipAndSpecPersistence ||
+        botLevel < PlayerbotAIConfig::instance().equipAndSpecPersistenceLevel)
     {
         bot->resetTalents(true);
     }
@@ -624,8 +624,8 @@ void PlayerbotFactory::Randomize(bool incremental)
         ClearSkills();
         ClearSpells();
         ResetQuests();
-        if (!sPlayerbotAIConfig.equipAndSpecPersistence ||
-            botLevel < sPlayerbotAIConfig.equipAndSpecPersistenceLevel)
+        if (!PlayerbotAIConfig::instance().equipAndSpecPersistence ||
+            botLevel < PlayerbotAIConfig::instance().equipAndSpecPersistenceLevel)
         {
         {
             ClearAllItems();
@@ -2267,7 +2267,7 @@ void PlayerbotFactory::InitEquipment(bool incremental, bool second_chance)
                         if (proto->Class != ITEM_CLASS_WEAPON && proto->Class != ITEM_CLASS_ARMOR)
                             continue;
 
-                        if (proto->Quality != desiredQuality)
+                        if (proto->Quality != uint32(desiredQuality))
                             continue;
 
                         if (proto->Class == ITEM_CLASS_ARMOR &&
@@ -3934,7 +3934,7 @@ void PlayerbotFactory::InitFood()
     }
 
     uint32 categories[] = {11, 59};
-    for (uint64_t i = 0; i < sizeof(categories) / sizeof(uint32); ++i)
+    for (size_t i = 0; i < sizeof(categories) / sizeof(uint32); ++i)
     {
         uint32 category = categories[i];
         std::vector<uint32>& ids = items[category];
@@ -5130,7 +5130,7 @@ void PlayerbotFactory::ApplyEnchantAndGemsNew(bool)
                     // Ensure meta gem activation
                     for (size_t i = 1; i < curCount.size(); i++)
                     {
-                        if (curCount[i] < requiredActive && (gemProperties->color & (1 << i)))
+                        if (curCount[i] < (uint32)requiredActive && (gemProperties->color & (1 << i)))
                         {
                             score *= 2;
                             break;

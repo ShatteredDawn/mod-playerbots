@@ -418,7 +418,9 @@ ItemIds InventoryAction::parseOutfitItems(std::string const text)
     uint8 pos = text.find("=") + 1;
     while (pos < text.size())
     {
-        uint64_t endPos = text.find(',', pos);
+        uint32 endPos = text.find(',', pos);
+        if (endPos == uint32(-1))
+            endPos = text.size();
 
         std::string const idC = text.substr(pos, endPos - pos);
         uint32 id = atol(idC.c_str());

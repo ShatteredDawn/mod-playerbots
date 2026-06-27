@@ -155,7 +155,7 @@ uint32 SpellIdValue::Calculate()
             auto spellId = *it;
             if (!highestSpellId)
                 highestSpellId = spellId;
-            if (saveMana == rank)
+            if (saveMana == (int32)rank)
                 return spellId;
             lowestSpellId = spellId;
             rank++;

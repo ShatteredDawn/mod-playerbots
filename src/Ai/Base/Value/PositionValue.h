@@ -21,12 +21,6 @@ public:
     {
     }
 
-    PositionInfo(PositionInfo const& other) = default;
-    PositionInfo& operator=(PositionInfo const& other) = default;
-
-    PositionInfo(PositionInfo&& other) = default;
-    PositionInfo& operator=(PositionInfo&& other) = default;
-
     void Set(float newX, float newY, float newZ, uint32 newMapId)
     {
         x = newX;

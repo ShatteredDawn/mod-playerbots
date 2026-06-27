@@ -1368,7 +1368,7 @@ std::string const BGTactics::HandleConsoleCommandPrivate(WorldSession* session, 
         int64_t max = vPaths->size() - 1;
         if (num >= 0)  // num specified or found
         {
-            if (num > max)
+            if (uint32(num) > max)
                 return fmt::format("Path {} of range of 0 - {}", num, max);
             min = num;
             max = num;
@@ -2177,7 +2177,7 @@ bool BGTactics::selectObjective(bool reset)
 
             uint8 defendersProhab = 3;  // Default balanced
 
-            switch (strategy)
+            switch (static_cast<uint8>(strategy))
             {
                 case 0:
                 case 1:

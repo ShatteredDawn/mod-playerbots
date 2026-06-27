@@ -985,7 +985,7 @@ std::vector<uint32> ItemUsageValue::SpellsUsingItem(int64_t itemId, Player* bot)
             continue;
 
         for (uint8 i = 0; i < MAX_SPELL_REAGENTS; i++)
-            if (spellInfo->ReagentCount[i] > 0 && spellInfo->Reagent[i] == itemId)
+            if (spellInfo->ReagentCount[i] > 0 && uint32(spellInfo->Reagent[i]) == itemId)
                 retSpells.push_back(spellId);
     }
 

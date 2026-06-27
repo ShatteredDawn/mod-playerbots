@@ -75,7 +75,7 @@ bool FollowChatShortcutAction::Execute(Event)
         else
         {
             WorldLocation loc = formation->GetLocation();
-            if (Formation::IsNullLocation(loc))
+            if (Formation::IsNullLocation(loc) || loc.GetMapId() == MAPID_INVALID)
                 return false;
 
             MovementPriority priority = botAI->GetState() == BOT_STATE_COMBAT ? MovementPriority::MOVEMENT_COMBAT

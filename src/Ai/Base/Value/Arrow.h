@@ -16,13 +16,6 @@ class UnitPosition
 {
 public:
     UnitPosition(float x, float y) : x(x), y(y) {}
-    ~UnitPosition() = default;
-
-    UnitPosition(UnitPosition const& other) = default;
-    UnitPosition& operator=(UnitPosition const& other) = default;
-
-    UnitPosition(UnitPosition&&) = default;
-    UnitPosition& operator=(UnitPosition&&) = default;
 
     float x, y;
 };

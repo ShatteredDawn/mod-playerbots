@@ -6,7 +6,7 @@
 #include "NearestCorpsesValue.h"
 
 #include "GridNotifiers.h"
-// Required due to
+// Required due to a poor implementation by Azerothcore
 #include "CellImpl.h"
 #include "GridNotifiersImpl.h"
 
