@@ -7,6 +7,7 @@
 
 #include <string>
 #include <cstdint>
+#include <unordered_map>
 
 class Player;
 class PlayerbotAI;
@@ -14,6 +15,8 @@ class Unit;
 
 namespace ai::buff
 {
+
+typedef std::unordered_map<std::string, uint32_t> MissingBuffReagentNoticeMap;
 
 bool IsGroupVariantEnabled(Player* bot, std::string const& name);
 
@@ -32,10 +35,16 @@ bool ShouldDeferGreaterBlessingAssignmentForRecentLogin(Player* bot);
 
 bool HasRequiredReagents(Player* bot, uint32_t spellId);
 
+void ClearMissingBuffReagentNotice(PlayerbotAI* botAI, std::string const& groupName);
+
+bool TryAnnounceMissingBuffReagents(
+    PlayerbotAI* botAI, std::string const& baseName, std::string const& groupName);
+
 std::string UpgradeToGroupIfAppropriate(
     Player* bot,
     PlayerbotAI* botAI,
-    std::string const& baseName);
+    std::string const& baseName,
+    std::string* outMissingReagentGroupName = nullptr);
 
 }
 
