@@ -519,10 +519,11 @@ public:
 
 void AddPlayerbotsSecureLoginScripts();
 
+void AddSC_MagtheridonBotScripts();
 void AddSC_TempestKeepBotScripts();
+void AddSC_HyjalSummitBotScripts();
 void AddSC_IcecrownBotScripts();
 void AddSC_RubySanctumBotScripts();
-void AddSC_HyjalSummitBotScripts();
 
 void AddPlayerbotsScripts()
 {
@@ -537,12 +538,13 @@ void AddPlayerbotsScripts()
     AddPlayerbotsSecureLoginScripts();
     AddPlayerbotsCommandscripts();
     PlayerBotsGuildValidationScript();
+    AddSC_MagtheridonBotScripts();
     AddSC_TempestKeepBotScripts();
     new ZulGurubInstanceScript();
     new HakkarTheSoulflayerScript();
     new HakkarTheSoulflayerPlayerScript();
     new HakkarTheSoulflayerUnitScriptPlayer();
+    AddSC_HyjalSummitBotScripts();
     AddSC_IcecrownBotScripts();
     AddSC_RubySanctumBotScripts();
-    AddSC_HyjalSummitBotScripts();
 }
