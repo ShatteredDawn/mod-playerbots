@@ -71,17 +71,17 @@ void ChatCommandHandlerStrategy::InitTriggers(std::vector<TriggerNode*>& trigger
 
     triggers.push_back(
         new TriggerNode(
-            "pvp stats",
+            "rep",
             {
-                CreateNextAction<TellPvpStatsAction>(relevance)
+                CreateNextAction<TellReputationAction>(relevance)
             }
         )
     );
     triggers.push_back(
         new TriggerNode(
-            "rep",
+            "pvp stats",
             {
-                CreateNextAction<TellReputationAction>(relevance)
+                CreateNextAction<TellPvpStatsAction>(relevance)
             }
         )
     );
@@ -148,22 +148,6 @@ void ChatCommandHandlerStrategy::InitTriggers(std::vector<TriggerNode*>& trigger
             "ue",
             {
                 CreateNextAction<UnequipAction>(relevance)
-            }
-        )
-    );
-    triggers.push_back(
-        new TriggerNode(
-            "t",
-            {
-                CreateNextAction<TradeAction>(relevance)
-            }
-        )
-    );
-    triggers.push_back(
-        new TriggerNode(
-            "nt",
-            {
-                CreateNextAction<TradeAction>(relevance)
             }
         )
     );
@@ -239,22 +223,15 @@ void ChatCommandHandlerStrategy::InitTriggers(std::vector<TriggerNode*>& trigger
             }
         )
     );
+
     triggers.push_back(
         new TriggerNode(
-            "naxx",
+            "tank attack",
             {
-                CreateNextAction<NaxxChatShortcutAction>(relevance)
+                CreateNextAction<TankAttackChatShortcutAction>(relevance)
             }
         )
     );
-    triggers.push_back(
-        new TriggerNode(
-        "tank attack",
-        {
-            CreateNextAction<TankAttackChatShortcutAction>(relevance)
-        }
-    )
-);
     triggers.push_back(
         new TriggerNode(
             "grind",
@@ -387,12 +364,13 @@ void ChatCommandHandlerStrategy::InitTriggers(std::vector<TriggerNode*>& trigger
     );
     triggers.push_back(
         new TriggerNode(
-            "ready",
+            "naxx",
             {
-                CreateNextAction<ReadyCheckAction>(relevance)
+                CreateNextAction<NaxxChatShortcutAction>(relevance)
             }
         )
     );
+
     triggers.push_back(
         new TriggerNode(
             "bwl",
@@ -419,14 +397,6 @@ void ChatCommandHandlerStrategy::InitTriggers(std::vector<TriggerNode*>& trigger
     );
     triggers.push_back(
         new TriggerNode(
-            "open items",
-            {
-                CreateNextAction<OpenItemAction>(relevance)
-            }
-        )
-    );
-    triggers.push_back(
-        new TriggerNode(
             "qi",
             {
                 CreateNextAction<QueryItemUsageAction>(relevance)
@@ -435,89 +405,9 @@ void ChatCommandHandlerStrategy::InitTriggers(std::vector<TriggerNode*>& trigger
     );
     triggers.push_back(
         new TriggerNode(
-            "unlock items",
-            {
-                CreateNextAction<UnlockItemAction>(relevance)
-            }
-        )
-    );
-    triggers.push_back(
-        new TriggerNode(
-            "unlock traded item",
-            {
-                CreateNextAction<UnlockTradedItemAction>(relevance)
-            }
-        )
-    );
-    triggers.push_back(
-        new TriggerNode(
-            "wipe",
-            {
-                CreateNextAction<WipeAction>(relevance)
-            }
-        )
-    );
-    triggers.push_back(
-        new TriggerNode(
-            "tame",
-            {
-                CreateNextAction<TameAction>(relevance)
-            }
-        )
-    );
-    triggers.push_back(
-        new TriggerNode(
-            "glyphs",
-            {
-                CreateNextAction<TellGlyphsAction>(relevance)
-            }
-        )
-    );
-    triggers.push_back(
-        new TriggerNode(
-            "glyph equip",
-            {
-                CreateNextAction<EquipGlyphsAction>(relevance)
-            }
-        )
-    );
-    triggers.push_back(
-        new TriggerNode(
-            "pet",
-            {
-                CreateNextAction<PetsAction>(relevance)
-            }
-        )
-    );
-    triggers.push_back(
-        new TriggerNode(
-            "pet attack",
-            {
-                CreateNextAction<ChatPetAttackAction>(relevance)
-            }
-        )
-    );
-    triggers.push_back(
-        new TriggerNode(
-            "roll",
-            {
-                CreateNextAction<RollAction>(relevance)
-            }
-        )
-    );
-    triggers.push_back(
-        new TriggerNode(
             "focus heal",
             {
                 CreateNextAction<SetFocusHealTargetsAction>(relevance)
-            }
-        )
-    );
-    triggers.push_back(
-        new TriggerNode(
-            "emblems",
-            {
-                CreateNextAction<TellEmblemsAction>(relevance)
             }
         )
     );
@@ -584,8 +474,6 @@ ChatCommandHandlerStrategy::ChatCommandHandlerStrategy(PlayerbotAI* botAI) : Pas
     this->supported.push_back({ "cancel aquatic form", CreateNextAction<CastCancelAquaticFormAction>(relevance).factory});
     this->supported.push_back({ "sendmail", CreateNextAction<SendMailAction>(relevance).factory });
     this->supported.push_back({ "mail", CreateNextAction<MailAction>(relevance).factory });
-    // It seems "outfit" command is not implemente);
-    // this->supported.push_back({ "outfit" });
     this->supported.push_back({ "go", CreateNextAction<GoAction>(relevance).factory });
     this->supported.push_back({ "debug", CreateNextAction<DebugAction>(relevance).factory });
     this->supported.push_back({ "cdebug", CreateNextAction<DebugAction>(relevance).factory });
@@ -595,8 +483,6 @@ ChatCommandHandlerStrategy::ChatCommandHandlerStrategy(PlayerbotAI* botAI) : Pas
     this->supported.push_back({ "craft", CreateNextAction<SetCraftAction>(relevance).factory });
     this->supported.push_back({ "flag", CreateNextAction<FlagAction>(relevance).factory });
     this->supported.push_back({ "range", CreateNextAction<RangeAction>(relevance).factory });
-    // It seems "ra" command is not implemente);
-    // this->supported.push_back({ "ra" });
     this->supported.push_back({ "give leader", CreateNextAction<GiveLeaderAction>(relevance).factory });
     this->supported.push_back({ "cheat", CreateNextAction<CheatAction>(relevance).factory });
     this->supported.push_back({ "ginvite", CreateNextAction<GuildInviteAction>(relevance).factory });
@@ -608,15 +494,14 @@ ChatCommandHandlerStrategy::ChatCommandHandlerStrategy(PlayerbotAI* botAI) : Pas
     this->supported.push_back({ "drink", CreateNextAction<DrinkAction>(relevance).factory });
     this->supported.push_back({ "calc", CreateNextAction<TellCalculateItemAction>(relevance).factory });
     this->supported.push_back({ "open items", CreateNextAction<OpenItemAction>(relevance).factory });
-    // It seems "qi" command is not implemente);
-    // this->supported.push_back({ "qi" });
+    this->supported.push_back( { "roll", CreateNextAction<RollAction>(relevance).factory });
     this->supported.push_back({ "unlock items", CreateNextAction<UnlockItemAction>(relevance).factory });
     this->supported.push_back({ "unlock traded item", CreateNextAction<UnlockTradedItemAction>(relevance).factory });
+    this->supported.push_back({ "wipe", CreateNextAction<WipeAction>(relevance).factory });
     this->supported.push_back({ "tame", CreateNextAction<TameAction>(relevance).factory });
     this->supported.push_back({ "glyphs", CreateNextAction<TellGlyphsAction>(relevance).factory }); // Added for custom Glyph
     this->supported.push_back({ "glyph equip", CreateNextAction<EquipGlyphsAction>(relevance).factory }); // Added for custom Glyph
     this->supported.push_back({ "pet", CreateNextAction<PetsAction>(relevance).factory });
     this->supported.push_back({ "pet attack", CreateNextAction<ChatPetAttackAction>(relevance).factory });
     this->supported.push_back({ "wait for attack time", CreateNextAction<SetWaitForAttackTimeAction>(relevance).factory });
-    this->supported.push_back({ "focus heal", CreateNextAction<SetFocusHealTargetsAction>(relevance).factory });
 }
