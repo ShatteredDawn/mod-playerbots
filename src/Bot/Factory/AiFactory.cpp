@@ -5,7 +5,6 @@
 
 #include "AiFactory.h"
 
-#include "BattlegroundMgr.h"
 #include "DKAiObjectContext.h"
 #include "DruidAiObjectContext.h"
 #include "Engine.h"
@@ -63,15 +62,15 @@ uint8 AiFactory::GetPlayerSpecTab(Player* bot)
     {
         int8 tab = -1;
         uint32 max = 0;
-        for (uint32 i = 0; i < uint32(3); i++)
+        for (uint8_t i = 0; i < 3; i++)
         {
             if (tab == -1 || max < tabs[i])
             {
-                tab = i;
+                tab = int8_t(i);
                 max = tabs[i];
             }
         }
-        return tab;
+        return uint8_t(tab);
     }
     else
     {
@@ -120,11 +119,11 @@ std::map<uint8, uint32> AiFactory::GetPlayerSpecTabs(Player* bot)
         const SpellInfo* spellInfo = sSpellMgr->GetSpellInfo(spellId);
         int rank = spellInfo ? spellInfo->GetRank() : 1;
         if (talentInfo->TalentTab == talentTabIds[0])
-            tabs[0] += rank;
+            tabs[0] += uint32_t(rank);
         if (talentInfo->TalentTab == talentTabIds[1])
-            tabs[1] += rank;
+            tabs[1] += uint32_t(rank);
         if (talentInfo->TalentTab == talentTabIds[2])
-            tabs[2] += rank;
+            tabs[2] += uint32_t(rank);
     }
     return tabs;
 }
