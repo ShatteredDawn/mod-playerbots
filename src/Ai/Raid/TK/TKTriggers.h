@@ -1,5 +1,4 @@
-#ifndef _PLAYERBOT_RAIDTEMPESTKEEPTRIGGERS_H
-#define _PLAYERBOT_RAIDTEMPESTKEEPTRIGGERS_H
+#pragma once
 
 #include "Trigger.h"
 
@@ -334,5 +333,3 @@ public:
         PlayerbotAI* botAI) : Trigger(botAI, "kael'thas sunstrider boss is manipulating gravity") {}
     bool IsActive() override;
 };
-
-#endif

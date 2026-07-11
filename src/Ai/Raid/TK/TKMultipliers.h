@@ -1,5 +1,4 @@
-#ifndef _PLAYERBOT_RAIDTEMPESTKEEPMULTIPLIERS_H
-#define _PLAYERBOT_RAIDTEMPESTKEEPMULTIPLIERS_H
+#pragma once
 
 #include "Multiplier.h"
 
@@ -146,5 +145,3 @@ public:
         PlayerbotAI* botAI) : Multiplier(botAI, "kael'thas sunstrider stay spread during gravity lapse multiplier") {}
     virtual float GetValue(Action& action);
 };
-
-#endif

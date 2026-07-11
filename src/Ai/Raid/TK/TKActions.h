@@ -1,5 +1,4 @@
-#ifndef _PLAYERBOT_RAIDTEMPESTKEEPACTIONS_H
-#define _PLAYERBOT_RAIDTEMPESTKEEPACTIONS_H
+#pragma once
 
 #include "TKKaelthasBossAI.h"
 #include "Action.h"
@@ -406,5 +405,3 @@ public:
         PlayerbotAI* botAI, std::string const name = "kael'thas sunstrider spread out in midair") : MovementAction(botAI, name) {}
     bool Execute(Event event) override;
 };
-
-#endif

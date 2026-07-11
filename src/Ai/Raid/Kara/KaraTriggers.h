@@ -1,5 +1,4 @@
-#ifndef _PLAYERBOT_RAIDKARAZHANTRIGGERS_H
-#define _PLAYERBOT_RAIDKARAZHANTRIGGERS_H
+#pragma once
 
 #include "Trigger.h"
 
@@ -297,5 +296,3 @@ public:
         PlayerbotAI* botAI) : Trigger(botAI, "nightbane need to manage timers and trackers") {}
     bool IsActive() override;
 };
-
-#endif

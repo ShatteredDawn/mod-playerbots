@@ -1,5 +1,4 @@
-#ifndef _PLAYERBOT_RAIDKARAZHANMULTIPLIERS_H
-#define _PLAYERBOT_RAIDKARAZHANMULTIPLIERS_H
+#pragma once
 
 #include "Multiplier.h"
 
@@ -147,4 +146,3 @@ public:
     virtual float GetValue(Action& action);
 };
 
-#endif

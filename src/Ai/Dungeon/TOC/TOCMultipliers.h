@@ -1,7 +1,4 @@
-#ifndef _PLAYERBOT_WOTLKDUNGEONTOCMULTIPLIERS_H
-#define _PLAYERBOT_WOTLKDUNGEONTOCMULTIPLIERS_H
-
-#include "Multiplier.h"
+#pragma once
 
 /* class tocMultiplier : public Multiplier
 {
@@ -12,4 +9,3 @@
         virtual float GetValue(Action* action);
 };
 */
-#endif

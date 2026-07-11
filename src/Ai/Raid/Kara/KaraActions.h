@@ -1,5 +1,4 @@
-#ifndef _PLAYERBOT_RAIDKARAZHANACTIONS_H
-#define _PLAYERBOT_RAIDKARAZHANACTIONS_H
+#pragma once
 
 #include "Action.h"
 #include "AttackAction.h"
@@ -318,5 +317,3 @@ public:
         PlayerbotAI* botAI, std::string const name = "nightbane manage timers and trackers") : Action(botAI, name) {}
     bool Execute(Event event) override;
 };
-
-#endif

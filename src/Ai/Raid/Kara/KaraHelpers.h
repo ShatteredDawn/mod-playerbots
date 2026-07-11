@@ -1,5 +1,4 @@
-#ifndef _PLAYERBOT_RAIDKARAZHANHELPERS_H_
-#define _PLAYERBOT_RAIDKARAZHANHELPERS_H_
+#pragma once
 
 #include <ctime>
 #include <unordered_map>
@@ -126,5 +125,3 @@ namespace KarazhanHelpers
         const std::vector<Unit*>& hazards, float safeDistance, float stepSize, uint8 numAngles,
         float maxSampleDist, bool requireSafePath, float& bestDestX, float& bestDestY, float& bestDestZ);
 }
-
-#endif
