@@ -270,7 +270,7 @@ void MaintenanceAction::performAltMaintenance()
     const PlayerbotAIConfig& configuration = PlayerbotAIConfig::instance();
     PlayerbotFactory factory{this->bot, this->bot->GetLevel()};
 
-    if (configuration.altMaintenanceAttunementQs)
+    if (!botAI->IsAltBot())
     {
         factory.InitAttunementQuests();
     }
@@ -737,7 +737,7 @@ bool MaintenanceAction::Execute(Event)
 
     PlayerbotFactory factory{this->bot, this->bot->GetLevel()};
 
-    if (this->botAI->IsAlt())
+    if (this->botAI->IsAltBot())
     {
         this->performAltMaintenance();
 

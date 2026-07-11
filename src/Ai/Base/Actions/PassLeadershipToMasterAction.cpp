@@ -44,7 +44,7 @@ bool PassLeadershipToMasterAction::Execute(Event)
 
 bool PassLeadershipToMasterAction::isUseful()
 {
-    return this->botAI->IsAlt() && this->bot->GetGroup() && this->bot->GetGroup()->IsLeader(this->bot->GetGUID());
+    return this->botAI->IsAltBot() && this->bot->GetGroup() && this->bot->GetGroup()->IsLeader(this->bot->GetGUID());
 }
 
 bool GiveLeaderAction::isUseful()

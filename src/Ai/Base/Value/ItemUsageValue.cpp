@@ -224,7 +224,6 @@ ItemUsage ItemUsageValue::Calculate()
 
     Player* const master = botAI->GetMaster();
 
-    const bool isSelfBot = (master == bot);
     const bool botNeedsItemForQuest = this->IsItemUsefulForQuest(bot, itemTemplate);
     const bool masterNeedsItemForQuest = master != nullptr && PlayerbotAIConfig::instance().syncQuestWithPlayer && this->IsItemUsefulForQuest(master, itemTemplate);
 
@@ -250,8 +249,8 @@ ItemUsage ItemUsageValue::Calculate()
         return ITEM_USAGE_QUEST;
     }
 
-    // If the bot is NOT acting alone and the master needs this quest item, defer to the master
-    if (!isSelfBot && masterNeedsItemForQuest)
+    // If this is not a self-bot acting alone and the master needs this quest item, defer to the master
+    if (!botAI->IsRealPlayer() && masterNeedsItemForQuest)
     {
         return ITEM_USAGE_NONE;
     }
