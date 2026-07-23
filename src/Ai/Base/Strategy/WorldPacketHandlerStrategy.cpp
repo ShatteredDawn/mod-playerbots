@@ -7,7 +7,6 @@
 #include "AddLootAction.h"
 #include "AreaTriggerAction.h"
 #include "ArenaTeamActions.h"
-#include "AutoMaintenanceOnLevelupAction.h"
 #include "BattleGroundJoinAction.h"
 #include "CreateNextAction.h"
 #include "AcceptInvitationAction.h"
@@ -260,14 +259,6 @@ void WorldPacketHandlerStrategy::InitTriggers(std::vector<TriggerNode*>& trigger
             "xpgain",
             {
                 CreateNextAction<XpGainAction>(relevance)
-            }
-        )
-    );
-    triggers.push_back(
-        new TriggerNode(
-            "levelup",
-            {
-                CreateNextAction<AutoMaintenanceOnLevelupAction>(relevance + 3.0f)
             }
         )
     );

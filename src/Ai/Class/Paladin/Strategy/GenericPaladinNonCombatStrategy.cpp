@@ -11,6 +11,7 @@
 #include "ImbueAction.h"
 #include "PaladinActions.h"
 #include "PaladinGreaterBlessingAction.h"
+#include "paladin/RefillPaladinReagentsAction.h"
 
 GenericPaladinNonCombatStrategy::GenericPaladinNonCombatStrategy(PlayerbotAI* botAI) : NonCombatStrategy(botAI)
 {
@@ -58,6 +59,14 @@ void GenericPaladinNonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& tr
             "party member critical health",
             {
                 CreateNextAction<CastHolyLightOnPartyAction>(28.0f)
+            }
+        )
+    );
+    triggers.emplace_back(
+        new TriggerNode(
+            "seldom",
+            {
+                CreateNextAction<RefillPaladinReagentsAction>(ACTION_HIGH)
             }
         )
     );

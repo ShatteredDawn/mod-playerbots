@@ -12,6 +12,7 @@
 #include "WorldBuffAction.h"
 #include "FishingAction.h"
 #include "EquipAction.h"
+#include "ManageInventoryAction.h"
 
 void NonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
 {
@@ -20,6 +21,14 @@ void NonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
             "random",
             {
                 CreateNextAction<CleanQuestLogAction>(1.0f)
+            }
+        )
+    );
+	triggers.push_back(
+        new TriggerNode(
+            "seldom",
+            {
+                CreateNextAction<ManageInventoryAction>(1.0f)
             }
         )
     );

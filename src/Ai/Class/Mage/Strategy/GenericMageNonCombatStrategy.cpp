@@ -8,6 +8,7 @@
 #include "CreateNextAction.h"
 #include "ImbueAction.h"
 #include "MageActions.h"
+#include "mage/RefillMageReagentsAction.h"
 
 class GenericMageNonCombatStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
 {
@@ -66,6 +67,14 @@ void GenericMageNonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& trigg
             "no mana gem",
             {
                 CreateNextAction<CastConjureManaGemAction>(20.0f)
+            }
+        )
+    );
+    triggers.emplace_back(
+        new TriggerNode(
+            "seldom",
+            {
+                CreateNextAction<RefillMageReagentsAction>(ACTION_HIGH)
             }
         )
     );

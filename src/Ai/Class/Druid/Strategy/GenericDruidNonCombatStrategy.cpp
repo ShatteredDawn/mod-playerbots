@@ -12,6 +12,7 @@
 #include "DruidShapeshiftActions.h"
 #include "GenericActions.h"
 #include "ImbueAction.h"
+#include "druid/RefillDruidReagentsAction.h"
 
 class GenericDruidNonCombatStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
 {
@@ -257,6 +258,14 @@ void GenericDruidNonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& trig
             "party member remove curse",
             {
                 CreateNextAction<CastDruidRemoveCurseOnPartyAction>(ACTION_DISPEL + 7.0f),
+            }
+        )
+    );
+    triggers.emplace_back(
+        new TriggerNode(
+            "seldom",
+            {
+                CreateNextAction<RefillDruidReagentsAction>(ACTION_HIGH)
             }
         )
     );

@@ -39,6 +39,7 @@
 #include "LootRollAction.h"
 #include "SetFocusHealTargetsAction.h"
 #include "MailAction.h"
+#include "ManageInventoryAction.h"
 #include "NamedObjectContext.h"
 #include "NewRpgAction.h"
 #include "PassLeadershipToMasterAction.h"
@@ -99,6 +100,9 @@ public:
         creators["unlock traded item"] = &ChatActionContext::unlock_traded_item;
         creators["range"] = &ChatActionContext::range;
         creators["stats"] = &ChatActionContext::stats;
+
+        creators["manage inventory"] = &ChatActionContext::manage_inventory;
+
         creators["quests"] = &ChatActionContext::quests;
         creators["leave"] = &ChatActionContext::leave;
         creators["reputation"] = &ChatActionContext::reputation;
@@ -292,6 +296,9 @@ private:
     static Action* clean_quest_log(PlayerbotAI* botAI) { return new CleanQuestLogAction(botAI); }
     static Action* share(PlayerbotAI* botAI) { return new ShareQuestAction(botAI); }
     static Action* stats(PlayerbotAI* botAI) { return new StatsAction(botAI); }
+
+    static Action* manage_inventory(PlayerbotAI* botAI) { return new ManageInventoryAction(botAI); }
+
     static Action* quests(PlayerbotAI* botAI) { return new ListQuestsAction(botAI); }
     static Action* leave(PlayerbotAI* botAI) { return new LeaveGroupAction(botAI); }
     static Action* reputation(PlayerbotAI* botAI) { return new TellReputationAction(botAI); }
