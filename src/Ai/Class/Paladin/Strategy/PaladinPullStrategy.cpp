@@ -6,7 +6,6 @@
 #include "PaladinPullStrategy.h"
 
 #include "PlayerbotAI.h"
-#include "Playerbots.h"
 
 std::string PaladinPullStrategy::GetPullActionName() const
 {
