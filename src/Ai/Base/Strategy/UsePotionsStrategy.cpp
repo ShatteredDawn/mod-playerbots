@@ -47,7 +47,7 @@ void UsePotionsStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
     );
     triggers.push_back(
         new TriggerNode(
-            "low mana",
+            "medium mana",
             {
                 CreateNextAction<UseManaPotion>(ACTION_EMERGENCY)
             }

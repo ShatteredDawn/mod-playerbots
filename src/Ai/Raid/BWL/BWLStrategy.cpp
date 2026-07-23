@@ -1,0 +1,132 @@
+#include "BWLStrategy.h"
+
+#include "BossAuraActions.h"
+#include "CreateNextAction.h"
+#include "MageActions.h"
+#include "BWLActions.h"
+#include "BWLMultipliers.h"
+#include "MovementActions.h"
+#include "Strategy.h"
+
+void RaidBwlStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
+{
+    triggers.push_back(
+        new TriggerNode(
+            "often",
+            {
+                CreateNextAction<BwlOnyxiaScaleCloakAuraCheckAction>(ACTION_RAID)
+            }
+        )
+    );
+
+    triggers.push_back(
+        new TriggerNode(
+            "bwl suppression device",
+            {
+                CreateNextAction<BwlTurnOffSuppressionDeviceAction>(ACTION_RAID)
+            }
+        )
+    );
+
+    triggers.push_back(
+        new TriggerNode(
+            "bwl razorgore fire resistance",
+            {
+            CreateNextAction<BossFireResistanceAction>(ACTION_RAID)
+            }
+        )
+    );
+    triggers.push_back(
+        new TriggerNode(
+            "bwl razorgore not mind controlled",
+            {
+            CreateNextAction<BwlRazorgoreAvoidAoeAction>(ACTION_RAID)
+            }
+        )
+    );
+    triggers.push_back(
+        new TriggerNode(
+            "bwl razorgore not mind controlled",
+            {
+            CreateNextAction<BwlRazorgoreMarkBossAction>(ACTION_RAID + 1.0f)
+            }
+        )
+    );
+
+    triggers.push_back(
+        new TriggerNode(
+            "bwl vaelastrasz fire resistance",
+            {
+            CreateNextAction<BossFireResistanceAction>(ACTION_RAID)
+            }
+        )
+    );
+    triggers.push_back(
+        new TriggerNode(
+            "bwl vaelastrasz positioning",
+            {
+            CreateNextAction<RearFlankAction>(ACTION_MOVE + 4.0f)
+            }
+        )
+    );
+    triggers.push_back(
+        new TriggerNode(
+            "bwl vaelastrasz burning adrenaline",
+            {
+            CreateNextAction<BwlVaelastraszMoveAwayAction>(ACTION_RAID + 5.0f)
+            }
+        )
+    );
+
+    triggers.push_back(
+        new TriggerNode(
+            "bwl affliction bronze",
+            {
+                CreateNextAction<BwlUseHourglassSandAction>(ACTION_RAID)
+            }
+        )
+    );
+
+    triggers.push_back(
+        new TriggerNode(
+            "bwl wild magic",
+            {
+                CreateNextAction<CastIceBlockAction>(ACTION_RAID)
+            }
+        )
+    );
+
+    triggers.push_back(
+        new TriggerNode(
+            "bwl nefarian fear ward",
+            {
+                CreateNextAction<BwlNefarianFearWardAction>(ACTION_RAID)
+            }
+        )
+    );
+
+    triggers.push_back(
+        new TriggerNode(
+            "bwl death talon wyrmguard tank",
+            {
+                CreateNextAction<BwlDeathTalonWyrmguardTankMoveAwayAction>(ACTION_RAID)
+            }
+        )
+    );
+
+    triggers.push_back(
+        new TriggerNode(
+            "bwl death talon wyrmguard ranged",
+            {
+                CreateNextAction<BwlDeathTalonWyrmguardRangedMoveAwayAction>(ACTION_RAID)
+            }
+        )
+    );
+}
+
+void RaidBwlStrategy::InitMultipliers(std::vector<Multiplier*>& multipliers)
+{
+    multipliers.push_back(new RazorgoreTankMultiplier(botAI));
+    multipliers.push_back(new VaelastraszTankMultiplier(botAI));
+    multipliers.push_back(new VaelastraszBurningAdrenalineMultiplier(botAI));
+}

@@ -7,6 +7,7 @@
 
 #include "Event.h"
 #include "LastMovementValue.h"
+#include "PlayerbotTextMgr.h"
 #include "PlayerbotAIConfig.h"
 #include "PlayerbotAI.h"
 #include "AiObjectContext.h"
@@ -35,7 +36,8 @@ bool TaxiAction::Execute(Event event)
         movement.taxiNodes.clear();
         movement.Set(nullptr);
 
-        this->botAI->TellMaster("I am ready for the next flight");
+        this->botAI->TellMaster(PlayerbotTextMgr::instance().GetBotTextOrDefault(
+            "taxi_ready_next_flight", "I am ready for the next flight", {}));
 
         return true;
     }
@@ -72,6 +74,7 @@ bool TaxiAction::Execute(Event event)
             continue;
         }
 
+        this->bot->GetSession()->SendLearnNewTaxiNode(npc);
         ObjectMgr* const objectMgr = ObjectMgr::instance();
 
         if (objectMgr == nullptr)
@@ -204,7 +207,8 @@ bool TaxiAction::Execute(Event event)
         {
             movement.taxiNodes.clear();
             movement.Set(nullptr);
-            this->botAI->TellError("I can't fly with you");
+            this->botAI->TellError(PlayerbotTextMgr::instance().GetBotTextOrDefault(
+                "taxi_cant_fly_with_you", "I can't fly with you", {}));
 
             return false;
         }
@@ -212,7 +216,8 @@ bool TaxiAction::Execute(Event event)
         return true;
     }
 
-    this->botAI->TellError("Cannot find any flightmaster to talk");
+    this->botAI->TellError(PlayerbotTextMgr::instance().GetBotTextOrDefault(
+        "taxi_no_flightmaster_nearby", "Cannot find any flightmaster to talk", {}));
 
     return false;
 }

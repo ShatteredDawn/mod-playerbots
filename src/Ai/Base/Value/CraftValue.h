@@ -16,13 +16,6 @@ class CraftData
 {
 public:
     CraftData() : itemId(0) {}
-    ~CraftData() = default;
-
-    CraftData(CraftData const& other) = default;
-    CraftData& operator=(CraftData const& other) = default;
-
-    CraftData(CraftData&&) = default;
-    CraftData& operator=(CraftData&&) = default;
 
     uint32 itemId;
     std::map<uint32, uint32> required, obtained;

@@ -57,4 +57,14 @@ public:
     bool Execute(Event event) override;
 };
 
+class BisGearAction : public Action
+{
+public:
+    BisGearAction(PlayerbotAI* botAI) : Action(botAI, "autogear bis") {}
+    bool Execute(Event event) override;
+
+private:
+    bool RunAutogearFallback(uint16 effectiveIlvl);
+};
+
 #endif

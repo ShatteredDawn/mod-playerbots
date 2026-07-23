@@ -14,78 +14,19 @@ public:
     ArcaneMageStrategyActionNodeFactory()
     {
         creators["arcane blast"] = &arcane_blast;
-        creators["arcane barrage"] = &arcane_barrage;
-        creators["arcane missiles"] = &arcane_missiles;
-        creators["fire blast"] = &fire_blast;
-        creators["frostbolt"] = &frostbolt;
-        creators["arcane power"] = &arcane_power;
-        creators["icy veins"] = &icy_veins;
     }
 
 private:
-    static ActionNode* arcane_blast(PlayerbotAI*)
+    // Arcane Barrage is the alternate for Arcane Blast (cast while moving, or
+    // when Arcane Blast is unavailable - e.g. not yet learned at low levels).
+    static ActionNode* arcane_blast([[maybe_unused]] PlayerbotAI* botAI)
     {
         return new ActionNode(
-            {},
-            {},
-            {}
+            /*P*/ {},
+            /*A*/ { CreateNextAction<CastArcaneBarrageAction>(1.0f) },
+            /*C*/ {}
         );
     }
-
-    static ActionNode* arcane_barrage(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-    }
-
-    static ActionNode* arcane_missiles(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-    }
-
-    static ActionNode* fire_blast(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-    }
-
-    static ActionNode* frostbolt(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-    }
-
-    static ActionNode* arcane_power(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-    }
-
-    static ActionNode* icy_veins(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-    }
-
 };
 
 // ===== Single Target Strategy =====

@@ -341,16 +341,6 @@ void ShamanAoeStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
     {
         triggers.push_back(
             new TriggerNode(
-                "medium aoe",
-                {
-                    CreateNextAction<CastMagmaTotemAction>(24.0f),
-                    CreateNextAction<CastFireNovaAction>(23.0f),
-                }
-            )
-        );
-
-        triggers.push_back(
-            new TriggerNode(
                 "maelstrom weapon 5 and medium aoe",
                 {
                     CreateNextAction<CastChainLightningAction>(22.0f),

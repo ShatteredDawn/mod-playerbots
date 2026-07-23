@@ -7,6 +7,17 @@
 #include "CreateNextAction.h"
 #include "ShamanActions.h"
 
+namespace
+{
+constexpr uint32 SPELL_TOTEM_OF_WRATH = 30706;
+constexpr uint32 SPELL_FLAMETONGUE_TOTEM = 8227;
+constexpr uint32 SPELL_CLEANSING_TOTEM = 8170;
+constexpr uint32 SPELL_MANA_SPRING_TOTEM = 5675;
+constexpr uint32 SPELL_WRATH_OF_AIR_TOTEM = 3738;
+constexpr uint32 SPELL_GROUNDING_TOTEM = 8177;
+constexpr uint32 SPELL_WINDFURY_TOTEM = 8512;
+}
+
 // These combat strategies are used to set the corresponding totems on the bar, and cast the totem when it's missing.
 // There are special cases for Totem of Wrath, Windfury Totem, Wrath of Air totem, and Cleansing totem - these totems
 // aren't learned at level 30, and have fallbacks in order to prevent the trigger from continuously firing.
@@ -173,7 +184,7 @@ void TotemOfWrathStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
     GenericShamanStrategy::InitTriggers(triggers);
     // If the bot hasn't learned Totem of Wrath yet, set Flametongue Totem instead.
     Player* bot = botAI->GetBot();
-    if (bot->HasSpell(30706))
+    if (bot->HasSpell(SPELL_TOTEM_OF_WRATH))
     {
         triggers.push_back(
             new TriggerNode(
@@ -184,7 +195,7 @@ void TotemOfWrathStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
             )
         );
     }
-    else if (bot->HasSpell(8227))
+    else if (bot->HasSpell(SPELL_FLAMETONGUE_TOTEM))
     {
         triggers.push_back(
             new TriggerNode(
@@ -278,7 +289,7 @@ void CleansingTotemStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
     GenericShamanStrategy::InitTriggers(triggers);
     // If the bot hasn't learned Cleansing Totem yet, set Mana Spring Totem instead.
     Player* bot = botAI->GetBot();
-    if (bot->HasSpell(8170))
+    if (bot->HasSpell(SPELL_CLEANSING_TOTEM))
     {
         triggers.push_back(
             new TriggerNode(
@@ -289,7 +300,7 @@ void CleansingTotemStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
             )
         );
     }
-    else if (bot->HasSpell(5675))
+    else if (bot->HasSpell(SPELL_MANA_SPRING_TOTEM))
     {
         triggers.push_back(
             new TriggerNode(
@@ -339,7 +350,7 @@ void WrathOfAirTotemStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
     GenericShamanStrategy::InitTriggers(triggers);
     // If the bot hasn't learned Wrath of Air Totem yet, set Grounding Totem instead.
     Player* bot = botAI->GetBot();
-    if (bot->HasSpell(3738))
+    if (bot->HasSpell(SPELL_WRATH_OF_AIR_TOTEM))
     {
         triggers.push_back(
             new TriggerNode(
@@ -350,7 +361,7 @@ void WrathOfAirTotemStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
             )
         );
     }
-    else if (bot->HasSpell(8177))
+    else if (bot->HasSpell(SPELL_GROUNDING_TOTEM))
     {
         triggers.push_back(
             new TriggerNode(
@@ -377,7 +388,7 @@ void WindfuryTotemStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
     GenericShamanStrategy::InitTriggers(triggers);
     // If the bot hasn't learned Windfury Totem yet, set Grounding Totem instead.
     Player* bot = botAI->GetBot();
-    if (bot->HasSpell(8512))
+    if (bot->HasSpell(SPELL_WINDFURY_TOTEM))
     {
         triggers.push_back(
             new TriggerNode(
@@ -388,7 +399,7 @@ void WindfuryTotemStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
             )
         );
     }
-    else if (bot->HasSpell(8177))
+    else if (bot->HasSpell(SPELL_GROUNDING_TOTEM))
     {
         triggers.push_back(
             new TriggerNode(

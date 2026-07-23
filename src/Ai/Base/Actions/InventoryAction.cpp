@@ -10,6 +10,31 @@
 #include "ItemVisitors.h"
 #include "Playerbots.h"
 
+namespace
+{
+bool isReservedQualifier(std::string const& text)
+{
+    static std::array<std::string_view, 13> const exactQualifiers = {
+        "ammo",
+        "conjured drink",
+        "conjured food",
+        "conjured water",
+        "drink",
+        "food",
+        "healing potion",
+        "mount",
+        "mana potion",
+        "pet",
+        "quest",
+        "recipe",
+        "water"
+    };
+
+    return std::find(exactQualifiers.begin(), exactQualifiers.end(), text) != exactQualifiers.end() ||
+        text.rfind("usage ", 0) == 0;
+}
+}
+
 void InventoryAction::IterateItems(IterateItemsVisitor* visitor, IterateItemsMask mask)
 {
     if (mask & ITERATE_ITEMS_IN_BAGS)
@@ -292,9 +317,12 @@ std::vector<Item*> InventoryAction::parseItems(std::string const text, IterateIt
         found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
     }
 
-    FindNamedItemVisitor visitor(bot, text);
-    IterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
-    found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
+    if (!isReservedQualifier(text))
+    {
+        FindNamedItemVisitor visitor(bot, text);
+        IterateItems(&visitor, ITERATE_ITEMS_IN_BAGS);
+        found.insert(visitor.GetResult().begin(), visitor.GetResult().end());
+    }
 
     uint32 quality = chat->parseItemQuality(text);
     if (quality != MAX_ITEM_QUALITY)
@@ -390,7 +418,9 @@ ItemIds InventoryAction::parseOutfitItems(std::string const text)
     uint8 pos = text.find("=") + 1;
     while (pos < text.size())
     {
-        uint64_t endPos = text.find(',', pos);
+        uint32 endPos = text.find(',', pos);
+        if (endPos == uint32(-1))
+            endPos = text.size();
 
         std::string const idC = text.substr(pos, endPos - pos);
         uint32 id = atol(idC.c_str());

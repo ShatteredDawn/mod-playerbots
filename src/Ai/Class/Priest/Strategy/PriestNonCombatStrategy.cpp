@@ -30,6 +30,14 @@ void PriestNonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
     );
     triggers.push_back(
         new TriggerNode(
+            "vampiric embrace",
+            {
+                CreateNextAction<CastVampiricEmbraceAction>(16.0f)
+            }
+        )
+    );
+    triggers.push_back(
+        new TriggerNode(
             "party member dead",
             {
                 CreateNextAction<CastRemoveShadowformAction>(ACTION_CRITICAL_HEAL + 11.0f),
@@ -108,22 +116,6 @@ void PriestBuffStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
 {
     NonCombatStrategy::InitTriggers(triggers);
 
-    triggers.push_back(
-        new TriggerNode(
-            "prayer of fortitude on party",
-            {
-                CreateNextAction<CastPrayerOfFortitudeOnPartyAction>(12.0f)
-            }
-        )
-    );
-    triggers.push_back(
-        new TriggerNode(
-            "prayer of spirit on party",
-            {
-                CreateNextAction<CastPrayerOfSpiritOnPartyAction>(14.0f)
-            }
-        )
-    );
     triggers.push_back(
         new TriggerNode(
             "power word: fortitude on party",

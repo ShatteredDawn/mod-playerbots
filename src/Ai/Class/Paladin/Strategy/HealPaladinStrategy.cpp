@@ -8,13 +8,9 @@
 #include "PaladinActions.h"
 #include "ReachTargetActions.h"
 
-class HealPaladinStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
-{
-};
-
 HealPaladinStrategy::HealPaladinStrategy(PlayerbotAI* botAI) : GenericPaladinStrategy(botAI)
 {
-    actionNodeFactories.Add(new HealPaladinStrategyActionNodeFactory());
+    // No custom ActionNodeFactory needed
 }
 
 std::vector<NextAction> HealPaladinStrategy::getDefaultActions()

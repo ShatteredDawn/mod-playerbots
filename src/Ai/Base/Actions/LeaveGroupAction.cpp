@@ -7,6 +7,7 @@
 
 #include "Event.h"
 #include "PlayerbotAIConfig.h"
+#include "PlayerbotTextMgr.h"
 #include "Playerbots.h"
 
 bool LeaveGroupAction::Execute(Event event)
@@ -86,7 +87,9 @@ bool LeaveGroupAction::Leave()
 
     Player* master = botAI -> GetMaster();
     if (master)
-        botAI->TellMaster("Goodbye!", PLAYERBOT_SECURITY_TALK);
+        botAI->TellMaster(
+            PlayerbotTextMgr::instance().GetBotTextOrDefault("goodbye", "Goodbye!", {}),
+            PLAYERBOT_SECURITY_TALK);
 
     botAI->LeaveOrDisbandGroup();
     return true;
@@ -123,7 +126,7 @@ bool LeaveFarAwayAction::isUseful()
     if (trueMaster && !GET_PLAYERBOT_AI(trueMaster))
         return false;
 
-    if (botAI->IsAlt() &&
+    if (botAI->IsAltBot() &&
         (!groupLeaderBotAI || groupLeaderBotAI->IsRealPlayer()))  // Don't leave group when alt grouped with player groupLeader.
         return false;
 

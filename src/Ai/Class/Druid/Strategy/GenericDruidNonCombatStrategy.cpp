@@ -8,6 +8,7 @@
 #include "AiFactory.h"
 #include "CreateNextAction.h"
 #include "DruidActions.h"
+#include "DruidCatActions.h"
 #include "DruidShapeshiftActions.h"
 #include "GenericActions.h"
 #include "ImbueAction.h"
@@ -21,12 +22,12 @@ public:
         creators["thorns on party"] = &thorns_on_party;
         creators["mark of the wild"] = &mark_of_the_wild;
         creators["mark of the wild on party"] = &mark_of_the_wild_on_party;
-        // creators["innervate"] = &innervate;
         creators["regrowth_on_party"] = &regrowth_on_party;
         creators["rejuvenation on party"] = &rejuvenation_on_party;
         creators["remove curse on party"] = &remove_curse_on_party;
         creators["abolish poison on party"] = &abolish_poison_on_party;
         creators["revive"] = &revive;
+        creators["aquatic form"] = &aquatic_form;
     }
 
 private:
@@ -98,6 +99,15 @@ private:
         );
     }
     static ActionNode* revive([[maybe_unused]] PlayerbotAI* botAI)
+    {
+        return new ActionNode(
+            /*P*/ { CreateNextAction<CastCasterFormAction>(1.0f) },
+            /*A*/ {},
+            /*C*/ {}
+        );
+    }
+
+    static ActionNode* aquatic_form([[maybe_unused]] PlayerbotAI* botAI)
     {
         return new ActionNode(
             /*P*/ { CreateNextAction<CastCasterFormAction>(1.0f) },
@@ -251,11 +261,40 @@ void GenericDruidNonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& trig
         )
     );
 
+    triggers.push_back(
+        new TriggerNode(
+            "aquatic form",
+            {
+                CreateNextAction<CastAquaticFormAction>(10.0f)
+            }
+        )
+    );
+
     int specTab = AiFactory::GetPlayerSpecTab(botAI->GetBot());
-    if (specTab == 0 || specTab == 2) // Balance or Restoration
-        triggers.push_back(new TriggerNode("often", { CreateNextAction<ImbueWithOilAction>(1.0f) }));
-    if (specTab == 1) // Feral
-        triggers.push_back(new TriggerNode("often", { CreateNextAction<ImbueWithStoneAction>(1.0f) }));
+
+    if (specTab == DRUID_TAB_BALANCE || specTab == DRUID_TAB_RESTORATION)
+    {
+        triggers.push_back(
+            new TriggerNode(
+                "often",
+                {
+                    CreateNextAction<ImbueWithOilAction>(1.0f)
+                }
+            )
+        );
+    }
+
+    if (specTab == DRUID_TAB_FERAL)
+    {
+        triggers.push_back(
+            new TriggerNode(
+                "often",
+                {
+                    CreateNextAction<ImbueWithStoneAction>(1.0f)
+                }
+            )
+        );
+    }
 
 }
 

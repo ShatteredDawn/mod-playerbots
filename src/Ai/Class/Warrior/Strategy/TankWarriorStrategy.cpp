@@ -20,8 +20,6 @@ public:
         creators["heroic throw taunt"] = &heroic_throw_taunt;
         creators["taunt"] = &taunt;
         creators["taunt spell"] = &taunt;
-        creators["vigilance"] = &vigilance;
-        creators["enraged regeneration"] = &enraged_regeneration;
     }
 
 private:
@@ -96,24 +94,6 @@ private:
                 CreateNextAction<CastHeroicThrowAction>(1.0f),
                 CreateNextAction<CastShieldSlamAction>(1.0f),
             },
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* vigilance(PlayerbotAI*)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* enraged_regeneration(PlayerbotAI*)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
             /*C*/ {}
         );
     }

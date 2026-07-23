@@ -551,7 +551,7 @@ bool NewRpgTravelFlightAction::Execute(Event)
         return this->MoveFarTo(flightMaster);
     }
 
-    std::vector<uint32> nodes = {data.fromNode, data.toNode};
+    std::vector<uint32> nodes = data.path;
 
     this->botAI->RemoveShapeshift();
 
@@ -559,6 +559,8 @@ bool NewRpgTravelFlightAction::Execute(Event)
     {
         bot->Dismount();
     }
+
+    this->bot->GetSession()->SendLearnNewTaxiNode(flightMaster);
 
     if (!this->bot->ActivateTaxiPathTo(nodes, flightMaster, 0))
     {
@@ -568,7 +570,7 @@ bool NewRpgTravelFlightAction::Execute(Event)
             this->bot->GetName(),
             flightMaster->GetEntry(),
             nodes[0],
-            nodes[1]
+            nodes[nodes.size() - 1]
         );
         this->botAI->rpgInfo.ChangeToIdle();
     }

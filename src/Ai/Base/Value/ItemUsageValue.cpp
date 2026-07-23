@@ -9,6 +9,7 @@
 #include "ChatHelper.h"
 #include "GuildTaskMgr.h"
 #include "Item.h"
+#include "ItemTemplate.h"
 #include "LootObjectStack.h"
 #include "PlayerbotAIConfig.h"
 #include "PlayerbotFactory.h"
@@ -207,8 +208,15 @@ ItemUsage ItemUsageValue::Calculate()
             return ITEM_USAGE_NONE; // Not skilled enough to disenchant
         }
 
-        // BoE (Bind on Equip) items should NOT be disenchanted unless they are already bound
-        if (itemTemplate->Bonding == BIND_WHEN_PICKED_UP || (itemTemplate->Bonding == BIND_WHEN_EQUIPPED && isSoulbound))
+        if (
+            enchantingSkill >= itemTemplate->RequiredDisenchantSkill
+            && (
+                itemTemplate->Bonding == BIND_WHEN_PICKED_UP
+                || (
+                    itemTemplate->Bonding == BIND_WHEN_EQUIPPED && isSoulbound
+                )
+            )
+        )
         {
             return ITEM_USAGE_DISENCHANT;
         }
@@ -216,7 +224,6 @@ ItemUsage ItemUsageValue::Calculate()
 
     Player* const master = botAI->GetMaster();
 
-    const bool isSelfBot = (master == bot);
     const bool botNeedsItemForQuest = this->IsItemUsefulForQuest(bot, itemTemplate);
     const bool masterNeedsItemForQuest = master != nullptr && PlayerbotAIConfig::instance().syncQuestWithPlayer && this->IsItemUsefulForQuest(master, itemTemplate);
 
@@ -242,8 +249,8 @@ ItemUsage ItemUsageValue::Calculate()
         return ITEM_USAGE_QUEST;
     }
 
-    // If the bot is NOT acting alone and the master needs this quest item, defer to the master
-    if (!isSelfBot && masterNeedsItemForQuest)
+    // If this is not a self-bot acting alone and the master needs this quest item, defer to the master
+    if (!botAI->IsRealPlayer() && masterNeedsItemForQuest)
     {
         return ITEM_USAGE_NONE;
     }
@@ -349,10 +356,10 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemTemplate const* itemProto, 
     if (itemScore)
         shouldEquip = true;
 
-    if (itemProto->Class == ITEM_CLASS_WEAPON && !sRandomItemMgr.CanEquipWeapon(bot->getClass(), itemProto))
+    if (itemProto->Class == ITEM_CLASS_WEAPON && !sRandomItemMgr.CanEquipWeapon(itemProto, bot->getClass()))
         shouldEquip = false;
     if (itemProto->Class == ITEM_CLASS_ARMOR &&
-        !sRandomItemMgr.CanEquipArmor(bot->getClass(), bot->GetLevel(), itemProto))
+        !sRandomItemMgr.CanEquipArmor(itemProto, bot->getClass(), bot->GetLevel()))
         shouldEquip = false;
 
     uint8 possibleSlots = 1;
@@ -434,11 +441,11 @@ ItemUsage ItemUsageValue::QueryItemUsageForEquip(ItemTemplate const* itemProto, 
         }
 
         bool existingShouldEquip = true;
-        if (oldItemProto->Class == ITEM_CLASS_WEAPON && !sRandomItemMgr.CanEquipWeapon(bot->getClass(), oldItemProto))
+        if (oldItemProto->Class == ITEM_CLASS_WEAPON && !sRandomItemMgr.CanEquipWeapon(oldItemProto, bot->getClass()))
             existingShouldEquip = false;
 
         if (oldItemProto->Class == ITEM_CLASS_ARMOR &&
-            !sRandomItemMgr.CanEquipArmor(bot->getClass(), bot->GetLevel(), oldItemProto))
+            !sRandomItemMgr.CanEquipArmor(oldItemProto, bot->getClass(), bot->GetLevel()))
             existingShouldEquip = false;
 
         // uint32 oldItemPower = sRandomItemMgr.GetLiveStatWeight(bot, oldItemProto->ItemId);
@@ -977,7 +984,7 @@ std::vector<uint32> ItemUsageValue::SpellsUsingItem(int64_t itemId, Player* bot)
             continue;
 
         for (uint8 i = 0; i < MAX_SPELL_REAGENTS; i++)
-            if (spellInfo->ReagentCount[i] > 0 && spellInfo->Reagent[i] == itemId)
+            if (spellInfo->ReagentCount[i] > 0 && uint32(spellInfo->Reagent[i]) == itemId)
                 retSpells.push_back(spellId);
     }
 

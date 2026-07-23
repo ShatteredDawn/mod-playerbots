@@ -4,116 +4,12 @@
  */
 
 #include "FrostMageStrategy.h"
-
-#include "CreateNextAction.h"
 #include "GenericActions.h"
 #include "MageActions.h"
 
-// ===== Action Node Factory =====
-class FrostMageStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
-{
-public:
-    FrostMageStrategyActionNodeFactory()
-    {
-        creators["cold snap"] = &cold_snap;
-        creators["ice barrier"] = &ice_barrier;
-        creators["summon water elemental"] = &summon_water_elemental;
-        creators["deep freeze"] = &deep_freeze;
-        creators["icy veins"] = &icy_veins;
-        creators["frostbolt"] = &frostbolt;
-        creators["ice lance"] = &ice_lance;
-        creators["fire blast"] = &fire_blast;
-        creators["fireball"] = &fireball;
-        creators["frostfire bolt"] = &frostfire_bolt;
-    }
-
-private:
-    static ActionNode* cold_snap(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-        }
-    static ActionNode* ice_barrier(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-        }
-    static ActionNode* summon_water_elemental(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-        }
-    static ActionNode* deep_freeze(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-        }
-    static ActionNode* icy_veins(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-        }
-    static ActionNode* frostbolt(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-        }
-    static ActionNode* ice_lance(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-        }
-    static ActionNode* fire_blast(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-        }
-    static ActionNode* fireball(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-        }
-    static ActionNode* frostfire_bolt(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-        }
-};
-
-// ===== Single Target Strategy =====
 FrostMageStrategy::FrostMageStrategy(PlayerbotAI* botAI) : GenericMageStrategy(botAI)
 {
-    actionNodeFactories.Add(new FrostMageStrategyActionNodeFactory());
+    // No custom ActionNodeFactory needed
 }
 
 // ===== Default Actions =====

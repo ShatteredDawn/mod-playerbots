@@ -7,91 +7,9 @@
 #include "CreateNextAction.h"
 #include "MageActions.h"
 
-// ===== Action Node Factory =====
-class FrostFireMageStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
-{
-public:
-    FrostFireMageStrategyActionNodeFactory()
-    {
-        creators["frostfire bolt"] = &frostfire_bolt;
-        creators["fire blast"] = &fire_blast;
-        creators["pyroblast"] = &pyroblast;
-        creators["combustion"] = &combustion;
-        creators["icy veins"] = &icy_veins;
-        creators["scorch"] = &scorch;
-        creators["living bomb"] = &living_bomb;
-    }
-
-private:
-    static ActionNode* frostfire_bolt(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-    }
-
-    static ActionNode* fire_blast(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-    }
-
-    static ActionNode* pyroblast(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-    }
-
-    static ActionNode* combustion(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-    }
-
-    static ActionNode* icy_veins(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-    }
-
-    static ActionNode* scorch(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-    }
-
-    static ActionNode* living_bomb(PlayerbotAI*)
-    {
-        return new ActionNode(
-            {},
-            {},
-            {}
-        );
-    }
-
-};
-
-// ===== Single Target Strategy =====
 FrostFireMageStrategy::FrostFireMageStrategy(PlayerbotAI* botAI) : GenericMageStrategy(botAI)
 {
-    actionNodeFactories.Add(new FrostFireMageStrategyActionNodeFactory());
+    // No custom ActionNodeFactory needed
 }
 
 // ===== Default Actions =====

@@ -7,10 +7,10 @@
 #define _PLAYERBOT_VALUE_H
 
 #include <time.h>
+#include <unordered_map>
 
 #include "AiObject.h"
 #include "ObjectGuid.h"
-#include "PerfMonitor.h"
 #include "Timer.h"
 #include "Unit.h"
 
@@ -24,7 +24,11 @@ public:
     float radius;
     float angle;
     uint32 timestamp;
-    int GetAngleRangeIndex() { return (angle + 2 * M_PI) / (M_PI / 2); }  // [0, 7)
+    int GetAngleRangeIndex()
+    {
+        // [0, 7)
+        return int((angle + 2 * M_PI) / (M_PI / 2));
+    }
 };
 
 struct CreatureData;
@@ -83,7 +87,7 @@ public:
             time_t now = getMSTime();
             if (!lastCheckTime || now - lastCheckTime >= checkInterval)
             {
-                lastCheckTime = now;
+                lastCheckTime = uint32_t(now);
                 // PerfMonitorOperation* pmo = sPerfMonitor.start(PERF_MON_VALUE, this->getName(),
                 // this->context ? &this->context->performanceStack : nullptr);
                 value = Calculate();
@@ -116,7 +120,7 @@ public:
             time_t now = getMSTime();
             if (!lastCheckTime || now - lastCheckTime >= checkInterval)
             {
-                lastCheckTime = now;
+                lastCheckTime = uint32_t(now);
                 // PerfMonitorOperation* pmo = sPerfMonitor.start(PERF_MON_VALUE, this->getName(),
                 // this->context ? &this->context->performanceStack : nullptr);
                 value = Calculate();
@@ -273,7 +277,7 @@ class Uint32CalculatedValue : public CalculatedValue<uint32>
 {
 public:
     Uint32CalculatedValue(PlayerbotAI* botAI, std::string const name = "value", int checkInterval = 1)
-        : CalculatedValue<uint32>(botAI, name, checkInterval)
+        : CalculatedValue<uint32>(botAI, name, uint32_t(checkInterval))
     {
     }
 
@@ -284,7 +288,7 @@ class FloatCalculatedValue : public CalculatedValue<float>
 {
 public:
     FloatCalculatedValue(PlayerbotAI* botAI, std::string const name = "value", int checkInterval = 1)
-        : CalculatedValue<float>(botAI, name, checkInterval)
+        : CalculatedValue<float>(botAI, name, uint32_t(checkInterval))
     {
     }
 
@@ -295,7 +299,7 @@ class BoolCalculatedValue : public CalculatedValue<bool>
 {
 public:
     BoolCalculatedValue(PlayerbotAI* botAI, std::string const name = "value", int checkInterval = 1)
-        : CalculatedValue<bool>(botAI, name, checkInterval)
+        : CalculatedValue<bool>(botAI, name, uint32_t(checkInterval))
     {
     }
 
@@ -414,6 +418,19 @@ public:
     }
 private:
     std::list<FleeInfo> data = {};
+};
+
+class MissingBuffReagentNoticeValue : public ManualSetValue<std::unordered_map<std::string, uint32>&>
+{
+public:
+    MissingBuffReagentNoticeValue(
+        PlayerbotAI* botAI, std::string const name = "missing buff reagent notice")
+        : ManualSetValue<std::unordered_map<std::string, uint32>&>(botAI, noticeTimes, name)
+    {
+    }
+
+private:
+    std::unordered_map<std::string, uint32> noticeTimes;
 };
 
 #endif

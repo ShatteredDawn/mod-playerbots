@@ -19,7 +19,6 @@ public:
     {
         creators["sinister strike"] = &sinister_strike;
         creators["kick"] = &kick;
-        creators["kidney shot"] = &kidney_shot;
         creators["backstab"] = &backstab;
         creators["rupture"] = &rupture;
     }
@@ -38,14 +37,6 @@ private:
         return new ActionNode(
             /*P*/ {},
             /*A*/ { CreateNextAction<CastKidneyShotAction>(1.0f) },
-            /*C*/ {}
-        );
-    }
-    static ActionNode* kidney_shot([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
             /*C*/ {}
         );
     }
@@ -231,9 +222,6 @@ public:
     StealthedRogueStrategyActionNodeFactory()
     {
         creators["ambush"] = &ambush;
-        creators["cheap shot"] = &cheap_shot;
-        creators["garrote"] = &garrote;
-        creators["sap"] = &sap;
         creators["sinister strike"] = &sinister_strike;
     }
 
@@ -243,33 +231,6 @@ private:
         return new ActionNode(
             /*P*/ {},
             /*A*/ { CreateNextAction<CastGarroteAction>(1.0f) },
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* cheap_shot([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* garrote([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* sap([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
             /*C*/ {}
         );
     }

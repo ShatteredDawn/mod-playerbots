@@ -11,6 +11,18 @@
 #include "MageActions.h"
 #include "RangedCombatStrategy.h"
 
+namespace
+{
+constexpr uint32 SPELL_CONJURE_MANA_SAPPHIRE = 42985;
+constexpr uint32 SPELL_CONJURE_MANA_EMERALD = 27101;
+constexpr uint32 SPELL_CONJURE_MANA_RUBY = 10054;
+constexpr uint32 SPELL_CONJURE_MANA_CITRINE = 10053;
+constexpr uint32 SPELL_CONJURE_MANA_JADE = 3552;
+constexpr uint32 SPELL_CONJURE_MANA_AGATE = 759;
+constexpr uint32 SPELL_FROSTFIRE_BOLT = 44614;
+constexpr uint32 SPELL_ICE_SHARDS = 15047;
+}
+
 class GenericMageStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
 {
 public:
@@ -18,16 +30,7 @@ public:
     {
         creators["frostbolt"] = &frostbolt;
         creators["frostfire bolt"] = &frostfire_bolt;
-        creators["ice lance"] = &ice_lance;
-        creators["fire blast"] = &fire_blast;
         creators["scorch"] = &scorch;
-        creators["frost nova"] = &frost_nova;
-        creators["cone of cold"] = &cone_of_cold;
-        creators["icy veins"] = &icy_veins;
-        creators["combustion"] = &combustion;
-        creators["evocation"] = &evocation;
-        creators["dragon's breath"] = &dragons_breath;
-        creators["blast wave"] = &blast_wave;
         creators["remove curse"] = &remove_curse;
         creators["remove curse on party"] = &remove_curse_on_party;
         creators["fireball"] = &fireball;
@@ -52,92 +55,11 @@ private:
         );
     }
 
-    static ActionNode* ice_lance([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* fire_blast([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
-            /*C*/ {}
-        );
-    }
-
     static ActionNode* scorch([[maybe_unused]] PlayerbotAI* botAI)
     {
         return new ActionNode(
             /*P*/ {},
             /*A*/ { CreateNextAction<CastShootAction>(1.0f) },
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* frost_nova([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* cone_of_cold([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* icy_veins([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* combustion([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* evocation([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ { CreateNextAction<UseManaPotion>(1.0f) },
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* dragons_breath([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* blast_wave([[maybe_unused]] PlayerbotAI* botAI)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
             /*C*/ {}
         );
     }
@@ -248,7 +170,7 @@ void GenericMageStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
 
     // Mana Threshold Triggers
     Player* bot = botAI->GetBot();
-    if (bot->HasSpell(42985))  // Mana Sapphire
+    if (bot->HasSpell(SPELL_CONJURE_MANA_SAPPHIRE))
         triggers.push_back(
             new TriggerNode(
                 "high mana",
@@ -257,7 +179,7 @@ void GenericMageStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
                 }
             )
         );
-    else if (bot->HasSpell(27101))  // Mana Emerald
+    else if (bot->HasSpell(SPELL_CONJURE_MANA_EMERALD))
         triggers.push_back(
             new TriggerNode(
                 "high mana",
@@ -266,7 +188,7 @@ void GenericMageStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
                 }
             )
         );
-    else if (bot->HasSpell(10054))  // Mana Ruby
+    else if (bot->HasSpell(SPELL_CONJURE_MANA_RUBY))
         triggers.push_back(
             new TriggerNode(
                 "high mana",
@@ -275,7 +197,7 @@ void GenericMageStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
                 }
             )
         );
-    else if (bot->HasSpell(10053))  // Mana Citrine
+    else if (bot->HasSpell(SPELL_CONJURE_MANA_CITRINE))
         triggers.push_back(
             new TriggerNode(
                 "high mana",
@@ -284,7 +206,7 @@ void GenericMageStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
                 }
             )
         );
-    else if (bot->HasSpell(3552))  // Mana Jade
+    else if (bot->HasSpell(SPELL_CONJURE_MANA_JADE))
         triggers.push_back(
             new TriggerNode(
                 "high mana",
@@ -293,7 +215,7 @@ void GenericMageStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
                 }
             )
         );
-    else if (bot->HasSpell(759))  // Mana Agate
+    else if (bot->HasSpell(SPELL_CONJURE_MANA_AGATE))
         triggers.push_back(
             new TriggerNode(
                 "high mana",
@@ -303,12 +225,6 @@ void GenericMageStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
             )
         );
 
-    triggers.push_back(
-        new TriggerNode(
-            "medium mana", { CreateNextAction<UseManaPotion>(90.0f)
-            }
-        )
-    );
     triggers.push_back(
         new TriggerNode(
             "low mana",
@@ -362,7 +278,7 @@ void MageBoostStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
     Player* bot = botAI->GetBot();
     int tab = AiFactory::GetPlayerSpecTab(bot);
 
-    if (tab == 0)  // Arcane
+    if (tab == MAGE_TAB_ARCANE)
     {
         triggers.push_back(
             new TriggerNode(
@@ -389,9 +305,9 @@ void MageBoostStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
             )
         );
     }
-    else if (tab == 1)
+    else if (tab == MAGE_TAB_FIRE)
     {
-        if (bot->HasSpell(44614) /*Frostfire Bolt*/ && bot->HasAura(15047) /*Ice Shards*/)
+        if (bot->HasSpell(SPELL_FROSTFIRE_BOLT) && bot->HasAura(SPELL_ICE_SHARDS))
         { // Frostfire
             triggers.push_back(
                 new TriggerNode(
@@ -438,7 +354,7 @@ void MageBoostStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
             );
         }
     }
-    else if (tab == 2)  // Frost
+    else if (tab == MAGE_TAB_FROST)  // Frost
     {
         triggers.push_back(
             new TriggerNode(

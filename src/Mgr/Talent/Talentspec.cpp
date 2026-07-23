@@ -316,7 +316,7 @@ std::vector<TalentSpec::TalentListEntry> TalentSpec::GetTalentTree(uint32 tabpag
     std::vector<TalentListEntry> retList;
 
     for (auto& entry : talents)
-        if (entry.tabPage() == tabpage)
+        if (entry.tabPage() == uint32(tabpage))
             retList.push_back(entry);
 
     return retList;
@@ -454,7 +454,7 @@ std::vector<TalentSpec::TalentListEntry> TalentSpec::SubTalentList(std::vector<T
             {
                 if (reverse == ABSOLUTE_DIST)
                     newentry.rank = std::abs(int32(newentry.rank - oldentry.rank));
-                else if (reverse == ADDED_POINTS)
+                else if (reverse == ADDED_POINTS || reverse == uint32(REMOVED_POINTS))
                     newentry.rank = std::max(0u, (newentry.rank - oldentry.rank) * (reverse / 2));
                 else
                     newentry.rank = (newentry.rank - oldentry.rank) * reverse;

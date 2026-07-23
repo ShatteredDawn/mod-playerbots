@@ -19,9 +19,6 @@ public:
         creators["piercing howl"] = &piercing_howl;
         creators["mocking blow"] = &mocking_blow;
         creators["heroic strike"] = &heroic_strike;
-        creators["enraged regeneration"] = &enraged_regeneration;
-        creators["retaliation"] = &retaliation;
-        creators["shattering throw"] = &shattering_throw;
     }
 
 private:
@@ -69,33 +66,6 @@ private:
             /*C*/ {}
         );
     }
-
-    static ActionNode* enraged_regeneration(PlayerbotAI*)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* retaliation(PlayerbotAI*)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* shattering_throw(PlayerbotAI*)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
-            /*C*/ {}
-        );
-    }
 };
 
 ArmsWarriorStrategy::ArmsWarriorStrategy(PlayerbotAI* botAI) : GenericWarriorStrategy(botAI)
@@ -108,6 +78,7 @@ std::vector<NextAction> ArmsWarriorStrategy::getDefaultActions()
     return {
         CreateNextAction<CastBladestormAction>(ACTION_DEFAULT + 0.2f),
         CreateNextAction<CastMortalStrikeAction>(ACTION_DEFAULT + 0.1f),
+        CreateNextAction<CastSunderArmorAction>(ACTION_DEFAULT + 0.05f),
         CreateNextAction<MeleeAction>(ACTION_DEFAULT)
     };
 }

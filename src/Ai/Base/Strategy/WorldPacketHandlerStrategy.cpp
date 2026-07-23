@@ -19,7 +19,6 @@
 #include "LootAction.h"
 #include "LootRollAction.h"
 #include "OpenItemAction.h"
-#include "PassLeadershipToMasterAction.h"
 #include "PetitionSignAction.h"
 #include "QuestAction.h"
 #include "ReadyCheckAction.h"
@@ -68,7 +67,7 @@ void WorldPacketHandlerStrategy::InitTriggers(std::vector<TriggerNode*>& trigger
         new TriggerNode(
             "group set leader",
             {
-                CreateNextAction<PassLeadershipToMasterAction>(relevance),
+                CreateNextAction<ResetAiAction>(relevance),
             }
         )
     );

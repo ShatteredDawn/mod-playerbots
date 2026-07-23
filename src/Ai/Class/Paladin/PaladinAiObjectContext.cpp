@@ -7,10 +7,10 @@
 
 #include "DpsPaladinStrategy.h"
 #include "GenericPaladinNonCombatStrategy.h"
+#include "PaladinGreaterBlessingAction.h"
 #include "HealPaladinStrategy.h"
 #include "NamedObjectContext.h"
 #include "OffhealRetPaladinStrategy.h"
-#include "PaladinActions.h"
 #include "PaladinBuffStrategies.h"
 #include "PaladinPullStrategy.h"
 #include "PaladinTriggers.h"
@@ -69,17 +69,17 @@ class PaladinBuffStrategyFactoryInternal : public NamedObjectContext<Strategy>
 public:
     PaladinBuffStrategyFactoryInternal() : NamedObjectContext<Strategy>(false, true)
     {
-        creators["bhealth"] = &PaladinBuffStrategyFactoryInternal::bhealth;
-        creators["bmana"] = &PaladinBuffStrategyFactoryInternal::bmana;
-        creators["bdps"] = &PaladinBuffStrategyFactoryInternal::bdps;
-        creators["bstats"] = &PaladinBuffStrategyFactoryInternal::bstats;
+        creators["bsanc"] = &PaladinBuffStrategyFactoryInternal::bsanc;
+        creators["bwisdom"] = &PaladinBuffStrategyFactoryInternal::bwisdom;
+        creators["bmight"] = &PaladinBuffStrategyFactoryInternal::bmight;
+        creators["bkings"] = &PaladinBuffStrategyFactoryInternal::bkings;
     }
 
 private:
-    static Strategy* bhealth(PlayerbotAI* botAI) { return new PaladinBuffHealthStrategy(botAI); }
-    static Strategy* bmana(PlayerbotAI* botAI) { return new PaladinBuffManaStrategy(botAI); }
-    static Strategy* bdps(PlayerbotAI* botAI) { return new PaladinBuffDpsStrategy(botAI); }
-    static Strategy* bstats(PlayerbotAI* botAI) { return new PaladinBuffStatsStrategy(botAI); }
+    static Strategy* bsanc(PlayerbotAI* botAI) { return new PaladinBuffHealthStrategy(botAI); }
+    static Strategy* bwisdom(PlayerbotAI* botAI) { return new PaladinBuffManaStrategy(botAI); }
+    static Strategy* bmight(PlayerbotAI* botAI) { return new PaladinBuffDpsStrategy(botAI); }
+    static Strategy* bkings(PlayerbotAI* botAI) { return new PaladinBuffStatsStrategy(botAI); }
 };
 
 class PaladinCombatStrategyFactoryInternal : public NamedObjectContext<Strategy>
@@ -153,6 +153,7 @@ public:
         creators["blessing of sanctuary on party"] = &PaladinTriggerFactoryInternal::blessing_of_sanctuary_on_party;
 
         creators["avenging wrath"] = &PaladinTriggerFactoryInternal::avenging_wrath;
+        creators["greater blessing needed"] = &PaladinTriggerFactoryInternal::greater_blessing_needed;
     }
 
 private:
@@ -210,8 +211,8 @@ private:
     static Trigger* repentance_on_enemy_healer(PlayerbotAI* botAI) { return new RepentanceOnHealerTrigger(botAI); }
     static Trigger* repentance_on_snare_target(PlayerbotAI* botAI) { return new RepentanceSnareTrigger(botAI); }
     static Trigger* repentance_interrupt(PlayerbotAI* botAI) { return new RepentanceInterruptTrigger(botAI); }
-    static Trigger* beacon_of_light_on_main_tank(PlayerbotAI* ai) { return new BeaconOfLightOnMainTankTrigger(ai); }
-    static Trigger* sacred_shield_on_main_tank(PlayerbotAI* ai) { return new SacredShieldOnMainTankTrigger(ai); }
+    static Trigger* beacon_of_light_on_main_tank(PlayerbotAI* botAI) { return new BeaconOfLightOnMainTankTrigger(botAI); }
+    static Trigger* sacred_shield_on_main_tank(PlayerbotAI* botAI) { return new SacredShieldOnMainTankTrigger(botAI); }
     static Trigger* hand_of_freedom_on_party(PlayerbotAI* botAI) { return new HandOfFreedomOnPartyTrigger(botAI); }
 
     static Trigger* blessing_of_kings_on_party(PlayerbotAI* botAI) { return new BlessingOfKingsOnPartyTrigger(botAI); }
@@ -226,6 +227,32 @@ private:
     }
 
     static Trigger* avenging_wrath(PlayerbotAI* botAI) { return new AvengingWrathTrigger(botAI); }
+    static Trigger* greater_blessing_needed(PlayerbotAI* botAI)
+    {
+        return new GreaterBlessingNeededTrigger(botAI);
+    }
+};
+
+class PaladinValueContextInternal : public NamedObjectContext<UntypedValue>
+{
+public:
+    PaladinValueContextInternal()
+    {
+        creators["greater blessing assignments"] = &PaladinValueContextInternal::greater_blessing_assignments;
+        creators["greater blessing pending assignment"] =
+            &PaladinValueContextInternal::greater_blessing_pending_assignment;
+    }
+
+private:
+    static UntypedValue* greater_blessing_assignments(PlayerbotAI* botAI)
+    {
+        return ai::gbless::greater_blessing_assignments_value(botAI);
+    }
+
+    static UntypedValue* greater_blessing_pending_assignment(PlayerbotAI* botAI)
+    {
+        return ai::gbless::greater_blessing_pending_assignment_value(botAI);
+    }
 };
 
 SharedNamedObjectContextList<Strategy> PaladinAiObjectContext::sharedStrategyContexts;
@@ -262,4 +289,5 @@ void PaladinAiObjectContext::BuildSharedTriggerContexts(SharedNamedObjectContext
 void PaladinAiObjectContext::BuildSharedValueContexts(SharedNamedObjectContextList<UntypedValue>& valueContexts)
 {
     AiObjectContext::BuildSharedValueContexts(valueContexts);
+    valueContexts.Add(new PaladinValueContextInternal());
 }

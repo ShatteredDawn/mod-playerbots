@@ -57,10 +57,11 @@ bool CastCancelDruidAction::Execute(Event)
 
 bool CastCancelDruidAction::isUseful()
 {
-    return this->botAI->HasAura(this->auraId, this->bot);
+    return this->bot->HasAura(this->auraId);
 }
 
 bool CastTreeFormAction::isUseful()
 {
-    return GetTarget() && CastSpellAction::isUseful() && !botAI->HasAura(33891, bot);
+    constexpr uint32 SPELL_TREE_OF_LIFE = 33891;
+    return GetTarget() && CastSpellAction::isUseful() && !bot->HasAura(SPELL_TREE_OF_LIFE);
 }

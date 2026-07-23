@@ -7,45 +7,25 @@
 #include "CreateNextAction.h"
 #include "DKActions.h"
 #include "GenericActions.h"
-
-class GenericDKNonCombatStrategyActionNodeFactory : public NamedObjectFactory<ActionNode>
-{
-public:
-    GenericDKNonCombatStrategyActionNodeFactory()
-    {
-        creators["bone shield"] = &bone_shield;
-        creators["horn of winter"] = &horn_of_winter;
-    }
-
-private:
-    static ActionNode* bone_shield(PlayerbotAI*)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
-            /*C*/ {}
-        );
-    }
-
-    static ActionNode* horn_of_winter(PlayerbotAI*)
-    {
-        return new ActionNode(
-            /*P*/ {},
-            /*A*/ {},
-            /*C*/ {}
-        );
-    }
-};
+#include "ImbueAction.h"
 
 GenericDKNonCombatStrategy::GenericDKNonCombatStrategy(PlayerbotAI* botAI) : NonCombatStrategy(botAI)
 {
-    actionNodeFactories.Add(new GenericDKNonCombatStrategyActionNodeFactory());
+    // No custom ActionNodeFactory needed
 }
 
 void GenericDKNonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& triggers)
 {
     NonCombatStrategy::InitTriggers(triggers);
 
+    triggers.push_back(
+        new TriggerNode(
+            "often",
+            {
+                CreateNextAction<ImbueWithStoneAction>(1.0f)
+            }
+        )
+    );
     triggers.push_back(
         new TriggerNode(
             "horn of winter",
@@ -62,9 +42,4 @@ void GenericDKNonCombatStrategy::InitTriggers(std::vector<TriggerNode*>& trigger
             }
         )
     );
-}
-
-void DKBuffDpsStrategy::InitTriggers(std::vector<TriggerNode*>&)
-{
-
 }

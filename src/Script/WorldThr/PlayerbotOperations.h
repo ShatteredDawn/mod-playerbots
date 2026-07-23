@@ -8,8 +8,6 @@
 
 #include "Group.h"
 #include "GroupMgr.h"
-#include "GuildMgr.h"
-#include "Playerbots.h"
 #include "ObjectAccessor.h"
 #include "PlayerbotOperation.h"
 #include "Player.h"
@@ -248,6 +246,7 @@ public:
         }
 
         group->ChangeLeader(newLeader->GetGUID());
+        group->SendUpdate();
         LOG_DEBUG("playerbots", "GroupSetLeaderOperation: Changed leader to {}", newLeader->GetName());
         return true;
     }
